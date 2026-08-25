@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+@keyframes flyBob { 0%,100% { transform: translate(-50%,50%) rotate(-2deg); } 50% { transform: translate(-50%,calc(50% - 6px)) rotate(2deg); } }
+body { margin: 0; background: #04070f; }
+a { color: #F6C96B; } a:hover { color: #ffe1a6; }
+</style>
+</helmet>
+
+<div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#050c0e;font-family:Nunito,system-ui,sans-serif;color:#F7EEDB">
+
+  <img src="assets/bg-sky.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;filter:brightness(.5) hue-rotate(-14deg)" />
+  <img src="assets/bg-l4.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.4;filter:blur(5px) brightness(.4)" />
+  <div style="position:absolute;inset:0;background:radial-gradient(52% 42% at 30% 50%,rgba(120,220,180,.14) 0%,rgba(5,14,16,.86) 68%,rgba(4,10,12,.96) 100%)"></div>
+
+  <div style="position:absolute;left:2.6%;top:5.5%;font-size:1.1vw;letter-spacing:.3em;color:#8FA6BE">C</div>
+  <div style="position:absolute;left:0;right:0;top:5%;text-align:center">
+    <div style="font-family:Marcellus,serif;font-size:1.9vw;letter-spacing:.2em;color:#F7EEDB">CAVE PASSAGE</div>
+    <div style="margin-top:.5vw;font-size:.95vw;letter-spacing:.1em;color:rgba(155,175,196,.8)">Living vines · the undergrowth parts for a steady breath</div>
+  </div>
+
+  <div style="position:absolute;left:0;right:0;top:19%;height:60%;overflow:hidden">
+    <div ref="{{ laneRef }}" style="position:absolute;left:0;right:0;background:linear-gradient(180deg,rgba(155,232,196,0) 0%,rgba(180,255,220,.13) 46%,rgba(255,222,168,.16) 54%,rgba(155,232,196,0) 100%);transition:opacity .25s ease"></div>
+
+    <div ref="{{ ceilRef }}" style="position:absolute;left:0;right:0;top:0;height:100%;display:flex;align-items:flex-start;gap:.25%">
+      <sc-for list="{{ cols }}" as="c" hint-placeholder-count="30">
+        <div style="flex:1;background:linear-gradient(180deg,#04140f 0%,#0c2b22 62%,#164236 88%,#1f6a4f 100%);border-bottom-left-radius:50% 22px;border-bottom-right-radius:50% 22px;box-shadow:0 10px 26px rgba(0,0,0,.55),0 2px 12px rgba(120,255,200,.18)"></div>
+      </sc-for>
+    </div>
+
+    <div ref="{{ floorRef }}" style="position:absolute;left:0;right:0;bottom:0;height:100%;display:flex;align-items:flex-end;gap:.25%">
+      <sc-for list="{{ cols }}" as="c" hint-placeholder-count="30">
+        <div style="flex:1;background:linear-gradient(0deg,#03110d 0%,#0b2820 62%,#153e33 88%,#1d6249 100%);border-top-left-radius:50% 22px;border-top-right-radius:50% 22px;box-shadow:0 -10px 26px rgba(0,0,0,.55),0 -2px 12px rgba(120,255,200,.16)"></div>
+      </sc-for>
+    </div>
+
+    <img ref="{{ flyRef }}" src="assets/char-golden.png" alt="Your firefly" style="position:absolute;left:30%;width:11%;transform:translate(-50%,50%);filter:drop-shadow(0 0 34px rgba(246,201,107,.55));animation:flyBob 2.6s ease-in-out infinite" />
+  </div>
+
+  <div ref="{{ stateRef }}" style="position:absolute;left:0;right:0;bottom:19%;text-align:center;font-size:1.15vw;letter-spacing:.14em;color:#9be8c4"></div>
+
+  <div style="position:absolute;left:18%;right:18%;bottom:9%;height:1.1vw;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden">
+    <div ref="{{ bandRef }}" style="position:absolute;top:0;bottom:0;background:rgba(155,232,196,.3);border-left:2px solid rgba(155,232,196,.75);border-right:2px solid rgba(155,232,196,.75)"></div>
+    <div ref="{{ meterRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#F6C96B,#ffe1a6);border-radius:999px"></div>
+  </div>
+  <div style="position:absolute;left:18%;bottom:4.5%;font-size:.85vw;letter-spacing:.16em;color:rgba(155,175,196,.6)">SOFTER</div>
+  <div style="position:absolute;right:18%;bottom:4.5%;font-size:.85vw;letter-spacing:.16em;color:rgba(155,175,196,.6)">FIRMER</div>
+
+  <div style="position:absolute;right:3%;bottom:8%;width:7%;display:flex;flex-direction:column;align-items:center;gap:.6vw">
+    <div style="position:relative;width:100%;aspect-ratio:.72;border:2px solid rgba(255,214,160,.35);border-radius:.5vw .5vw 1.2vw 1.2vw;overflow:hidden;background:rgba(10,16,28,.5)">
+      <div ref="{{ jarRef }}" style="position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(0deg,rgba(255,196,110,.8),rgba(255,231,178,.35));transition:height .5s cubic-bezier(.2,1,.3,1)"></div>
+    </div>
+    <div ref="{{ sparkRef }}" style="font-size:.9vw;letter-spacing:.14em;color:#F6C96B">0</div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  cols = Array.from({ length: 30 }, (_, i) => ({ i }));
+  ceilRef = React.createRef(); floorRef = React.createRef(); laneRef = React.createRef();
+  flyRef = React.createRef(); stateRef = React.createRef(); meterRef = React.createRef();
+  bandRef = React.createRef(); jarRef = React.createRef(); sparkRef = React.createRef();
+  v = 0; hold = 0; sparks = 0; scroll = 0;
+
+  componentDidMount() {
+    this.ceilEls = this.ceilRef.current ? Array.from(this.ceilRef.current.children) : [];
+    this.floorEls = this.floorRef.current ? Array.from(this.floorRef.current.children) : [];
+    this.t0 = performance.now(); this.last = this.t0;
+    this.raf = requestAnimationFrame(this.frame);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); }
+
+  breathAt(ms) {
+    const K = [[0,0],[900,.66],[2300,.52],[6300,.5],[7500,.33],[9400,.49],[12200,.51],[13200,0],[15000,0]];
+    const t = ms % 15000;
+    for (let i = 0; i < K.length - 1; i++) {
+      if (t <= K[i+1][0]) {
+        const a = K[i], b = K[i+1], p = (t - a[0]) / (b[0] - a[0]), e = p*p*(3-2*p);
+        return a[1] + (b[1] - a[1]) * e;
+      }
+    }
+    return 0;
+  }
+
+  frame = (now) => {
+    const dt = Math.min(50, now - this.last); this.last = now;
+    const tt = now - this.t0;
+    const tgt = this.breathAt(tt) + Math.sin(now / 95) * 0.006;
+    this.v += (tgt - this.v) * 0.13;
+    const lc = 0.5 + 0.115 * Math.sin(tt * 0.00052) + 0.05 * Math.sin(tt * 0.0012);
+    const lh = 0.09;
+    const pos = 0.08 + this.v * 0.84;
+    const on = this.v > 0.06 && Math.abs(pos - lc) < lh;
+    if (on) { this.scroll += dt * 0.06; this.hold += dt; } else { this.hold *= 0.9985; }
+    while (this.hold > 2200) { this.hold -= 2200; this.sparks++; }
+
+    for (let i = 0; i < this.ceilEls.length; i++) {
+      const j = 0.026 * Math.sin(i * 0.62 + this.scroll * 0.075) + 0.016 * Math.sin(i * 1.9 - this.scroll * 0.045);
+      this.ceilEls[i].style.height = Math.max(2, (1 - (lc + lh) - j) * 100) + '%';
+      this.floorEls[i].style.height = Math.max(2, (lc - lh - j) * 100) + '%';
+    }
+    const lane = this.laneRef.current;
+    if (lane) { lane.style.top = ((1 - (lc + lh)) * 100) + '%'; lane.style.height = (2 * lh * 100) + '%'; lane.style.opacity = on ? '1' : '.35'; }
+    const fly = this.flyRef.current;
+    if (fly) { fly.style.bottom = (pos * 100) + '%'; fly.style.filter = 'drop-shadow(0 0 ' + (18 + this.v * 46) + 'px rgba(246,201,107,' + (0.3 + this.v * 0.45) + '))'; }
+    const m = this.meterRef.current; if (m) m.style.width = Math.min(100, this.v * 100) + '%';
+    const bd = this.bandRef.current;
+    if (bd) { const c = (lc - 0.08) / 0.84, w = (2 * lh) / 0.84; bd.style.left = Math.max(0, (c - w / 2) * 100) + '%'; bd.style.width = (w * 100) + '%'; }
+    const st = this.stateRef.current;
+    if (st) {
+      let txt = 'blow gently to begin', col = 'rgba(155,175,196,.8)';
+      if (this.v > 0.06) {
+        if (on) { txt = 'steady — the vines are parting'; col = '#9be8c4'; }
+        else if (pos < lc - lh) { txt = 'a little firmer'; col = '#F6C96B'; }
+        else { txt = 'a little softer'; col = '#F6C96B'; }
+      }
+      st.textContent = txt; st.style.color = col;
+    }
+    const jr = this.jarRef.current; if (jr) jr.style.height = Math.min(100, (this.sparks % 9) * 11.5) + '%';
+    const sp = this.sparkRef.current; if (sp) sp.textContent = String(this.sparks);
+    this.raf = requestAnimationFrame(this.frame);
+  };
+
+  renderVals() { return {
+    cols: this.cols, ceilRef: this.ceilRef, floorRef: this.floorRef, laneRef: this.laneRef,
+    flyRef: this.flyRef, stateRef: this.stateRef, meterRef: this.meterRef, bandRef: this.bandRef,
+    jarRef: this.jarRef, sparkRef: this.sparkRef
+  }; }
+}
+
+</script>
+</body>
+</html>

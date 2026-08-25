@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet" />
+<style>
+html, body { margin: 0; height: 100%; background: #8FD3F4; overflow: hidden; }
+button, a { transition: transform .16s cubic-bezier(.22,.7,.3,1), box-shadow .16s ease, filter .16s ease; }
+</style>
+</helmet>
+
+<div data-screen-label="Home" style="position:relative;width:100%;height:100vh;overflow:hidden;font-family:'Baloo 2',Nunito,system-ui,sans-serif;color:#2F3B52;background:#8FD3F4">
+  <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/scene-home-meadow.png)"></div>
+
+  <!-- tier 3: player identity + wallet, quiet white plates -->
+  <div style="position:absolute;left:2.6%;top:4%;display:flex;align-items:center;gap:1.2vh">
+    <button onClick="{{ noop }}" style="display:flex;align-items:center;gap:1.2vh;padding:1vh 1.6vh 1vh 1vh;border:none;border-radius:1.8vh;background:rgba(255,255,255,.94);box-shadow:0 .5vh 1.2vh rgba(23,74,104,.18);cursor:pointer;text-align:left" style-hover="transform:translateY(-.2vh)" style-active="transform:translateY(0)">
+      <div style="width:5.6vh;height:5.6vh;border-radius:1.3vh;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);display:flex;align-items:center;justify-content:center;color:#fff">
+        <svg width="3.4vh" height="3.4vh" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.8" fill="currentColor"></circle><path d="M4.6 20c0-3.9 3.4-5.8 7.4-5.8s7.4 1.9 7.4 5.8" fill="currentColor"></path></svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.6vh">
+        <div style="display:flex;align-items:baseline;gap:.8vh">
+          <div style="font-weight:800;font-size:1.9vh;line-height:1;color:#2F3B52">PLAYER</div>
+          <div style="font-family:Nunito;font-weight:900;font-size:1.2vh;letter-spacing:.06em;color:#8C97AB">LVL {{ level }}</div>
+        </div>
+        <div style="position:relative;width:15vh;height:1.4vh;border-radius:99px;background:#E4E9F1;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:{{ xpPct }};background:linear-gradient(180deg,#A5EA76 0%,#56B92A 100%);border-radius:99px"></div>
+        </div>
+      </div>
+    </button>
+
+    <div style="display:flex;align-items:center;gap:.8vh;height:5.4vh;padding:0 .6vh 0 1vh;border-radius:99px;background:rgba(255,255,255,.94);box-shadow:0 .5vh 1.2vh rgba(23,74,104,.18)">
+      <svg width="3vh" height="3vh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.4" fill="#F0A62A"></circle><circle cx="12" cy="12" r="6.4" fill="#FFD75E"></circle></svg>
+      <div style="font-family:Nunito;font-weight:900;font-size:1.8vh;color:#2F3B52">{{ coins }}</div>
+      <button onClick="{{ addCoin }}" style="width:3.6vh;height:3.6vh;border-radius:50%;border:none;background:linear-gradient(180deg,#A5EA76 0%,#56B92A 100%);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#fff" style-hover="filter:brightness(1.06)" style-active="transform:translateY(1px)">
+        <svg width="1.9vh" height="1.9vh" viewBox="0 0 24 24"><path d="M10.6 4h2.8v6.6H20v2.8h-6.6V20h-2.8v-6.6H4v-2.8h6.6z" fill="currentColor"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- tier 3: system controls, smallest weight -->
+  <div style="position:absolute;right:2.6%;top:4%;display:flex;gap:1vh">
+    <button onClick="{{ noop }}" style="position:relative;width:5.4vh;height:5.4vh;border-radius:50%;border:none;background:rgba(255,255,255,.94);box-shadow:0 .5vh 1.2vh rgba(23,74,104,.18);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#EE5CB4;padding:0" style-hover="transform:translateY(-.2vh)" style-active="transform:translateY(0)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M3 10.2l9.2-4.8v13.2L3 13.8v-3.6z"></path><path stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" d="M14.6 9.2a4 4 0 010 5.6"></path></svg>
+      <div style="position:absolute;top:-.2vh;right:-.2vh;width:2vh;height:2vh;border-radius:50%;border:.25vh solid #fff;background:#F0483E;color:#fff;font-family:Nunito;font-weight:900;font-size:1vh;display:flex;align-items:center;justify-content:center">2</div>
+    </button>
+    <button onClick="{{ toggleMute }}" style="width:5.4vh;height:5.4vh;border-radius:50%;border:none;background:rgba(255,255,255,.94);box-shadow:0 .5vh 1.2vh rgba(23,74,104,.18);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#2FB4E6;padding:0" style-hover="transform:translateY(-.2vh)" style-active="transform:translateY(0)">
+      <sc-if value="{{ muted }}">
+        <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9.4l4.6 5.2M20.6 9.4L16 14.6"></path></svg>
+      </sc-if>
+      <sc-if value="{{ notMuted }}">
+        <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" d="M15.8 8.6a4.6 4.6 0 010 6.8"></path><path stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" d="M18.6 6a8.4 8.4 0 010 12"></path></svg>
+      </sc-if>
+    </button>
+    <button onClick="{{ noop }}" style="width:5.4vh;height:5.4vh;border-radius:50%;border:none;background:rgba(255,255,255,.94);box-shadow:0 .5vh 1.2vh rgba(23,74,104,.18);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9E77E8;padding:0" style-hover="transform:translateY(-.2vh)" style-active="transform:translateY(0)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M19.14,12.94a7.14,7.14,0,000-1.88l2.11-1.65a.5.5,0,00.12-.64l-2-3.46a.5.5,0,00-.6-.22l-2.49,1a7.3,7.3,0,00-1.62-.94l-.38-2.65A.5.5,0,0013.8,2h-4a.5.5,0,00-.5.42l-.38,2.65a7.3,7.3,0,00-1.62.94l-2.49-1a.5.5,0,00-.6.22l-2,3.46a.5.5,0,00.12.64l2.11,1.65a7.14,7.14,0,000,1.88l-2.11,1.65a.5.5,0,00-.12.64l2,3.46a.5.5,0,00.6.22l2.49-1a7.3,7.3,0,001.62.94l.38,2.65a.5.5,0,00.5.42h4a.5.5,0,00.5-.42l.38-2.65a7.3,7.3,0,001.62-.94l2.49,1a.5.5,0,00.6-.22l2-3.46a.5.5,0,00-.12-.64ZM12,15.5A3.5,3.5,0,1115.5,12,3.5,3.5,0,0112,15.5Z"></path></svg>
+    </button>
+  </div>
+
+  <!-- tier 1: the only loud element -->
+  <a href="Chamki Firefly Forest.dc.html" style="position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;gap:1.6vh;width:34vh;height:10.4vh;border-radius:2.6vh;border:.55vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.9vh 0 rgba(0,0,0,.16),0 1.2vh 2.2vh rgba(23,74,104,.3);color:#fff;font-weight:800;font-size:4.6vh;letter-spacing:.04em;text-decoration:none;text-shadow:0 .35vh 0 rgba(0,0,0,.24)" style-hover="filter:brightness(1.04);transform:translate(-50%,-50%) translateY(-.4vh)" style-active="transform:translate(-50%,-50%) translateY(3px)">
+    <svg width="3vh" height="3vh" viewBox="0 0 24 24"><path fill="#fff" d="M7 4.6l13 7.4-13 7.4V4.6z"></path></svg>
+    PLAY
+  </a>
+
+  <!-- tier 2: three equal secondary destinations -->
+  <div style="position:absolute;left:50%;bottom:6%;transform:translateX(-50%);display:flex;gap:1.6vh">
+    <button onClick="{{ noop }}" style="display:flex;align-items:center;gap:1.1vh;height:6.4vh;padding:0 2.2vh;border:none;border-radius:1.8vh;background:rgba(255,255,255,.94);box-shadow:0 .6vh 1.4vh rgba(23,74,104,.2);cursor:pointer;color:#2F3B52;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;letter-spacing:.04em" style-hover="transform:translateY(-.4vh)" style-active="transform:translateY(0)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24" style="color:#EE5CB4"><path fill="currentColor" d="M5.4 8.6h13.2l-1 11.4H6.4L5.4 8.6z"></path><path stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" d="M9 8.6a3 3 0 016 0"></path></svg>
+      SHOP
+    </button>
+    <button onClick="{{ noop }}" style="display:flex;align-items:center;gap:1.1vh;height:6.4vh;padding:0 2.2vh;border:none;border-radius:1.8vh;background:rgba(255,255,255,.94);box-shadow:0 .6vh 1.4vh rgba(23,74,104,.2);cursor:pointer;color:#2F3B52;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;letter-spacing:.04em" style-hover="transform:translateY(-.4vh)" style-active="transform:translateY(0)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24" style="color:#2FB4E6"><circle cx="12" cy="12" r="9" fill="currentColor" opacity=".28"></circle><circle cx="12" cy="12" r="5.4" fill="currentColor" opacity=".55"></circle><circle cx="12" cy="12" r="2.2" fill="currentColor"></circle></svg>
+      MISSION
+      <div style="font-family:Nunito;font-weight:900;font-size:1.3vh;color:#8C97AB">2/5</div>
+    </button>
+    <button onClick="{{ noop }}" style="display:flex;align-items:center;gap:1.1vh;height:6.4vh;padding:0 2.2vh;border:none;border-radius:1.8vh;background:rgba(255,255,255,.94);box-shadow:0 .6vh 1.4vh rgba(23,74,104,.2);cursor:pointer;color:#2F3B52;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;letter-spacing:.04em" style-hover="transform:translateY(-.4vh)" style-active="transform:translateY(0)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24" style="color:#56B92A"><circle cx="12" cy="12" r="9.4" fill="currentColor" opacity=".22"></circle><path fill="currentColor" d="M12 5.6c2.2 0 3.9 1.4 3.9 3.4 0 1.6-.9 2.3-2 3-.9.6-1.2 1-1.2 1.9v.4h-2.2v-.6c0-1.6.7-2.4 1.9-3.2.8-.5 1.1-.9 1.1-1.5 0-.8-.6-1.3-1.5-1.3s-1.6.6-1.6 1.6H8.2c0-2.1 1.6-3.7 3.8-3.7zm-.2 10.5a1.4 1.4 0 110 2.8 1.4 1.4 0 010-2.8z"></path></svg>
+      HOW TO PLAY
+    </button>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { muted: false, coins: 1280, level: 4, xp: 62 };
+
+  renderVals() {
+    return {
+      coins: this.state.coins.toLocaleString('en-US'),
+      level: this.state.level,
+      xpPct: this.state.xp + '%',
+      muted: this.state.muted,
+      notMuted: !this.state.muted,
+      toggleMute: () => this.setState(s => ({ muted: !s.muted })),
+      addCoin: () => this.setState(s => ({ coins: s.coins + 100 })),
+      noop: () => {}
+    };
+  }
+}
+
+</script>
+</body>
+</html>

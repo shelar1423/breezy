@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Marcellus&family=Nunito:wght@400;600;700;800;900&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+<style>
+html, body { margin: 0; height: 100%; background: #140E1E; overflow: hidden; }
+a { color: #F6C96B; } a:hover { color: #ffe1a6; }
+@keyframes flyBob { 0%,100% { transform: translate(-50%,-50%); } 50% { transform: translate(-50%,calc(-50% - 8px)); } }
+@keyframes calmPulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: .5; } 50% { transform: translate(-50%,-50%) scale(1.5); opacity: .9; } }
+</style>
+</helmet>
+
+<div style="position:relative;width:100%;height:100vh;overflow:hidden;font-family:Nunito,system-ui,sans-serif;color:#F7EEDB;background:#140E1E">
+
+  <sc-if value="{{ isCards }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#4FB8EE 0%,#7FD2F5 46%,#A9E3F9 100%)"></div>
+    <div style="position:absolute;inset:-2vh;background-size:190% auto;background-position:center 88%;background-image:url(assets/scene-home-meadow.png);filter:blur(4px) saturate(1.06)"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(24,86,124,.3) 0%,rgba(24,86,124,.14) 44%,rgba(24,86,124,.26) 100%)"></div>
+
+    <div style="position:absolute;left:5.5%;right:5.5%;top:6%;display:flex;align-items:center;justify-content:center">
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:6vh;line-height:1;color:#fff;text-shadow:0 .4vh 0 rgba(20,73,107,.32)">{{ t.pickPlace }}</div>
+      <a href="Breezy Home.dc.html" style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2.2vh 0 1.6vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;text-decoration:none;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(-50%) translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</a>
+      <button onClick="{{ toggleLang }}" style="position:absolute;right:0;top:50%;transform:translateY(-50%);height:5.4vh;padding:0 2.2vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.14),0 .3vh .5vh rgba(0,0,0,.16);color:#fff;font-family:Nunito;font-weight:900;font-size:1.5vh;letter-spacing:.12em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(-50%) translateY(2px)">{{ langLabel }}</button>
+    </div>
+
+    <div style="position:absolute;left:5.5%;right:5.5%;top:20%;bottom:14%;display:flex;gap:2.6vh;align-items:stretch;justify-content:center">
+      <sc-for list="{{ places }}" as="p" hint-placeholder-count="4">
+        <button onClick="{{ p.play }}" style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0;overflow:hidden;cursor:pointer;border:none;border-radius:3vh;background:{{ p.wash }};box-shadow:0 1.4vh 2.4vh rgba(20,73,107,.18);text-align:center;transition:transform .22s cubic-bezier(.22,.7,.3,1),box-shadow .22s ease,filter .22s ease" style-hover="transform:translateY(-.6vh);box-shadow:0 2vh 3vh rgba(20,73,107,.22)" style-active="transform:translateY(0)">
+          <div style="position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;background-position:{{ p.pos }};background-image:{{ p.art }}"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:56%;background:linear-gradient(180deg,rgba(9,32,48,0) 0%,rgba(9,32,48,.55) 52%,rgba(9,32,48,.88) 100%)"></div>
+          <div style="position:absolute;left:0;top:2.6vh;display:flex;align-items:center;justify-content:center;min-width:6vh;height:4vh;padding:0 1.4vh;border-radius:0 99px 99px 0;border:.35vh solid #fff;border-left:none;background:{{ p.chip }};box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.22);color:#fff;font-family:Nunito;font-weight:900;font-size:2vh;letter-spacing:.04em;text-shadow:0 .2vh 0 rgba(0,0,0,.28)">{{ p.index }}</div>
+          <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:.9vh;padding:0 2vh 3vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.9vh;line-height:1.1;letter-spacing:.01em;color:#fff;text-shadow:0 .25vh .5vh rgba(0,0,0,.4)">{{ p.name }}</div>
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.75vh;line-height:1.4;color:rgba(255,255,255,.9);text-wrap:pretty">{{ p.teach }}</div>
+            <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.22em;color:rgba(255,255,255,.62)">{{ p.dur }}</div>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="position:absolute;left:5.5%;bottom:6%;display:flex;align-items:center;gap:1.6vh">
+      <button onClick="{{ openConnect }}" style="display:flex;align-items:center;gap:.9vh;height:4.6vh;padding:0 1.8vh;border-radius:1.2vh;border:.3vh solid rgba(255,255,255,.9);background:rgba(9,42,64,.42);color:#fff;font-family:Nunito;font-weight:900;font-size:1.25vh;letter-spacing:.14em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.15)" style-active="transform:translateY(2px)">
+        <svg width="2vh" height="2vh" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a3 3 0 013 3v5a3 3 0 01-6 0V6a3 3 0 013-3z"></path><path stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21"></path></svg>
+        {{ t.breathe }}
+        <span style="width:1.1vh;height:1.1vh;border-radius:50%;background:{{ dotColor }};box-shadow:0 0 .8vh {{ dotColor }}"></span>
+      </button>
+      <div style="font-size:1.25vh;letter-spacing:.06em;color:rgba(15,66,98,.72)">{{ t.hint }}</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isConnect }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1B2438 0%,#141E2E 100%)"></div>
+    <div style="position:absolute;inset:-2vh;background-size:cover;background-position:center;background-image:url(assets/scene-home-meadow.png);filter:blur(18px) saturate(.7);opacity:.22"></div>
+
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84vh;max-width:88%;display:flex;flex-direction:column;gap:2.4vh">
+
+      <div style="display:flex;align-items:center;justify-content:center;position:relative">
+        <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:4.2vh;line-height:1.1;color:#fff;padding:0 16vh;text-align:center;text-wrap:balance">{{ t.conn }}</div>
+        <button onClick="{{ closeConnect }}" style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:.9vh;height:4.8vh;padding:0 2vh 0 1.4vh;border-radius:1.2vh;border:.3vh solid rgba(255,255,255,.35);background:transparent;color:rgba(247,238,219,.7);font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.12em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.4)" style-active="transform:translateY(-50%) translateY(2px)">{{ t.skipConnect }}</button>
+      </div>
+
+      <div style="display:flex;gap:1.8vh">
+        <button onClick="{{ pickSerial }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.8vh;padding:2.4vh 1.6vh;border-radius:2vh;border:.35vh solid {{ serialBorder }};background:rgba(255,255,255,.07);color:#F7EEDB;cursor:pointer;text-align:center;transition:transform .18s cubic-bezier(.22,.7,.3,1),filter .18s ease" style-hover="transform:translateY(-.5vh);filter:brightness(1.2)" style-active="transform:translateY(0)">
+          <div style="font-size:3.4vh;line-height:1">🎵</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.1vh;color:#fff">{{ t.srcSerial }}</div>
+          <div style="font-family:Nunito;font-weight:600;font-size:1.45vh;line-height:1.45;color:rgba(247,238,219,.72);text-wrap:pretty">{{ t.srcSerialBlurb }}</div>
+          <div style="margin-top:.6vh;padding:.7vh 1.8vh;border-radius:99px;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);color:#fff;font-family:Nunito;font-weight:900;font-size:1.2vh;letter-spacing:.14em">{{ t.connectNow }}</div>
+        </button>
+        <button onClick="{{ pickKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.8vh;padding:2.4vh 1.6vh;border-radius:2vh;border:.35vh solid {{ keyBorder }};background:rgba(255,255,255,.07);color:#F7EEDB;cursor:pointer;text-align:center;transition:transform .18s cubic-bezier(.22,.7,.3,1),filter .18s ease" style-hover="transform:translateY(-.5vh);filter:brightness(1.2)" style-active="transform:translateY(0)">
+          <div style="font-size:3.4vh;line-height:1">⌨️</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.1vh;color:#fff">{{ t.srcKey }}</div>
+          <div style="font-family:Nunito;font-weight:600;font-size:1.45vh;line-height:1.45;color:rgba(247,238,219,.72);text-wrap:pretty">{{ t.srcKeyBlurb }}</div>
+        </button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:1.4vh;padding:2.2vh 2.4vh;border-radius:2vh;background:rgba(0,0,0,.28)">
+        <div style="display:flex;align-items:center;gap:1.2vh">
+          <span style="width:1.2vh;height:1.2vh;border-radius:50%;background:{{ dotColor }};box-shadow:0 0 1vh {{ dotColor }}"></span>
+          <div style="font-family:Nunito;font-weight:900;font-size:1.5vh;letter-spacing:.1em;color:{{ dotColor }}">{{ statusText }}</div>
+          <div style="flex:1"></div>
+          <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.18em;color:rgba(247,238,219,.45)">{{ t.noteHeard }}</div>
+          <div ref="{{ cbNoteRef }}" style="font-family:Nunito;font-weight:900;font-size:1.6vh;color:#F6C96B;min-width:9vh;text-align:right">—</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1.4vh">
+          <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.18em;color:rgba(247,238,219,.45)">{{ t.reading }}</div>
+          <div ref="{{ cbValRef }}" style="font-family:Nunito;font-weight:900;font-size:1.7vh;color:#fff;min-width:6vh">0.000</div>
+          <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.18em;color:rgba(247,238,219,.45)">{{ t.onBar }}</div>
+          <div ref="{{ cbNormRef }}" style="font-family:Nunito;font-weight:900;font-size:1.7vh;color:#8C97AB;min-width:4.5vh">0.00</div>
+          <div style="position:relative;flex:1;height:2vh;border-radius:99px;border:.3vh solid rgba(255,255,255,.32);background:rgba(0,0,0,.35);overflow:hidden">
+            <div ref="{{ cbBarRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#7FDDF7,#A5EA76);border-radius:99px"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1.2vh">
+          <div style="flex:1;font-family:Nunito;font-weight:600;font-size:1.4vh;color:rgba(247,238,219,.7)">{{ t.tryBlow }}</div>
+          <sc-if value="{{ hasSerialSensor }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ reZero }}" style="height:4.2vh;padding:0 2vh;border-radius:1.1vh;border:.3vh solid rgba(255,255,255,.55);background:rgba(255,255,255,.1);color:#fff;font-family:Nunito;font-weight:900;font-size:1.25vh;letter-spacing:.14em;cursor:pointer;transition:filter .16s ease,transform .16s ease" style-hover="filter:brightness(1.3)" style-active="transform:translateY(2px)">{{ t.reZero }}</button>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:2.4vh;padding-top:1.2vh;border-top:.2vh solid rgba(255,255,255,.12)">
+          <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.18em;color:rgba(247,238,219,.45)">{{ t.yourBreath }}</div>
+          <sc-if value="{{ calReady }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;gap:2.4vh">
+              <div style="font-family:Nunito;font-weight:700;font-size:1.35vh;color:rgba(247,238,219,.8)">{{ t.lenLbl }} <b style="color:#A5EA76">{{ calLen }}</b></div>
+              <div style="font-family:Nunito;font-weight:700;font-size:1.35vh;color:rgba(247,238,219,.8)">{{ t.strengthLbl }} <b style="color:#A5EA76">{{ calStrength }}</b></div>
+              <div style="font-family:Nunito;font-weight:700;font-size:1.35vh;color:rgba(247,238,219,.8)">{{ t.restLbl }} <b style="color:#A5EA76">{{ calRest }}</b></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ calNotReady }}" hint-placeholder-val="{{ false }}">
+            <div style="font-family:Nunito;font-weight:700;font-size:1.35vh;color:rgba(247,238,219,.55)">{{ t.notMeasured }}</div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ breathNote }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:Nunito;font-weight:700;font-size:1.35vh;line-height:1.5;color:#F2A9C4;text-wrap:pretty">{{ breathNote }}</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isWarmup }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1B2438 0%,#141E2E 100%)"></div>
+    <div style="position:absolute;inset:-2vh;background-size:cover;background-position:center;background-image:url(assets/scene-home-meadow.png);filter:blur(18px) saturate(.7);opacity:.22"></div>
+
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76vh;max-width:88%;display:flex;flex-direction:column;align-items:center;gap:2.6vh;text-align:center">
+
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:4.6vh;line-height:1.1;color:#fff;text-wrap:balance">{{ warmTitle }}</div>
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:2.1vh;line-height:1.5;color:rgba(247,238,219,.82);text-wrap:pretty">{{ warmSub }}</div>
+
+      <sc-if value="{{ warmResting }}" hint-placeholder-val="{{ true }}">
+        <div style="width:100%;height:1.6vh;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden">
+          <div ref="{{ warmBarRef }}" style="height:100%;width:0%;background:linear-gradient(90deg,#7FDDF7,#A5D4F5);border-radius:99px"></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ warmBlowing }}" hint-placeholder-val="{{ false }}">
+        <div style="width:100%;display:flex;flex-direction:column;gap:1.6vh">
+          <div style="position:relative;width:100%;height:5vh;border-radius:99px;border:.35vh solid rgba(255,255,255,.3);background:rgba(0,0,0,.35);overflow:hidden">
+            <div ref="{{ warmLiveRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#A5EA76,#F6C96B);border-radius:99px;transition:width .05s linear"></div>
+          </div>
+          <div style="width:100%;height:1vh;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden">
+            <div ref="{{ warmBarRef }}" style="height:100%;width:0%;background:rgba(212,165,245,.75);border-radius:99px"></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ warmOk }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:3.2vh;padding:2vh 3vh;border-radius:1.8vh;background:rgba(0,0,0,.3)">
+          <div style="display:flex;flex-direction:column;gap:.5vh">
+            <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.18em;color:rgba(247,238,219,.45)">{{ t.lenLbl }}</div>
+            <div style="font-family:Nunito;font-weight:900;font-size:2.6vh;color:#A5EA76">{{ warmLen }}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.5vh">
+            <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.18em;color:rgba(247,238,219,.45)">{{ t.strengthLbl }}</div>
+            <div style="font-family:Nunito;font-weight:900;font-size:2.6vh;color:#A5EA76">{{ warmStrength }}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.5vh">
+            <div style="font-family:Nunito;font-weight:800;font-size:1.15vh;letter-spacing:.18em;color:rgba(247,238,219,.45)">{{ t.breathsLbl }}</div>
+            <div style="font-family:Nunito;font-weight:900;font-size:2.6vh;color:#A5EA76">{{ warmBreaths }}</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="display:flex;align-items:center;gap:1.4vh;flex-wrap:wrap;justify-content:center">
+        <sc-if value="{{ warmOk }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ goPlay }}" style="display:flex;align-items:center;gap:1.2vh;height:6.4vh;padding:0 3.4vh;border-radius:1.6vh;border:.45vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.6vh 0 rgba(0,0,0,.16),0 .6vh 1.2vh rgba(0,0,0,.28);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.06em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><path fill="#fff" d="M7 4.6l13 7.4-13 7.4V4.6z"></path></svg>{{ t.letsPlay }}</button>
+        </sc-if>
+        <sc-if value="{{ warmDone }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ retryWarm }}" style="height:5.4vh;padding:0 2.6vh;border-radius:1.3vh;border:.3vh solid rgba(255,255,255,.5);background:rgba(255,255,255,.1);color:#fff;font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.14em;cursor:pointer;transition:filter .16s ease,transform .16s ease" style-hover="filter:brightness(1.3)" style-active="transform:translateY(2px)">{{ t.againBreath }}</button>
+        </sc-if>
+        <sc-if value="{{ hasSavedCal }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ useSaved }}" style="height:5.4vh;padding:0 2.6vh;border-radius:1.3vh;border:.3vh solid rgba(255,255,255,.3);background:transparent;color:rgba(247,238,219,.8);font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.14em;cursor:pointer;transition:filter .16s ease,transform .16s ease" style-hover="filter:brightness(1.4)" style-active="transform:translateY(2px)">{{ t.useLast }}</button>
+        </sc-if>
+        <button onClick="{{ cancelWarm }}" style="height:5.4vh;padding:0 2.6vh;border-radius:1.3vh;border:.3vh solid rgba(255,255,255,.3);background:transparent;color:rgba(247,238,219,.65);font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.14em;cursor:pointer;transition:filter .16s ease,transform .16s ease" style-hover="filter:brightness(1.4)" style-active="transform:translateY(2px)">{{ t.back }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#4FB8EE 0%,#7FD2F5 46%,#A9E3F9 100%)"></div>
+    <div style="position:absolute;inset:-2vh;background-size:cover;background-position:center;background-image:{{ res.art }};filter:blur(9px) saturate(1.05);opacity:.5"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(24,86,124,.42) 0%,rgba(24,86,124,.2) 45%,rgba(24,86,124,.5) 100%)"></div>
+
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70vh;max-width:90%;display:flex;flex-direction:column;align-items:center;gap:2.2vh;padding:4vh 4vh 3.4vh;border-radius:3.4vh;background:rgba(255,255,255,.96);box-shadow:0 2.4vh 4vh rgba(20,73,107,.32);text-align:center">
+
+      <div style="display:flex;align-items:center;justify-content:center;min-width:9vh;height:3.6vh;padding:0 1.8vh;border-radius:99px;border:.35vh solid #fff;background:{{ res.chip }};box-shadow:inset 0 -.35vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.2);color:#fff;font-family:Nunito;font-weight:900;font-size:1.4vh;letter-spacing:.16em;text-shadow:0 .2vh 0 rgba(0,0,0,.25)">{{ res.name }}</div>
+
+      <div style="display:flex;align-items:flex-end;gap:1.6vh;margin-top:-.4vh">
+        <div style="width:7.4vh;height:7.4vh;filter:drop-shadow(0 .5vh .8vh rgba(20,73,107,.28))"><sc-if value="{{ res.star1 }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path d="M12 2.4l2.9 6.1 6.7.9-4.9 4.7 1.2 6.7-5.9-3.2-5.9 3.2 1.2-6.7L2.4 9.4l6.7-.9z" fill="#FFD75E" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{ res.noStar1 }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path d="M12 2.4l2.9 6.1 6.7.9-4.9 4.7 1.2 6.7-5.9-3.2-5.9 3.2 1.2-6.7L2.4 9.4l6.7-.9z" fill="#DCE4EC" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"></path></svg></sc-if></div>
+        <div style="width:9.6vh;height:9.6vh;margin-bottom:1.4vh;filter:drop-shadow(0 .6vh 1vh rgba(20,73,107,.32))"><sc-if value="{{ res.star2 }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path d="M12 2.4l2.9 6.1 6.7.9-4.9 4.7 1.2 6.7-5.9-3.2-5.9 3.2 1.2-6.7L2.4 9.4l6.7-.9z" fill="#FFD75E" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{ res.noStar2 }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path d="M12 2.4l2.9 6.1 6.7.9-4.9 4.7 1.2 6.7-5.9-3.2-5.9 3.2 1.2-6.7L2.4 9.4l6.7-.9z" fill="#DCE4EC" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"></path></svg></sc-if></div>
+        <div style="width:7.4vh;height:7.4vh;filter:drop-shadow(0 .5vh .8vh rgba(20,73,107,.28))"><sc-if value="{{ res.star3 }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path d="M12 2.4l2.9 6.1 6.7.9-4.9 4.7 1.2 6.7-5.9-3.2-5.9 3.2 1.2-6.7L2.4 9.4l6.7-.9z" fill="#FFD75E" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{ res.noStar3 }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path d="M12 2.4l2.9 6.1 6.7.9-4.9 4.7 1.2 6.7-5.9-3.2-5.9 3.2 1.2-6.7L2.4 9.4l6.7-.9z" fill="#DCE4EC" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"></path></svg></sc-if></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:.7vh">
+        <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:4vh;line-height:1.1;color:#2F3B52;text-wrap:balance">{{ res.title }}</div>
+        <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.9vh;line-height:1.4;color:#6B7A8D;text-wrap:pretty">{{ res.sub }}</div>
+      </div>
+
+      <div style="display:flex;gap:1.4vh;width:100%">
+        <div style="flex:1;display:flex;flex-direction:column;gap:.5vh;padding:1.8vh 1vh;border-radius:1.8vh;background:#EEF3F8">
+          <div style="font-family:Nunito;font-weight:800;font-size:1.05vh;letter-spacing:.16em;color:#8C97AB">{{ res.scoreLabel }}</div>
+          <div style="font-family:Nunito;font-weight:900;font-size:2.8vh;color:{{ res.accent }};filter:brightness(.72)">{{ res.score }}</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:.5vh;padding:1.8vh 1vh;border-radius:1.8vh;background:#EEF3F8">
+          <div style="font-family:Nunito;font-weight:800;font-size:1.05vh;letter-spacing:.16em;color:#8C97AB">{{ t.rBreaths }}</div>
+          <div style="font-family:Nunito;font-weight:900;font-size:2.8vh;color:#56B92A">{{ res.breaths }}</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:.5vh;padding:1.8vh 1vh;border-radius:1.8vh;background:#EEF3F8">
+          <div style="font-family:Nunito;font-weight:800;font-size:1.05vh;letter-spacing:.16em;color:#8C97AB">{{ t.rLongest }}</div>
+          <div style="font-family:Nunito;font-weight:900;font-size:2.8vh;color:#2FB4E6">{{ res.longest }}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:1.4vh;margin-top:.6vh">
+        <button onClick="{{ retryPlace }}" style="display:flex;align-items:center;gap:1vh;height:6.4vh;padding:0 2.8vh;border:none;border-radius:1.8vh;background:#fff;box-shadow:inset 0 0 0 .35vh #E4E9F1,0 .6vh 1.2vh rgba(20,73,107,.16);cursor:pointer;color:#2F3B52;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;letter-spacing:.06em;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="transform:translateY(-.4vh)" style-active="transform:translateY(0)">
+          <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5V2.2L7.8 6.4 12 10.6V7.8a4.6 4.6 0 11-4.6 4.6H5.2A6.8 6.8 0 1012 5z"></path></svg>
+          {{ t.rRetry }}
+        </button>
+        <sc-if value="{{ res.notLast }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ nextPlace }}" style="display:flex;align-items:center;gap:1.2vh;height:6.8vh;padding:0 3.4vh;border:.5vh solid #fff;border-radius:2vh;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.7vh 0 rgba(0,0,0,.16),0 1vh 1.8vh rgba(23,74,104,.3);cursor:pointer;color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.05em;text-shadow:0 .25vh 0 rgba(0,0,0,.22);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.05);transform:translateY(-.4vh)" style-active="transform:translateY(2px)">
+            {{ t.rNext }}
+            <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="#fff" d="M12.7 5.3L19.4 12l-6.7 6.7-2-2L14.6 13H4v-2h10.6l-3.9-3.7z"></path></svg>
+          </button>
+        </sc-if>
+        <sc-if value="{{ res.isLast }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ resultToCards }}" style="display:flex;align-items:center;gap:1.2vh;height:6.8vh;padding:0 3.4vh;border:.5vh solid #fff;border-radius:2vh;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.7vh 0 rgba(0,0,0,.16),0 1vh 1.8vh rgba(23,74,104,.3);cursor:pointer;color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.05em;text-shadow:0 .25vh 0 rgba(0,0,0,.22);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.05);transform:translateY(-.4vh)" style-active="transform:translateY(2px)">
+            {{ t.rPlaces }}
+          </button>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isStream }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/scene-lillypad.png)"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,22,.3) 0%,rgba(14,9,22,0) 22%,rgba(14,9,22,0) 74%,rgba(14,9,22,.42) 100%)"></div>
+
+    <div style="position:absolute;left:50%;top:3vh;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:1vh">
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.3vh;letter-spacing:.12em;color:#fff;text-shadow:0 .25vh .3vh rgba(0,0,0,.45)">{{ t.timeBar }}</div>
+      <div style="position:relative;width:26vh;height:1.8vh;border-radius:99px;border:.3vh solid rgba(255,255,255,.9);background:rgba(18,12,28,.5);overflow:hidden">
+        <div ref="{{ progressRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(180deg,#FFD75E,#F0A62A);border-radius:99px"></div>
+      </div>
+    </div>
+    <button onClick="{{ leaveGame }}" style="position:absolute;left:2.6vh;top:2.6vh;z-index:8;display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2vh 0 1.4vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</button>
+
+    <div ref="{{ padLaneRef }}" style="position:absolute;left:0;right:0;top:72%;height:0">
+      <sc-for list="{{ pads }}" as="pad" hint-placeholder-count="7">
+        <div style="position:absolute;left:0;top:0;transform:translate(-50%,-50%)">
+          <div style="width:11vh;height:3.4vh;border-radius:50%;background:radial-gradient(ellipse at 40% 34%,#4E8F52,#2C5F38 70%,#1E4429);box-shadow:0 1.2vh 2.4vh rgba(6,14,10,.5)"></div>
+          <div style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:8vh;height:2vh;border-radius:50%;border:1px solid rgba(255,255,255,.14)"></div>
+        </div>
+      </sc-for>
+    </div>
+
+    <img ref="{{ flyRef }}" src="assets/char-golden.png" alt="Chamki the firefly" style="position:absolute;left:26%;top:52%;width:18vh;height:18vh;object-fit:contain;transform:translate(-50%,-50%);animation:flyBob 3s ease-in-out infinite;filter:drop-shadow(0 0 2.4vh rgba(255,214,130,.45))" />
+
+    <div style="position:absolute;left:50%;top:7.2vh;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:1vh">
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.3vh;letter-spacing:.12em;color:#fff;text-shadow:0 .25vh .3vh rgba(0,0,0,.45)">{{ t.breathBar }}</div>
+      <div style="position:relative;width:26vh;height:1.8vh;border-radius:99px;border:.3vh solid rgba(255,255,255,.9);background:rgba(18,12,28,.5);overflow:hidden">
+        <div ref="{{ gaugeZoneRef }}" style="position:absolute;top:0;bottom:0;left:25%;width:30%;background:rgba(255,255,255,.3);border-left:.25vh solid rgba(255,255,255,.85);border-right:.25vh solid rgba(255,255,255,.85);transition:left .3s ease,width .3s ease,opacity .2s ease"></div>
+        <div ref="{{ gaugeRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(180deg,#7FDDF7,#12A5E0);border-radius:99px;transition:opacity .2s ease"></div>
+        <div ref="{{ gaugePeakRef }}" style="position:absolute;top:-.2vh;bottom:-.2vh;left:0%;width:.45vh;margin-left:-.22vh;background:#fff;border-radius:99px;opacity:0;box-shadow:0 0 .6vh rgba(0,0,0,.45);transition:opacity .15s ease"></div>
+      </div>
+    </div>
+
+    <div ref="{{ jarWrapRef }}" style="position:absolute;right:3.2%;bottom:7%;display:flex;align-items:flex-end;gap:1.4vh">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5vh">
+        <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.35vh;letter-spacing:.12em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.32)">{{ t.sparks }}</div>
+        <div ref="{{ jarCountRef }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:3.6vh;line-height:1;color:#fff;text-shadow:0 .3vh 0 rgba(0,0,0,.32)">0</div>
+      </div>
+      <div style="position:relative;width:6.4vh;height:10vh;filter:drop-shadow(0 .4vh .8vh rgba(0,0,0,.24))">
+        <div style="position:absolute;left:1.6vh;right:1.6vh;top:0;height:1.4vh;border-radius:99px;border:.35vh solid #fff;background:linear-gradient(180deg,#FFD75E,#F0A62A)"></div>
+        <div style="position:absolute;left:0;right:0;top:1.3vh;bottom:0;border:.4vh solid #fff;border-radius:1vh 1vh 2.4vh 2.4vh;overflow:hidden;background:#2E1B60">
+          <div ref="{{ jarFillRef }}" style="position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(180deg,#FFD75E,#F0A62A);transition:height .4s cubic-bezier(.2,1,.3,1)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div ref="{{ lineWrapRef }}" style="position:absolute;left:50%;bottom:calc(9% - 20px);transform:translateX(-50%);max-width:64%;padding:1.2vh 2.4vh;background:#fff;border-radius:1.8vh;box-shadow:0 .5vh 1vh rgba(9,32,48,.28);opacity:0;transition:opacity .28s ease">
+      <div ref="{{ lineRef }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:700;font-size:1.9vh;color:#3A2E66"></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isCave }}" hint-placeholder-val="{{ false }}">
+    <div ref="{{ caveBgRef }}" style="position:absolute;inset:0;background-image:url(assets/scene-tunnel.png);background-size:auto 100%;background-repeat:repeat-x;background-position:0 center"></div>
+
+        <button onClick="{{ leaveGame }}" style="position:absolute;left:2.6vh;top:2.6vh;z-index:9;display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2vh 0 1.4vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</button>
+
+    <div ref="{{ caveObsRef }}" style="position:absolute;left:0;right:0;top:42%;bottom:0;overflow:hidden">
+      <sc-for list="{{ caveObstacles }}" as="o" hint-placeholder-count="4">
+        <div style="position:absolute;top:0;bottom:0;left:0;width:8%;transform:translateX(-50%)">
+          <div style="position:absolute;left:0;right:0;top:0;height:20%;clip-path:polygon(0 0,100% 0,74% 88%,50% 100%,26% 88%);background:linear-gradient(180deg,#6E5FA8 0%,#8B7BC4 62%,#CFF6EE 92%,#EFFFFA 100%);filter:drop-shadow(0 .3vh 2vh rgba(120,230,215,.6))"></div>
+          <div style="position:absolute;left:0;right:0;top:0;height:20%;clip-path:polygon(0 0,100% 0,74% 88%,50% 100%,26% 88%);background:linear-gradient(180deg,rgba(255,255,255,0) 55%,rgba(230,255,250,.95) 100%);mix-blend-mode:screen"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:20%;clip-path:polygon(50% 0,74% 12%,100% 100%,0 100%,26% 12%);background:linear-gradient(0deg,#6E5FA8 0%,#8B7BC4 62%,#CFF6EE 92%,#EFFFFA 100%);filter:drop-shadow(0 -.3vh 2vh rgba(120,230,215,.6))"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:20%;clip-path:polygon(50% 0,74% 12%,100% 100%,0 100%,26% 12%);background:linear-gradient(0deg,rgba(255,255,255,0) 55%,rgba(230,255,250,.95) 100%);mix-blend-mode:screen"></div>
+        </div>
+      </sc-for>
+    </div>
+
+    <img ref="{{ caveFlyRef }}" src="assets/char-golden.png" alt="Chamki the firefly" style="position:absolute;left:26%;top:56%;width:18vh;height:18vh;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 0 3vh rgba(255,214,130,.55))" />
+
+    <div style="position:absolute;left:50%;top:3vh;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:1vh">
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.3vh;letter-spacing:.12em;color:#fff;text-shadow:0 .25vh .3vh rgba(0,0,0,.45)">{{ t.timeBar }}</div>
+      <div style="position:relative;width:26vh;height:1.8vh;border-radius:99px;border:.3vh solid rgba(255,255,255,.9);background:rgba(18,12,28,.5);overflow:hidden">
+        <div ref="{{ caveBarRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(180deg,#FFD75E,#F0A62A);border-radius:99px"></div>
+        <div ref="{{ caveStreakRef }}" style="position:absolute;top:0;bottom:0;left:0;width:0%;background:rgba(255,255,255,.55)"></div>
+      </div>
+    </div>
+
+    <div ref="{{ jarWrap2Ref }}" style="position:absolute;right:3.2%;bottom:7%;display:flex;align-items:flex-end;gap:1.4vh">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5vh">
+        <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.35vh;letter-spacing:.12em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.32)">{{ t.sparks }}</div>
+        <div ref="{{ jarCount2Ref }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:3.6vh;line-height:1;color:#fff;text-shadow:0 .3vh 0 rgba(0,0,0,.32)">0</div>
+      </div>
+      <div style="position:relative;width:6.4vh;height:10vh;filter:drop-shadow(0 .4vh .8vh rgba(0,0,0,.24))">
+        <div style="position:absolute;left:1.6vh;right:1.6vh;top:0;height:1.4vh;border-radius:99px;border:.35vh solid #fff;background:linear-gradient(180deg,#FFD75E,#F0A62A)"></div>
+        <div style="position:absolute;left:0;right:0;top:1.3vh;bottom:0;border:.4vh solid #fff;border-radius:1vh 1vh 2.4vh 2.4vh;overflow:hidden;background:#2E1B60">
+          <div ref="{{ jarFill2Ref }}" style="position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(180deg,#FFD75E,#F0A62A);transition:height .4s cubic-bezier(.2,1,.3,1)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div ref="{{ lineWrap2Ref }}" style="position:absolute;left:50%;bottom:calc(11% - 20px);transform:translateX(-50%);max-width:64%;padding:1.2vh 2.4vh;background:#fff;border-radius:1.8vh;box-shadow:0 .5vh 1vh rgba(9,32,48,.28);opacity:0;transition:opacity .28s ease">
+      <div ref="{{ line2Ref }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:700;font-size:1.9vh;color:#3A2E66"></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isConversation }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:#2A0F1E"></div>
+    <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/scene-stage.png)"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,22,.28) 0%,rgba(14,9,22,0) 30%,rgba(14,9,22,.42) 100%);pointer-events:none"></div>
+
+    <div style="position:absolute;left:50%;top:3vh;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:1vh">
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.3vh;letter-spacing:.12em;color:#fff;text-shadow:0 .25vh .3vh rgba(0,0,0,.45)">{{ t.timeBar }}</div>
+      <div style="position:relative;width:26vh;height:1.8vh;border-radius:99px;border:.3vh solid rgba(255,255,255,.9);background:rgba(18,12,28,.5);overflow:hidden">
+        <div ref="{{ progressRef3 }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(180deg,#FFD75E,#F0A62A);border-radius:99px"></div>
+      </div>
+    </div>
+    <button onClick="{{ leaveGame }}" style="position:absolute;left:2.6vh;top:2.6vh;z-index:10;display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2vh 0 1.4vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</button>
+
+    <div style="position:absolute;left:50%;top:24%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2.2vh;z-index:2">
+      <div ref="{{ convGlowRef }}" style="width:12vh;height:12vh;border-radius:50%;background:#D4A5F5;opacity:0;box-shadow:0 0 4vh 1vh rgba(212,165,245,.55);transition:opacity .12s"></div>
+      <div ref="{{ convSeqRef }}" style="display:flex;gap:1.4vh;justify-content:center">
+        <sc-for list="{{ convPatterns }}" as="p" hint-placeholder-count="4">
+          <div style="width:2.2vh;height:2.2vh;border-radius:50%;border:.3vh solid #fff;background:{{ p.color }};box-shadow:0 .2vh .4vh rgba(0,0,0,.24);opacity:.4;transition:opacity .3s"></div>
+        </sc-for>
+      </div>
+    </div>
+
+    <img ref="{{ convFlyRef }}" src="assets/char-golden.png" alt="Chamki the firefly" style="position:absolute;left:50%;top:66%;margin-top:-40px;z-index:3;width:18vh;height:18vh;object-fit:contain;transform:translate(-50%,-50%);animation:flyBob 3s ease-in-out infinite;filter:drop-shadow(0 0 2.4vh rgba(255,214,130,.45))" />
+
+    <div style="position:absolute;left:50%;bottom:6%;transform:translateX(-50%);z-index:3">
+      <div style="position:relative;width:8.6vh;height:8.6vh;border-radius:50%;border:.3vh solid rgba(255,255,255,.62);background:rgba(18,12,28,.42);display:flex;align-items:center;justify-content:center">
+        <div ref="{{ convBreathRef }}" style="width:6.4vh;height:6.4vh;border-radius:50%;background:#D4A5F5;opacity:0;box-shadow:0 0 2.4vh rgba(212,165,245,.55);transition:opacity .12s"></div>
+      </div>
+    </div>
+
+    <div style="position:absolute;right:3.2%;bottom:7%;display:flex;align-items:flex-end;gap:1.4vh">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5vh">
+        <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.35vh;letter-spacing:.12em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.32)">{{ t.sparks }}</div>
+        <div ref="{{ jarCount3Ref }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:3.6vh;line-height:1;color:#fff;text-shadow:0 .3vh 0 rgba(0,0,0,.32)">0</div>
+      </div>
+      <div style="position:relative;width:6.4vh;height:10vh;filter:drop-shadow(0 .4vh .8vh rgba(0,0,0,.24))">
+        <div style="position:absolute;left:1.6vh;right:1.6vh;top:0;height:1.4vh;border-radius:99px;border:.35vh solid #fff;background:linear-gradient(180deg,#FFD75E,#F0A62A)"></div>
+        <div style="position:absolute;left:0;right:0;top:1.3vh;bottom:0;border:.4vh solid #fff;border-radius:1vh 1vh 2.4vh 2.4vh;overflow:hidden;background:#2E1B60">
+          <div ref="{{ jarFill3Ref }}" style="position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(180deg,#FFD75E,#F0A62A);transition:height .4s cubic-bezier(.2,1,.3,1)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div ref="{{ lineWrap3Ref }}" style="position:absolute;left:50%;bottom:calc(26% - 20px);z-index:3;transform:translateX(-50%);max-width:64%;padding:1.2vh 2.4vh;background:#fff;border-radius:1.8vh;box-shadow:0 .5vh 1vh rgba(9,32,48,.28);opacity:0;transition:opacity .28s ease">
+      <div ref="{{ line3Ref }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:700;font-size:1.9vh;color:#3A2E66"></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPond }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/scene-garden.png)"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,22,.34) 0%,rgba(14,9,22,.04) 28%,rgba(14,9,22,0) 62%,rgba(14,9,22,.3) 100%)"></div>
+
+    <button onClick="{{ leaveGame }}" style="position:absolute;left:2.6vh;top:2.6vh;z-index:11;display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2vh 0 1.4vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</button>
+
+    <div ref="{{ plotRef }}" style="position:absolute;inset:0;pointer-events:none">
+      <div ref="{{ pondOrbRef }}" style="position:absolute;left:24%;bottom:20%;width:13vh;height:13vh;border-radius:50%;transform:translate(-50%,30%);background:radial-gradient(circle,rgba(255,233,190,.5) 0%,rgba(246,201,107,.12) 55%,rgba(0,0,0,0) 74%);transition:left .5s ease,bottom .5s ease;pointer-events:none"></div>
+      <img src="assets/flower-1.png" alt="Flower" style="position:absolute;left:24%;bottom:20%;transform:translateX(-50%);width:11vh;height:18.7vh;object-fit:contain;object-position:bottom;opacity:0;transition:opacity .3s ease,transform .45s cubic-bezier(.2,1,.3,1);transform-origin:50% 100%;filter:drop-shadow(0 .8vh 1.4vh rgba(11,7,17,.26))" />
+      <img src="assets/flower-1.png" alt="Flower" style="position:absolute;left:38%;bottom:25%;transform:translateX(-50%);width:9.5vh;height:16.1vh;object-fit:contain;object-position:bottom;opacity:0;transition:opacity .3s ease,transform .45s cubic-bezier(.2,1,.3,1);transform-origin:50% 100%;filter:drop-shadow(0 .8vh 1.4vh rgba(11,7,17,.26))" />
+      <img src="assets/flower-1.png" alt="Flower" style="position:absolute;left:50%;bottom:29%;transform:translateX(-50%);width:8.5vh;height:14.4vh;object-fit:contain;object-position:bottom;opacity:0;transition:opacity .3s ease,transform .45s cubic-bezier(.2,1,.3,1);transform-origin:50% 100%;filter:drop-shadow(0 .8vh 1.4vh rgba(11,7,17,.26))" />
+      <img src="assets/flower-1.png" alt="Flower" style="position:absolute;left:62%;bottom:25%;transform:translateX(-50%);width:9.5vh;height:16.1vh;object-fit:contain;object-position:bottom;opacity:0;transition:opacity .3s ease,transform .45s cubic-bezier(.2,1,.3,1);transform-origin:50% 100%;filter:drop-shadow(0 .8vh 1.4vh rgba(11,7,17,.26))" />
+      <img src="assets/flower-1.png" alt="Flower" style="position:absolute;left:76%;bottom:20%;transform:translateX(-50%);width:11vh;height:18.7vh;object-fit:contain;object-position:bottom;opacity:0;transition:opacity .3s ease,transform .45s cubic-bezier(.2,1,.3,1);transform-origin:50% 100%;filter:drop-shadow(0 .8vh 1.4vh rgba(11,7,17,.26))" />
+    </div>
+
+    <div style="position:absolute;left:2.6vh;top:8.5vh;display:flex;align-items:center;gap:1.4vh;padding:1.2vh 1.6vh;background:linear-gradient(180deg,#9E77E8,#7B54D6);border:.4vh solid #fff;border-radius:1.8vh;box-shadow:0 .4vh .8vh rgba(0,0,0,.24)">
+      <div style="position:relative;width:26vh;height:2.8vh;border:.35vh solid #fff;border-radius:99px;overflow:hidden;background:#2E1B60">
+        <div ref="{{ gardenFillRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(180deg,#FFD75E,#F0A62A);border-radius:99px"></div>
+        <div ref="{{ stageMarkRef }}" style="position:absolute;left:0;top:0;bottom:0;width:2px;background:#F7EEDB;opacity:0;box-shadow:0 0 1vh rgba(247,238,219,.8);transition:left .3s ease,opacity .3s ease"></div>
+        <div style="position:absolute;left:20%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.35)"></div>
+        <div style="position:absolute;left:40%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.35)"></div>
+        <div style="position:absolute;left:60%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.35)"></div>
+        <div style="position:absolute;left:80%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.35)"></div>
+      </div>
+      <div ref="{{ plotTextRef }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.1vh;line-height:1;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.3);min-width:5vh;text-align:right">0/5</div>
+    </div>
+
+    <div style="position:absolute;left:0;right:0;bottom:calc(12% - 20px);display:flex;flex-direction:column;align-items:center;gap:1.2vh">
+      <div ref="{{ lineWrap4Ref }}" style="padding:1vh 2vh;background:#fff;border-radius:1.8vh;box-shadow:0 .5vh 1vh rgba(9,32,48,.28);opacity:0;transition:opacity .28s ease">
+        <div ref="{{ line4Ref }}" style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:700;font-size:1.9vh;color:#3A2E66"></div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;breathEffort&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Gentle&quot;,&quot;Standard&quot;,&quot;Strong&quot;],&quot;default&quot;:&quot;Standard&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Play feel&quot;},&quot;pacing&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Unhurried&quot;,&quot;Steady&quot;,&quot;Brisk&quot;],&quot;default&quot;:&quot;Steady&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Play feel&quot;},&quot;coaching&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Quiet&quot;,&quot;Warm&quot;,&quot;Chatty&quot;],&quot;default&quot;:&quot;Warm&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Play feel&quot;}}">
+const PLACES = [
+  { id: 'stream', index: '01', accent: '#9FD0F2', wash: '#E3F2FD', chip: 'linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%)', dur: 30, art: 'url(assets/card-stream.png)', pos: '50% 40%' },
+  { id: 'cave',   index: '02', accent: '#F2A9C4', wash: '#FBE6EE', chip: 'linear-gradient(180deg,#FF8ED0 0%,#E9349B 100%)', dur: 45, art: 'url(assets/scene-tunnel.png)', pos: '50% 50%' },
+  { id: 'clearing', index: '03', accent: '#F6C96B', wash: '#FDF0D8', chip: 'linear-gradient(180deg,#FFD75E 0%,#F58A0C 100%)', dur: 60, art: 'url(assets/card-stage.png)', pos: '50% 44%' },
+  { id: 'pond',   index: '04', accent: '#A9B4F2', wash: '#E8EAFB', chip: 'linear-gradient(180deg,#A5EA76 0%,#3FA80F 100%)', dur: 0,  art: 'url(assets/scene-garden.png)', pos: '50% 62%' }
+];
+
+const STR = {
+  en: {
+    pickPlace: 'Choose a place', grownups: 'FOR GROWN-UPS', back: 'BACK', sparks: 'SPARKS', timeBar: 'TIME', breathBar: 'BREATH',
+    hint: 'Hold SPACE to breathe, or press and hold anywhere',
+    puff: 'PUFF', pulseHint: 'SHORT PULSE = QUICK PUFF · LONG PULSE = LONGER BREATH',
+    names: { stream: 'Lillypad Hop', cave: 'The Cave', clearing: 'Firefly Conversation', pond: 'The Garden' },
+    teach: { stream: 'Little puffs, one after another', cave: 'One long, steady breath', clearing: 'Answer each pulse you see', pond: 'Longer breaths make it grow' },
+    durs: { stream: '30 SECONDS', cave: '45 SECONDS', clearing: '60 SECONDS', pond: '5 STAGES' },
+    good: 'That was a good one.', softer: 'A little softer.', firmer: 'A little more air.',
+    tooMuch: 'Too much air — ease off sooner.',
+    streamHint: 'Blow until the ring turns green, then hold it there.',
+    hold: 'Hold it steady.', drifting: 'Come back to the light.', lovely: 'Lovely.',
+    watch: 'Watch the fireflies', yourTurn: 'Now your turn.',
+    pondLine: 'Hold your breath out and watch it grow.',
+    grow: 'GROW', grew: 'It grew a little.', bloomed: 'Fully bloomed.',
+    breathe: 'HOW WE BREATHE', conn: 'How are we breathing?',
+    srcKey: 'Spacebar', srcKeyBlurb: 'No hardware. Hold the space bar. Good for testing.',
+    srcSerial: 'Flute + sensor', srcSerialBlurb: 'The sensor measures the air, the flute plays the note.',
+    tryBlow: 'Give it a blow — if the bar moves, we are ready.',
+    noteHeard: 'NOTE PLAYED', reading: 'READING',
+    reZero: 'RE-ZERO SENSOR',
+    stKey: 'spacebar', stSerial: 'flute ready', stOff: 'not connected',
+    onBar: 'ON THE BAR', yourBreath: 'YOUR BREATH', lenLbl: 'LENGTH', strengthLbl: 'STRENGTH', restLbl: 'RESTING', breathsLbl: 'BREATHS',
+    notMeasured: 'not measured yet — the next game will ask',
+    warmRest: 'Sit still for a moment',
+    warmRestSub: 'Hands off the flute. We are listening to how quiet it is.',
+    warmBlow: 'Now breathe out, twice',
+    warmBlowSub: 'Just an ordinary breath into the flute. Not your biggest — the one that feels easy. Then one more.',
+    warmGot: 'That is your breath',
+    warmGotSub: 'Everything in the game is now measured against this, so it fits you.',
+    warmNothing: 'We did not catch that',
+    warmNothingSub: 'Make sure the flute is on the tube, then breathe out gently twice more.',
+    letsPlay: 'PLAY', againBreath: 'BREATHE AGAIN', useLast: 'USE LAST TIME',
+    connectNow: 'CONNECT', skipConnect: 'PLAY WITHOUT IT',
+    rGreat: 'Beautiful breathing!', rGood: 'Really well done.', rNice: 'Nice work.', rTried: 'Good try!',
+    rSubHigh: 'Your breath stayed lovely and steady.', rSubLow: 'Every breath counts. Try another?',
+    rPuffs: 'PUFFS LANDED', rSteady: 'LONGEST STEADY', rPatterns: 'PATTERNS', rFlowers: 'FLOWERS',
+    rBreaths: 'BREATHS', rLongest: 'LONGEST BREATH', rSparks: 'SPARKS',
+    rRetry: 'AGAIN', rNext: 'NEXT PLACE', rPlaces: 'ALL PLACES',
+    errBrowser: 'This needs Chrome or Edge.',
+    errPort: 'No port picked. Close the Arduino Serial Monitor first — only one program can hold the cable.',
+    errUnplug: 'The cable came out. Plug it back in and connect again.',
+    errMic: 'The microphone was not allowed.',
+    warnLoud: 'It is quite noisy in here — that is fine, just blow a little firmer.',
+    warnFilter: 'Your browser is still filtering the mic. Turn off voice isolation in your sound settings.'
+  },
+  hi: {
+    pickPlace: 'Ek jagah chunein', grownups: 'BADON KE LIYE', back: 'PICHHE', sparks: 'CHINGARI', timeBar: 'SAMAY', breathBar: 'SAANS',
+    hint: 'SPACE dabaye rakhein, ya kahin bhi dabaye rakhein',
+    puff: 'PHOONK', pulseHint: 'CHHOTI JHALAK = CHHOTI PHOONK · LAMBI JHALAK = LAMBI SAANS',
+    names: { stream: 'Lillypad Hop', cave: 'Gufa', clearing: 'Jugnu ki Baatein', pond: 'Bagiya' },
+    teach: { stream: 'Chhoti phoonkein, ek ke baad ek', cave: 'Ek lambi, sthir saans', clearing: 'Har jhalak ka jawab dein', pond: 'Lambi saans se yeh badhta hai' },
+    durs: { stream: '30 SECOND', cave: '45 SECOND', clearing: '60 SECOND', pond: '5 CHARAN' },
+    good: 'Yeh achhi thi.', softer: 'Thoda dheere.', firmer: 'Thodi aur hawa.',
+    tooMuch: 'Bahut zyada hawa — pehle rukein.',
+    streamHint: 'Ring hare hone tak phoonkein, phir wahin rokein.',
+    hold: 'Isse sthir rakhein.', drifting: 'Roshni mein wapas aaiye.', lovely: 'Sundar.',
+    watch: 'Jugnuon ko dekhein', yourTurn: 'Ab aapki baari.',
+    pondLine: 'Saans rokein aur ise badhta dekhein.',
+    grow: 'BADHNA', grew: 'Yeh thoda bada hua.', bloomed: 'Poora khil gaya.',
+    breathe: 'SAANS KAISE', conn: 'Hum saans kaise le rahe hain?',
+    srcKey: 'Spacebar', srcKeyBlurb: 'Koi hardware nahi. Space dabaye rakhein. Jaanchne ke liye.',
+    srcSerial: 'Bansuri + sensor', srcSerialBlurb: 'Sensor hawa naapta hai, bansuri sur bajati hai.',
+    tryBlow: 'Ek phoonk maarein — agar patti hile, to hum taiyar hain.',
+    noteHeard: 'BAJA SUR', reading: 'PADHAI',
+    reZero: 'SENSOR PHIR SE ZERO',
+    stKey: 'spacebar', stSerial: 'bansuri taiyar', stOff: 'juda nahi hai',
+    onBar: 'PATTI PAR', yourBreath: 'AAPKI SAANS', lenLbl: 'LAMBAI', strengthLbl: 'TAAKAT', restLbl: 'AARAAM', breathsLbl: 'SAANSEIN',
+    notMeasured: 'abhi naapi nahi — agla khel poochhega',
+    warmRest: 'Ek pal shaant baithein',
+    warmRestSub: 'Bansuri ko haath na lagayein. Hum sun rahe hain ki kitni shaanti hai.',
+    warmBlow: 'Ab do baar saans chhodein',
+    warmBlowSub: 'Bansuri mein bas ek saadharan saans. Sabse badi nahi — jo aasaan lage. Phir ek aur.',
+    warmGot: 'Yeh hai aapki saans',
+    warmGotSub: 'Ab khel ki har cheez isi ke hisaab se naapi jayegi, taaki aapke liye theek rahe.',
+    warmNothing: 'Hum use pakad nahi paaye',
+    warmNothingSub: 'Dekh lein ki bansuri tube par lagi hai, phir do baar halki saans chhodein.',
+    letsPlay: 'KHELEIN', againBreath: 'PHIR SE SAANS', useLast: 'PICHHLI BAAR WALI',
+    connectNow: 'JODEIN', skipConnect: 'ISKE BINA KHELEIN',
+    rGreat: 'Sundar saans!', rGood: 'Bahut achha kiya.', rNice: 'Achha kaam.', rTried: 'Achhi koshish!',
+    rSubHigh: 'Aapki saans sundar aur sthir rahi.', rSubLow: 'Har saans maayne rakhti hai. Ek aur?',
+    rPuffs: 'PHOONKEIN', rSteady: 'SABSE LAMBI STHIR', rPatterns: 'PATTERN', rFlowers: 'PHOOL',
+    rBreaths: 'SAANSEIN', rLongest: 'SABSE LAMBI SAANS', rSparks: 'CHINGARI',
+    rRetry: 'PHIR SE', rNext: 'AGLI JAGAH', rPlaces: 'SABHI JAGAH',
+    errBrowser: 'Iske liye Chrome ya Edge chahiye.',
+    errPort: 'Koi port nahi chuna. Pehle Arduino Serial Monitor band karein — ek samay par ek hi program taar le sakta hai.',
+    errUnplug: 'Taar nikal gaya. Use wapas lagakar phir se connect karein.',
+    errMic: 'Microphone ki anumati nahi mili.',
+    warnLoud: 'Yahan kaafi shor hai — koi baat nahi, bas thodi zor se phoonkein.',
+    warnFilter: 'Aapka browser abhi bhi mic filter kar raha hai. Sound settings mein voice isolation band karein.'
+  }
+};
+
+const SAVE_KEY = 'chamkiForest.v3';
+const PAD_GAPS = [14, 25, 11, 21, 30, 13, 24, 17];
+const PAD_POS = [0];
+function padPos(i) {
+  while (PAD_POS.length <= i) {
+    const n = PAD_POS.length - 1;
+    PAD_POS.push(PAD_POS[n] + PAD_GAPS[n % PAD_GAPS.length]);
+  }
+  return PAD_POS[i];
+}
+function padGap(i) { return PAD_GAPS[i % PAD_GAPS.length]; }
+
+
+/* ==========================================================
+   BREATH INPUT — the flute's pressure sensor, over USB.
+
+   The Arduino stays dumb. Fifty times a second it types one
+   line of plain text down the cable — "0.734,523.3" — meaning
+   how hard, and which note. Nothing below is clever: it reads
+   text and splits it at the comma.
+
+   Web Serial needs Chrome or Edge AND a real http:// origin.
+   Opening this file by double-clicking will not work — serve
+   the folder and use localhost.
+
+   The spacebar stays as a fallback so the game can be shown,
+   tested and tuned with no board on the table.
+   ========================================================== */
+const SERIAL_BAUD = 115200;
+const CAL_KEY = 'chamkiForest.breath.v1';
+
+// What the recorder actually sounds. German fingering, so going
+// down the scale is simply "cover one more finger" each time.
+// The Hz comes from the Arduino; this only turns it into a name.
+/* These must match NOTE_HZ[] in the sketch exactly — the sketch decides
+   which hertz it sends, and this table only turns that back into a name.
+   They were an octave apart, which is why the panel showed a dash. */
+const LADDER = [
+  { n: 'C', holes: 0, hz: 523.25 },
+  { n: 'B', holes: 1, hz: 493.88 },
+  { n: 'A', holes: 2, hz: 440.00 },
+  { n: 'G', holes: 3, hz: 392.00 },
+  { n: 'F', holes: 4, hz: 349.23 },
+  { n: 'E', holes: 5, hz: 329.63 },
+  { n: 'D', holes: 6, hz: 261.63 }
+];
+function noteFromHz(hz) {
+  if (!hz) return null;
+  let best = null, bc = 1e9;
+  LADDER.forEach(l => { const c = Math.abs(1200 * Math.log2(hz / l.hz)); if (c < bc) { bc = c; best = l; } });
+  return bc < 60 ? best : null;   // more than half a semitone out — don't guess
+}
+
+const BreathIn = {
+  /* ------------------------------------------------------------------
+     THE ONE IDEA THAT MAKES THIS PERSONAL.
+
+     Every child's "normal" is different, and the sensor's own resting
+     value drifts between sessions. So nothing in the games is written
+     as a raw sensor number. Instead we measure ONE ordinary breath and
+     pin it to NORMAL on the bar — deliberately the MIDDLE, not the top.
+
+         rest ............ 0.0    sensor sitting still, nobody blowing
+         normal breath ... 0.5    an easy, unforced breath
+         firm breath ..... 1.0    about twice that effort
+
+     Putting normal at the middle is the whole point. If a normal breath
+     filled the bar (which is what it used to do) there would be nothing
+     left to aim at, and every puff would read as maximum. Now there is
+     room on BOTH sides: a gentle breath has somewhere to sit, and a
+     firmer one has somewhere to go.
+     ------------------------------------------------------------------ */
+  NORMAL: 0.5,
+
+  src: 'key',                 // 'key' | 'serial'
+  raw: 0, connected: false,
+  why: '', lines: 0, hz: 0, note: null,
+  serialRaw: 0,
+  onChange: null,
+
+  // The measured person. amp/dur are what ONE normal breath looks like.
+  cal: { rest: 0, amp: 0.35, dur: 2200, breaths: 0, ready: false, when: 0 },
+
+  active() { return this.src === 'serial' && this.connected; },
+  _emit() { if (this.onChange) this.onChange(); },
+
+  // Sensor reading -> the 0..1 the games think in, with a normal
+  // breath landing on NORMAL. Allowed past 1 so "much harder than
+  // usual" is still expressible; the games clamp where they need to.
+  norm() {
+    const c = this.cal;
+    const span = Math.max(0.02, c.amp - c.rest);
+    return Math.max(0, Math.min(1.6, ((this.raw - c.rest) / span) * this.NORMAL));
+  },
+
+  // How long this person's comfortable breath is, against the 2.2s the
+  // pulse patterns were originally written for. Used by the games that
+  // measure TIME rather than strength.
+  durScale() {
+    if (!this.cal.ready) return 1;
+    return Math.max(0.6, Math.min(1.9, this.cal.dur / 2200));
+  },
+
+  /* ---- The Arduino, over USB ------------------------------------- */
+  _port: null, _reader: null, _writer: null, _keep: true, _buf: '',
+
+  /* Chrome remembers a port once it has been picked, and hands it back
+     without another dialog. So after the very first time, the flute just
+     connects on its own — nobody has to choose anything again. */
+  async autoConnect() {
+    if (!('serial' in navigator)) return false;
+    try {
+      const ports = await navigator.serial.getPorts();
+      if (!ports.length) return false;
+      this._port = ports[0];
+      await this._port.open({ baudRate: SERIAL_BAUD });
+    } catch (e) { this._port = null; return false; }
+    this.src = 'serial'; this.connected = true; this._keep = true;
+    try {
+      const enc = new TextEncoderStream();
+      enc.readable.pipeTo(this._port.writable).catch(() => {});
+      this._writer = enc.writable.getWriter();
+    } catch (e) { this._writer = null; }
+    this._readLoop();
+    this._emit();
+    return true;
+  },
+
+  async useSerial() {
+    if (!('serial' in navigator)) return { ok: false, why: 'needBrowser' };
+    try {
+      this._port = await navigator.serial.requestPort();
+      await this._port.open({ baudRate: SERIAL_BAUD });
+    } catch (e) {
+      // Almost always one of: nothing picked, or the Arduino Serial
+      // Monitor still holds the cable. Only one program gets it at a time.
+      return { ok: false, why: 'noPort' };
+    }
+    this.connected = true; this._keep = true;
+    try {
+      const enc = new TextEncoderStream();
+      enc.readable.pipeTo(this._port.writable).catch(() => {});
+      this._writer = enc.writable.getWriter();
+    } catch (e) { this._writer = null; }
+    this._readLoop();
+    this._emit();
+    return { ok: true };
+  },
+
+  async _readLoop() {
+    const dec = new TextDecoderStream();
+    this._port.readable.pipeTo(dec.writable).catch(() => {});
+    this._reader = dec.readable.getReader();
+    try {
+      while (this._keep) {
+        const { value, done } = await this._reader.read();
+        if (done) break;
+        this._buf += value;
+        let i;
+        while ((i = this._buf.indexOf('\n')) >= 0) {
+          this._parse(this._buf.slice(0, i).trim());
+          this._buf = this._buf.slice(i + 1);
+        }
+        if (this._buf.length > 400) this._buf = '';
+      }
+    } catch (e) { /* cable pulled mid-read */ }
+    // A seven-year-old WILL pull the cable. Notice it, say something
+    // kind, and let them reconnect — never freeze.
+    this.connected = false; this.serialRaw = 0; this.raw = 0; this._buf = '';
+    if (this.src === 'serial' && this._keep) this.why = 'unplugged';
+    this._emit();
+  },
+
+  _parse(l) {
+    if (!l || l[0] === '#' || l.startsWith('READY') || l.startsWith('ERR')) return;
+    const p = l.split(','), v = parseFloat(p[0]);
+    if (!isFinite(v)) return;
+    this.serialRaw = Math.max(0, Math.min(1, v));   // sketch already sends 0..1
+    if (p[1]) { const hz = parseFloat(p[1]); if (isFinite(hz) && hz > 0) { this.hz = hz; this.note = noteFromHz(hz); } }
+    this.lines++;
+  },
+
+  // Tell the sketch to take a fresh "nobody is blowing" reading.
+  async reZero() { if (this._writer) { try { await this._writer.write('z'); } catch (e) {} } },
+
+  async closeSerial() {
+    this._keep = false;
+    try { if (this._reader) await this._reader.cancel(); } catch (e) {}
+    try { if (this._writer) await this._writer.close(); } catch (e) {}
+    try { if (this._port) await this._port.close(); } catch (e) {}
+    this._port = null; this._reader = null; this._writer = null;
+    this.connected = false; this.serialRaw = 0;
+  },
+
+  tick() { this.raw = this.active() ? this.serialRaw : 0; },
+
+  async use(src) {
+    this.why = '';
+    if (src !== 'serial' && this.connected) await this.closeSerial();
+    this.src = src;
+    let r = { ok: true };
+    if (src === 'serial') r = await this.useSerial();
+    if (!r.ok) { this.why = r.why; this.src = 'key'; }
+    this._emit();
+    return r;
+  },
+
+  /* ---- Measuring one ordinary breath ------------------------------
+     We do NOT try to judge a breath as it happens — a child ramps up,
+     wobbles, runs out of air, and any live threshold would catch the
+     wrong moment. Instead we record the whole window and read it back
+     afterwards, when the shape of the breath is already known.
+     ------------------------------------------------------------------ */
+  capture: null,
+
+  startCapture() { this.capture = { v: [], t: [] }; },
+  pushCapture(dt) {
+    if (!this.capture) return;
+    this.capture.v.push(this.raw);
+    this.capture.t.push(dt);
+    if (this.capture.v.length > 3000) { this.capture.v.shift(); this.capture.t.shift(); }
+  },
+
+  // Average the room's idle reading. The HX710B rarely sits at zero and
+  // where it sits changes with temperature, so this must be measured.
+  restFromCapture() {
+    const cap = this.capture;
+    if (!cap || !cap.v.length) return 0;
+    let s = 0; for (let i = 0; i < cap.v.length; i++) s += cap.v[i];
+    return s / cap.v.length;
+  },
+
+  // Pull the individual breaths back out of the recorded window.
+  analyseCapture(rest) {
+    const cap = this.capture;
+    if (!cap || cap.v.length < 10) return null;
+    const peak = Math.max.apply(null, cap.v);
+    if (peak - rest < 0.012) return null;              // nobody actually blew
+    // Two thresholds, both relative to the breath's own height so they
+    // work for a big blow and a small one. The high one FINDS a breath
+    // (immune to noise); the low one then widens it out to where the
+    // air really started and stopped. Using only the high mark would
+    // clip the gentle ramp in and out and report every breath short.
+    const hi = rest + (peak - rest) * 0.33;
+    const lo = rest + (peak - rest) * 0.15;
+    const runs = [];
+    let i = 0;
+    while (i < cap.v.length) {
+      if (cap.v[i] > hi) {
+        let a = i, b = i;
+        while (b + 1 < cap.v.length && cap.v[b + 1] > hi) b++;
+        while (a > 0 && cap.v[a - 1] > lo) a--;
+        while (b + 1 < cap.v.length && cap.v[b + 1] > lo) b++;
+        // A breath still running when the recording ends has only been
+        // half seen — counting it would report every breath as short and
+        // weak. Note it and leave it out.
+        if (b >= cap.v.length - 1) { i = b + 1; continue; }
+        let ms = 0, pk = 0;
+        for (let k = a; k <= b; k++) { ms += cap.t[k]; pk = Math.max(pk, cap.v[k]); }
+        if (ms > 260) runs.push({ ms: ms, pk: pk });    // ignore coughs and blips
+        i = b + 1;
+      } else i++;
+    }
+    if (!runs.length) return null;
+    const amp = runs.reduce((a, r) => a + r.pk, 0) / runs.length;
+    const dur = runs.reduce((a, r) => a + r.ms, 0) / runs.length;
+    return { amp: amp, dur: dur, breaths: runs.length };
+  },
+
+  commitCal(rest, res) {
+    this.cal = {
+      rest: rest,
+      amp: Math.max(rest + 0.02, res.amp),             // never a zero-width span
+      dur: Math.max(400, Math.min(12000, res.dur)),
+      breaths: res.breaths,
+      ready: true,
+      when: Date.now()
+    };
+    this.capture = null;
+    this.saveCal();
+    this._emit();
+  },
+
+  saveCal() { try { localStorage.setItem(CAL_KEY, JSON.stringify(this.cal)); } catch (e) {} },
+  loadCal() {
+    try {
+      const raw = localStorage.getItem(CAL_KEY);
+      if (!raw) return false;
+      const c = JSON.parse(raw);
+      if (!c || !c.ready || !isFinite(c.amp) || !isFinite(c.dur)) return false;
+      this.cal = c;
+      return true;
+    } catch (e) { return false; }
+  }
+};
+
+class Component extends DCLogic {
+  /* 'boot' shows only the background. The flute usually reconnects in a few
+     milliseconds, so deciding BEFORE painting anything means a returning
+     player never sees the chooser flash past on the way to the game. */
+  state = { screen: 'boot', lang: 'en' };
+
+  progressRef = React.createRef();
+  progressRef2 = React.createRef();
+  progressRef3 = React.createRef();
+  padLaneRef = React.createRef();
+  flyRef = React.createRef();
+  gaugeRef = React.createRef();
+  gaugeZoneRef = React.createRef();
+  gaugePeakRef = React.createRef();
+  zoneHold = 0;
+  hoppedThisBreath = false;
+  jarCountRef = React.createRef();
+  jarFillRef = React.createRef();
+  jarWrapRef = React.createRef();
+  lineRef = React.createRef();
+  lineWrapRef = React.createRef();
+  caveBgRef = React.createRef();
+  caveObsRef = React.createRef();
+  caveFlyRef = React.createRef();
+  caveBarRef = React.createRef();
+  caveStreakRef = React.createRef();
+  jarCount2Ref = React.createRef();
+  jarFill2Ref = React.createRef();
+  jarWrap2Ref = React.createRef();
+  line2Ref = React.createRef();
+  lineWrap2Ref = React.createRef();
+  convGlowRef = React.createRef();
+  convBreathRef = React.createRef();
+  convSeqRef = React.createRef();
+  convFlyRef = React.createRef();
+  jarCount3Ref = React.createRef();
+  jarFill3Ref = React.createRef();
+  line3Ref = React.createRef();
+  lineWrap3Ref = React.createRef();
+  pondOrbRef = React.createRef();
+  plotRef = React.createRef();
+  plotIdx = 0;
+  gardenFillRef = React.createRef();
+  stageMarkRef = React.createRef();
+  plotTextRef = React.createRef();
+  shownStage = 0;
+  line4Ref = React.createRef();
+  lineWrap4Ref = React.createRef();
+  gardenStage = 0;
+
+  cbBarRef = React.createRef();
+  cbValRef = React.createRef();
+  cbNoteRef = React.createRef();
+  cbNormRef = React.createRef();
+  warmBarRef = React.createRef();
+  warmLiveRef = React.createRef();
+  warmStage = 0;
+  warmT = 0;
+  warmRest = 0;
+  warmSeen = 0;
+  warmResult = null;
+  warmFailed = false;
+  pendingPlace = null;
+
+  breath = { value: 0, held: false, peak: 0, dur: 0 };
+  keyDown = false;
+  pointerDown = false;
+
+  sparks = 0;
+  breaths = 0;
+  longest = 0;
+  elapsed = 0;
+  line = '';
+  lineTimer = 0;
+
+  padIdx = 0;
+  padScroll = 0;
+  hopT = 999;
+  hopDur = 800;
+  hopFrom = 0;
+  hopGap = 14;
+
+  caveScroll = 0;
+  caveY = 56;
+  caveObs = [];
+  caveStreak = 0;
+  caveBest = 0;
+  caveIn = false;
+
+  convSeq = [];
+  convIdx = 0;
+  convPhase = 'show';
+  convPhaseTime = 0;
+  convStep = 0;
+
+  componentDidMount() {
+    this.ensureLoop();
+    BreathIn.loadCal();
+    /* Try the flute first. If it is already plugged in and trusted, skip
+       straight to the places — asking again would just be a door to shut. */
+    let decided = false;
+    const settle = (on) => {
+      if (decided) return;
+      decided = true;
+      this.setState({ screen: on ? 'cards' : 'connect' });
+    };
+    BreathIn.autoConnect().then(settle).catch(() => settle(false));
+    // Never sit on a blank screen if the browser stalls over the port.
+    setTimeout(() => settle(BreathIn.active()), 1500);
+    BreathIn.onChange = () => {
+      const s = this.state.screen;
+      if (s === 'connect' || s === 'warmup') this.forceUpdate();
+    };
+  }
+
+  componentWillUnmount() {
+    this.loopOn = false;
+    BreathIn.onChange = null;
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
+    window.removeEventListener('pointerdown', this.onPointerDown);
+    window.removeEventListener('pointerup', this.onPointerUp);
+  }
+
+  t() { return STR[this.state.lang] || STR.en; }
+
+  effort() { const e = this.props.breathEffort || 'Standard'; return e === 'Gentle' ? 0.74 : e === 'Strong' ? 1.28 : 1; }
+  pace() { const p = this.props.pacing || 'Steady'; return p === 'Unhurried' ? 1.4 : p === 'Brisk' ? 0.7 : 1; }
+
+  say(msg) {
+    const v = this.props.coaching || 'Warm';
+    if (v === 'Quiet') return;
+    this.line = msg;
+    this.lineTimer = v === 'Chatty' ? 3200 : 1800;
+  }
+
+  logVisit(id) {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      const data = raw ? JSON.parse(raw) : { sessions: [] };
+      data.sessions = data.sessions || [];
+      data.sessions.push({ d: Date.now(), p: id, att: 0, on: this.sparks, longest: this.caveBest, blow: 0, finished: false });
+      if (data.sessions.length > 200) data.sessions = data.sessions.slice(-200);
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    } catch (e) {}
+  }
+
+  resetRun() {
+    this.sparks = 0; this.elapsed = 0; this.line = ''; this.lineTimer = 0;
+    this.breaths = 0; this.longest = 0;
+  }
+
+  startStream() {
+    this.resetRun();
+    this.padIdx = 0; this.padScroll = 0; this.hopT = 999;
+    this.zoneHold = 0; this.hoppedThisBreath = false;
+    this.say(this.t().streamHint);
+    this.setState({ screen: 'stream' });
+  }
+
+  startCave() {
+    this.resetRun();
+    this.caveScroll = 0; this.caveY = 50; this.caveStreak = 0; this.caveBest = 0; this.caveIn = false;
+    this.caveObs = [this.makeObs(58), this.makeObs(92), this.makeObs(126), this.makeObs(160)];
+    this.setState({ screen: 'cave' });
+  }
+
+  startConversation() {
+    this.resetRun();
+    this.convSeq = [
+      { pulses: [320, 260, 320], color: '#D4A5F5' },
+      { pulses: [560, 220, 340], color: '#FFD4A3' },
+      { pulses: [300, 200, 300, 200, 300], color: '#A5D4F5' },
+      { pulses: [640, 240, 380], color: '#D4F5A5' }
+    ];
+    this.convIdx = 0; this.convPhase = 'show'; this.convPhaseTime = 0; this.convStep = 0;
+    this.setState({ screen: 'conversation' });
+  }
+
+  startPond() { this.resetRun(); this.gardenStage = -1; this.shownStage = -2; this.plotIdx = 0; this.plotCleared = false; this.growHold = 0; this.grewThisBreath = false; this.setState({ screen: 'pond' }); }
+
+  leave() {
+    const id = this.state.screen;
+    if (id !== 'cards' && id !== 'pond') this.logVisit(id === 'conversation' ? 'clearing' : id);
+    this.setState({ screen: 'cards' });
+  }
+
+  /* Reaching the end of a run is not the same as walking out of it, so it
+     gets its own door: the run is logged, then held on screen. */
+  finish() {
+    const id = this.state.screen;
+    this.finishedPlace = id === 'conversation' ? 'clearing' : id;
+    this.logVisit(this.finishedPlace);
+    this.setState({ screen: 'result' });
+  }
+
+  /* Stars are earned against the exercise each place actually teaches,
+     never against a generic score. Two of the four are measured against
+     the child's own breath, so a small pair of lungs can still take three. */
+  resultFor(id) {
+    const T = this.t();
+    const ds = this.durScale();
+    let got, of, label, stars;
+    if (id === 'stream') {
+      got = this.sparks; of = 12;
+      label = T.rPuffs;
+      stars = got >= 11 ? 3 : got >= 7 ? 2 : got >= 3 ? 1 : 0;
+    } else if (id === 'cave') {
+      got = Math.round(this.caveBest / 100) / 10; of = 0;
+      label = T.rSteady;
+      const b = this.caveBest / ds;              // against their own breath
+      stars = b >= 12000 ? 3 : b >= 7000 ? 2 : b >= 3000 ? 1 : 0;
+    } else if (id === 'clearing') {
+      got = this.convIdx; of = 4;
+      label = T.rPatterns;
+      stars = got >= 4 ? 3 : got >= 3 ? 2 : got >= 1 ? 1 : 0;
+    } else {
+      got = this.plotIdx; of = 5;
+      label = T.rFlowers;
+      stars = got >= 5 ? 3 : got >= 3 ? 2 : got >= 1 ? 1 : 0;
+    }
+    return { got: got, of: of, label: label, stars: stars };
+  }
+
+  retryPlace() { this.startWarmup(this.finishedPlace); }
+
+  nextPlace() {
+    const order = ['stream', 'cave', 'clearing', 'pond'];
+    const i = order.indexOf(this.finishedPlace);
+    if (i < 0 || i >= order.length - 1) { this.setState({ screen: 'cards' }); return; }
+    this.startWarmup(order[i + 1]);
+  }
+
+  tickBreath(dt) {
+    const b = this.breath;
+    BreathIn.tick();
+    // A real breath already HAS a magnitude, so the calibrated value goes
+    // straight in — normal breath lands at NORMAL, mid-bar. The spacebar
+    // has no magnitude of its own, so it fakes one by ramping: a quick tap
+    // peaks low, a long hold peaks high. Both end up spanning the same
+    // gentle .. normal .. firm range the games are written against.
+    const ext = BreathIn.active();
+    const keyT = (this.keyDown || this.pointerDown) ? 1 : 0;
+    const target = ext ? Math.max(keyT * BreathIn.NORMAL, Math.min(1, BreathIn.norm())) : keyT;
+    const k = ext ? 0.22 : (target ? 0.035 : 0.16);
+    b.value += (target - b.value) * (1 - Math.pow(1 - k, dt / 16.67));
+    if (b.value < 0.01) b.value = 0;
+    const was = b.held;
+    // "is a breath happening" — a fifth of a normal one, so a child who
+    // breathes softly still registers, and sensor noise still does not.
+    b.held = b.value > BreathIn.NORMAL * 0.12;
+    if (b.held && !was) { b.peak = b.value; b.dur = dt; }
+    else if (b.held) { b.peak = Math.max(b.peak, b.value); b.dur += dt; }
+    if (!b.held && was) { const ev = { peak: b.peak, dur: b.dur }; b.peak = 0; b.dur = 0; return ev; }
+    return null;
+  }
+
+  showLine(wrap, el) {
+    if (el && el.current) el.current.textContent = this.line;
+    if (wrap && wrap.current) wrap.current.style.opacity = this.line ? '1' : '0';
+  }
+
+  showJar(cnt, fill, max) {
+    if (cnt && cnt.current) cnt.current.textContent = String(this.sparks);
+    if (fill && fill.current) fill.current.style.height = Math.min(100, (this.sparks / max) * 100) + '%';
+  }
+
+  updateStream(dt, ev) {
+    this.elapsed += dt;
+    const total = 30000 * this.pace();
+    if (this.progressRef.current) this.progressRef.current.style.width = Math.min(1, this.elapsed / total) * 100 + '%';
+
+    if (this.gaugeRef.current) this.gaugeRef.current.style.width = Math.min(1, this.breath.value) * 100 + '%';
+
+    const gap = padGap(this.padIdx);
+    // A near pad wants a gentle puff, a far one a firm puff — 0.62x to
+    // 1.55x of THIS child's normal breath, never a fixed sensor number.
+    const N = this.N();
+    const need = (0.62 + ((gap - 11) / 19) * 0.93) * N * this.effort();
+    const tol = 0.34 * N * (this.props.breathEffort === 'Gentle' ? 1.3 : 1);
+    const hopping = this.hopT < this.hopDur;
+    const v = Math.min(1, this.breath.value);
+    const inZone = v >= need - tol && v <= need + tol;
+    const over = v > need + tol;
+
+    /* The old rule was "the PEAK of your puff must land in the ring", judged
+       only once you stopped blowing. Passing through the ring on the way up
+       counted for nothing, and an overshoot was already lost before anything
+       said so — you could do it right and still be told "softer".
+
+       Now the ring is somewhere you ARRIVE and stay: hold inside it for a
+       moment and the firefly goes, while you are still blowing. Cause and
+       effect land together, which is the only way a child can learn it. */
+    if (!hopping && this.breath.held && inZone) {
+      this.zoneHold = (this.zoneHold || 0) + dt;
+      if (this.zoneHold >= 160) { this.doHop(gap); this.zoneHold = 0; }
+    } else if (!inZone || !this.breath.held) {
+      this.zoneHold = 0;
+    }
+
+    // Live colour: white = aim here, green = you are in it, pink = too much.
+    if (this.gaugeZoneRef.current) {
+      const z = this.gaugeZoneRef.current;
+      z.style.left = Math.max(0, (need - tol)) * 100 + '%';
+      z.style.width = (tol * 2) * 100 + '%';
+      z.style.opacity = hopping ? '.18' : '1';
+      z.style.background = hopping ? 'rgba(255,255,255,.3)'
+        : inZone ? 'rgba(165,234,118,.85)'
+        : over ? 'rgba(242,169,196,.5)' : 'rgba(255,255,255,.3)';
+    }
+    // A marker parked at the highest point this puff reached, so an
+    // overshoot is visible while there is still time to ease off.
+    if (this.gaugePeakRef.current) {
+      const pk = this.gaugePeakRef.current;
+      const shown = this.breath.held ? Math.min(1, this.breath.peak) : 0;
+      pk.style.opacity = this.breath.held && !hopping ? '1' : '0';
+      pk.style.left = (shown * 100) + '%';
+      pk.style.background = shown > need + tol ? '#F2A9C4' : '#fff';
+    }
+    if (this.gaugeRef.current) this.gaugeRef.current.style.opacity = hopping ? '.35' : '1';
+
+    // Only coach on the way out, and only if the puff earned nothing.
+    if (ev && !hopping) {
+      if (this.hoppedThisBreath) {
+        this.hoppedThisBreath = false;
+      } else if (ev.peak >= need - tol && ev.peak <= need + tol) {
+        /* Second chance. On the sensor you can park at a level and hold it,
+           but the spacebar always climbs to full — so a key player only ever
+           passes THROUGH the ring. Landing your peak in it still counts. */
+        this.doHop(gap);
+        this.hoppedThisBreath = false;
+      } else if (ev.peak > need + tol) {
+        this.say(this.t().tooMuch);
+      } else {
+        this.say(this.t().firmer);
+      }
+      this.zoneHold = 0;
+    }
+
+    if (this.hopT < this.hopDur) {
+      this.hopT += dt;
+      const p = Math.min(1, this.hopT / this.hopDur);
+      const e = (1 - Math.cos(Math.PI * p)) / 2;
+      this.padScroll = this.hopFrom + e * this.hopGap;
+    } else {
+      this.padScroll += (padPos(this.padIdx) - this.padScroll) * Math.min(1, dt / 400);
+    }
+
+    const lane = this.padLaneRef.current;
+    if (lane) {
+      for (let j = 0; j < lane.children.length; j++) {
+        const L = this.padIdx - 1 + j;
+        const el = lane.children[j];
+        if (L < 0) { el.style.opacity = '0'; continue; }
+        el.style.left = (26 + padPos(L) - this.padScroll) + '%';
+        el.style.opacity = L < this.padIdx ? '.35' : '1';
+      }
+    }
+    if (this.flyRef.current) {
+      const base = 64;
+      let y = base, x = 26;
+      if (this.hopT < this.hopDur) {
+        const p = Math.min(1, this.hopT / this.hopDur);
+        const lift = Math.sin(Math.PI * p);
+        y = base - (Math.pow(lift, 0.85) * (11 + this.hopGap * 0.42));
+        x = 26 + Math.sin(Math.PI * p) * (2 + this.hopGap * 0.1);
+      } else {
+        y = base - this.breath.value * 4;
+      }
+      this.flyRef.current.style.top = y + '%';
+      this.flyRef.current.style.left = x + '%';
+    }
+
+    this.showJar(this.jarCountRef, this.jarFillRef, 12);
+    if (this.lineTimer > 0) { this.lineTimer -= dt; if (this.lineTimer <= 0) this.line = ''; }
+    this.showLine(this.lineWrapRef, this.lineRef);
+
+    if (this.elapsed > total) this.finish();
+  }
+
+  doHop(gap) {
+    this.hopFrom = padPos(this.padIdx);
+    this.hopGap = gap;
+    this.hopDur = 620 + gap * 30;
+    this.hopT = 0;
+    this.padIdx++;
+    this.sparks++;
+    this.hoppedThisBreath = true;
+    this.say(this.t().good);
+  }
+
+  makeObs(x) {
+    return { x: x, gapC: 32 + Math.random() * 36, gapH: 30 + Math.random() * 10, scored: false, clear: true };
+  }
+
+  updateCave(dt, ev) {
+    this.elapsed += dt;
+    const total = 45000 * this.pace();
+    if (this.progressRef2.current) this.progressRef2.current.style.width = Math.min(1, this.elapsed / total) * 100 + '%';
+
+    const speed = 17;
+    this.caveScroll += (speed * dt) / 1000;
+    if (this.caveBgRef.current) this.caveBgRef.current.style.backgroundPosition = (-this.caveScroll * 5.2) + 'px center';
+
+    const flyX = 26;
+    const bandTop = 42, bandH = 58, half = 9 * (this.props.breathEffort === 'Gentle' ? 1.35 : this.props.breathEffort === 'Strong' ? 0.8 : 1), pad = 3;
+    const yLo = (bandTop + half - bandTop) / (bandH / 100);
+    const yHi = (100 - pad - half - bandTop) / (bandH / 100);
+    const flyTarget = yHi - Math.min(1, this.breath.value) * (yHi - yLo);
+    this.caveY += (flyTarget - this.caveY) * Math.min(1, dt / 210);
+    if (this.caveFlyRef.current) this.caveFlyRef.current.style.top = (42 + this.caveY * 0.58) + '%';
+
+    let hit = false;
+    for (const o of this.caveObs) {
+      o.x -= (speed * dt) / 1000;
+      if (o.x < -14) { const far = Math.max.apply(null, this.caveObs.map(q => q.x)); Object.assign(o, this.makeObs(far + 34)); }
+      if (Math.abs(o.x - flyX) < 4.6 && Math.abs(this.caveY - o.gapC) > o.gapH / 2 - 4) { hit = true; o.clear = false; }
+      if (!o.scored && o.x < flyX - 6) { o.scored = true; if (o.clear) this.sparks++; }
+    }
+
+    const obs = this.caveObsRef.current;
+    if (obs) {
+      for (let i = 0; i < obs.children.length && i < this.caveObs.length; i++) {
+        const o = this.caveObs[i];
+        const el = obs.children[i];
+        el.style.left = o.x + '%';
+        const th = Math.max(0, o.gapC - o.gapH / 2) + '%';
+        const bh = Math.max(0, 100 - (o.gapC + o.gapH / 2)) + '%';
+        el.children[0].style.height = th;
+        el.children[1].style.height = th;
+        el.children[2].style.height = bh;
+        el.children[3].style.height = bh;
+      }
+    }
+
+    if (!hit) {
+      this.caveStreak += dt;
+      this.caveBest = Math.max(this.caveBest, this.caveStreak);
+      if (!this.caveIn && this.caveStreak > 900 * this.durScale()) { this.caveIn = true; this.say(this.t().hold); }
+    } else {
+      if (this.caveIn || this.caveStreak > 600 * this.durScale()) { this.caveIn = false; this.say(this.t().drifting); }
+      this.caveStreak = 0;
+    }
+    if (this.caveFlyRef.current) {
+      this.caveFlyRef.current.style.filter = hit
+        ? 'drop-shadow(0 0 3vh rgba(255,120,120,.75))'
+        : 'drop-shadow(0 0 3vh rgba(255,214,130,.55))';
+    }
+
+    if (this.caveBarRef.current) this.caveBarRef.current.style.width = Math.min(1, this.elapsed / total) * 100 + '%';
+    if (this.caveStreakRef.current) {
+      const w = Math.min(30, (this.caveStreak / (8000 * this.durScale())) * 30);
+      const l = Math.max(0, Math.min(1, this.elapsed / total) * 100 - w);
+      this.caveStreakRef.current.style.left = l + '%';
+      this.caveStreakRef.current.style.width = w + '%';
+    }
+
+    this.showJar(this.jarCount2Ref, this.jarFill2Ref, 20);
+    if (this.lineTimer > 0) { this.lineTimer -= dt; if (this.lineTimer <= 0) this.line = ''; }
+    this.showLine(this.lineWrap2Ref, this.line2Ref);
+
+    if (this.elapsed > total) this.finish();
+  }
+
+  updateConversation(dt, ev) {
+    this.elapsed += dt;
+    const total = 60000 * this.pace();
+    if (this.progressRef3.current) this.progressRef3.current.style.width = Math.min(1, this.elapsed / total) * 100 + '%';
+
+    const pat = this.convSeq[this.convIdx];
+    if (!pat) { this.finish(); return; }
+    this.convPhaseTime += dt;
+
+    if (this.convPhase === 'show') {
+      let acc = 0, lit = false, done = true;
+      for (let i = 0; i < pat.pulses.length; i++) {
+        const d = pat.pulses[i] * this.durScale();   // show it at the child's own tempo
+        if (this.convPhaseTime < acc + d) { lit = (i % 2 === 0); done = false; break; }
+        acc += d;
+      }
+      if (this.convGlowRef.current) {
+        this.convGlowRef.current.style.background = pat.color;
+        this.convGlowRef.current.style.boxShadow = '0 0 4vh 1vh ' + pat.color;
+        this.convGlowRef.current.style.opacity = lit ? '1' : '0';
+      }
+      if (done && this.convPhaseTime > acc + 500) {
+        this.convPhase = 'answer'; this.convPhaseTime = 0; this.convStep = 0;
+        this.say(this.t().yourTurn);
+      } else if (this.convPhaseTime < 60) {
+        this.say(this.t().watch);
+      }
+    } else {
+      if (this.convGlowRef.current) this.convGlowRef.current.style.opacity = '0';
+      const wantIdx = this.convStep * 2;
+      // The written pattern assumes a 2.2s comfortable breath. A child
+      // whose breath runs shorter gets proportionally shorter pulses to
+      // answer, so the exercise stays the same shape at their own size.
+      const want = pat.pulses[wantIdx] != null ? pat.pulses[wantIdx] * this.durScale() : null;
+      if (ev && want != null) {
+        const ok = Math.abs(ev.dur - want) < Math.max(220 * this.durScale(), want * 0.55);
+        if (ok) {
+          this.convStep++;
+          this.sparks++;
+          if (this.convStep * 2 >= pat.pulses.length) {
+            this.say(this.t().lovely);
+            this.convIdx++; this.convPhase = 'show'; this.convPhaseTime = 0; this.convStep = 0;
+          }
+        } else {
+          this.say(ev.dur > want ? this.t().softer : this.t().firmer);
+          this.convStep = 0;
+        }
+      }
+      if (this.convPhaseTime > 12000) { this.convPhase = 'show'; this.convPhaseTime = 0; this.convStep = 0; }
+    }
+
+    if (this.convBreathRef.current) {
+      this.convBreathRef.current.style.background = pat.color;
+      this.convBreathRef.current.style.opacity = this.breath.value > this.N() * 0.16 ? String(0.35 + this.breath.value * 0.6) : '0';
+    }
+    const seq = this.convSeqRef.current;
+    if (seq) {
+      for (let i = 0; i < seq.children.length; i++) {
+        seq.children[i].style.opacity = i < this.convIdx ? '1' : (i === this.convIdx ? '.7' : '.25');
+      }
+    }
+
+    this.showJar(this.jarCount3Ref, this.jarFill3Ref, 14);
+    if (this.lineTimer > 0) { this.lineTimer -= dt; if (this.lineTimer <= 0) this.line = ''; }
+    this.showLine(this.lineWrap3Ref, this.line3Ref);
+
+    if (this.elapsed > total) this.finish();
+  }
+
+  spriteFor(stage, plot) {
+    const V = ['pink', 'yellow', 'orange', 'purple', 'pink'];
+    if (stage < 2) return 'assets/flower-' + (stage + 1) + '.png';
+    return 'assets/flower-' + V[plot % V.length] + '-' + (stage + 1) + '.png';
+  }
+
+  updatePond(dt, ev) {
+    const SPOTS = [[24, 20], [38, 25], [50, 29], [62, 25], [76, 20]];
+    const v = Math.min(1, this.breath.value);
+    const E = this.effort();
+    // All five stages sit inside ONE ordinary breath (0.35x .. 1.15x of
+    // normal), because this game is meant to reward breathing LONGER,
+    // not blowing harder. The holding is what does the work.
+    const N = this.N();
+    const STEPS = [0.35, 0.55, 0.75, 0.95, 1.15].map(m => Math.min(0.97, m * N * E));
+    let seg = 0;
+    for (let i = 0; i < STEPS.length; i++) if (v >= STEPS[i]) seg = i + 1;
+    const full = this.plotIdx >= SPOTS.length;
+    const target = full ? -1 : seg - 1;
+    if (target > this.gardenStage) {
+      this.growHold = (this.growHold || 0) + dt;
+      if (this.growHold >= this.growHoldMs()) { this.gardenStage++; this.growHold = 0; this.grewThisBreath = true; }
+    } else this.growHold = 0;
+    const stage = this.gardenStage;
+
+    if (!this.plotCleared && this.plotRef.current) {
+      this.plotCleared = true;
+      this.plotRef.current.querySelectorAll('img').forEach(im => { im.style.opacity = '0'; im.src = 'assets/flower-1.png'; });
+    }
+    if (this.pondOrbRef.current) {
+      const sp = SPOTS[Math.min(SPOTS.length - 1, this.plotIdx)];
+      this.pondOrbRef.current.style.left = sp[0] + '%';
+      this.pondOrbRef.current.style.bottom = sp[1] + '%';
+      this.pondOrbRef.current.style.transform = 'translate(-50%,30%) scale(' + (1 + v * 0.5).toFixed(3) + ')';
+      this.pondOrbRef.current.style.opacity = this.plotIdx >= SPOTS.length ? '0' : '1';
+    }
+    if (this.gardenFillRef.current) {
+      this.gardenFillRef.current.style.width = (full ? 0 : v * 100).toFixed(1) + '%';
+    }
+    if (this.stageMarkRef.current) {
+      const on = !full && this.gardenStage >= 0;
+      this.stageMarkRef.current.style.opacity = on ? '1' : '0';
+      this.stageMarkRef.current.style.left = on ? ((this.gardenStage + 1) * 20) + '%' : '0%';
+    }
+    if (this.plotTextRef.current) {
+      this.plotTextRef.current.textContent = Math.min(SPOTS.length, this.plotIdx) + '/' + SPOTS.length;
+    }
+    if (stage !== this.shownStage) {
+      this.shownStage = stage;
+      const plot = this.plotRef.current;
+      const el = plot ? plot.querySelectorAll('img')[this.plotIdx] : null;
+      if (el) {
+        el.style.opacity = stage < 0 ? '0' : '1';
+        if (stage >= 0) {
+          el.src = this.spriteFor(stage, this.plotIdx);
+          el.style.transform = 'translateX(-50%) scale(1.12)';
+          setTimeout(() => { if (el) el.style.transform = 'translateX(-50%) scale(1)'; }, 300);
+        }
+      }
+    }
+    if (ev) {
+      if (full) {
+        this.say(this.t().lovely);
+      } else if (this.grewThisBreath) {
+        this.sparks++;
+        this.say(this.gardenStage === 4 ? this.t().bloomed : this.t().grew);
+        if (this.gardenStage === 4) {
+          this.plotIdx++;
+          this.gardenStage = -1;
+          this.shownStage = -2;
+        }
+      } else if (this.plotIdx >= SPOTS.length) {
+        this.finish(); return;
+      } else {
+        this.say(this.t().firmer);
+      }
+      this.grewThisBreath = false;
+      this.growHold = 0;
+    }
+    if (this.lineTimer > 0) { this.lineTimer -= dt; if (this.lineTimer <= 0) this.line = ''; }
+    this.showLine(this.lineWrap4Ref, this.line4Ref);
+  }
+
+  /* ---- the connect panel ------------------------------------------ */
+  openConnect() { this.setState({ screen: 'connect' }); }
+
+  async pickSource(src) {
+    const r = await BreathIn.use(src);
+    // Only move on if it worked; a failed connect must stay put and say why.
+    if (r.ok) this.setState({ screen: 'cards' });
+    else this.forceUpdate();
+  }
+
+  updateConnect(dt) {
+    const v = Math.min(1, BreathIn.active() ? BreathIn.norm() : this.breath.value);
+    if (this.cbBarRef.current) this.cbBarRef.current.style.width = (v * 100) + '%';
+    if (this.cbValRef.current) this.cbValRef.current.textContent = (BreathIn.active() ? BreathIn.raw : this.breath.value).toFixed(3);
+    if (this.cbNormRef.current) {
+      // What the games actually receive. Normal breath should read ~0.50.
+      this.cbNormRef.current.textContent = v.toFixed(2);
+      this.cbNormRef.current.style.color = !BreathIn.active() ? '#8C97AB'
+        : (v > 0.92 || v < 0.08) ? '#F2A9C4' : (v > 0.30 && v < 0.72) ? '#A5EA76' : '#F6C96B';
+    }
+    if (this.cbNoteRef.current) {
+      const n = BreathIn.note;
+      this.cbNoteRef.current.textContent = n ? (n.n + ' \u00b7 ' + n.holes + (n.holes === 1 ? ' finger' : ' fingers')) : '\u2014';
+    }
+  }
+
+  /* ---- the warm-up: measuring THIS child's normal breath -----------
+     Runs before every game, because the number it produces is what all
+     four games are scaled against. Three steps: sit still so the sensor's
+     own resting level can be read, then two ordinary breaths, then read
+     the recording back. Two breaths rather than one because the first is
+     usually a giggle or a half-try, and averaging survives that.
+     ------------------------------------------------------------------ */
+  WARM_REST_MS = 2000;
+  WARM_BLOW_MS = 9000;
+
+  startWarmup(placeId) {
+    this.pendingPlace = placeId;
+    // No sensor on the table: the spacebar has no personal baseline to
+    // measure, so there is nothing to warm up.
+    if (!BreathIn.active()) { this.launch(placeId); return; }
+    this.warmStage = 0;
+    this.warmT = this.WARM_REST_MS;
+    this.warmRest = 0;
+    this.warmResult = null;
+    this.warmFailed = false;
+    BreathIn.startCapture();
+    this.setState({ screen: 'warmup' });
+  }
+
+  updateWarmup(dt) {
+    if (this.warmStage === 2) return;
+    this.warmT -= dt;
+    BreathIn.pushCapture(dt);
+
+    if (this.warmStage === 0) {
+      if (this.warmBarRef.current) this.warmBarRef.current.style.width = (100 * (1 - this.warmT / this.WARM_REST_MS)) + '%';
+      if (this.warmT <= 0) {
+        this.warmRest = BreathIn.restFromCapture();
+        this.warmStage = 1;
+        this.warmT = this.WARM_BLOW_MS;
+        BreathIn.startCapture();          // fresh window for the breaths
+        this.forceUpdate();
+      }
+      return;
+    }
+
+    // Stage 1: recording two ordinary breaths.
+    if (this.warmBarRef.current) this.warmBarRef.current.style.width = (100 * (1 - this.warmT / this.WARM_BLOW_MS)) + '%';
+    const live = Math.max(0, BreathIn.raw - this.warmRest);
+    if (this.warmLiveRef.current) {
+      // Shown against the biggest breath so far, so the child sees
+      // something move immediately — this bar is encouragement, not a score.
+      this.warmSeen = Math.max(this.warmSeen || 0.03, live);
+      this.warmLiveRef.current.style.width = Math.min(100, (live / this.warmSeen) * 100) + '%';
+    }
+
+    // Stop as soon as two clean breaths are in the bag.
+    const early = this.warmT < this.WARM_BLOW_MS - 3000 ? BreathIn.analyseCapture(this.warmRest) : null;
+    if ((early && early.breaths >= 2) || this.warmT <= 0) {
+      const res = early && early.breaths >= 2 ? early : BreathIn.analyseCapture(this.warmRest);
+      if (res) { BreathIn.commitCal(this.warmRest, res); this.warmResult = res; this.warmFailed = false; }
+      else { this.warmFailed = true; }
+      this.warmStage = 2;
+      this.forceUpdate();
+    }
+  }
+
+  retryWarmup() {
+    this.warmStage = 1;
+    this.warmT = this.WARM_BLOW_MS;
+    this.warmSeen = 0;
+    this.warmFailed = false;
+    BreathIn.startCapture();
+    this.forceUpdate();
+  }
+
+  // Skip straight in on the profile recorded last time.
+  useSavedCal() { this.launch(this.pendingPlace); }
+
+  launch(placeId) {
+    if (placeId === 'stream') this.startStream();
+    else if (placeId === 'cave') this.startCave();
+    else if (placeId === 'clearing') this.startConversation();
+    else this.startPond();
+  }
+
+  /* ---- turning the measured breath into game numbers ---------------
+     N is where a normal breath sits on the bar. Every threshold in the
+     four games is written as a multiple of it, so "a bit firmer than
+     usual" means the same thing for a small child and a grown-up.
+     ------------------------------------------------------------------ */
+  N() { return BreathIn.NORMAL; }
+
+  // Time-based games stretch to however long this person's breath runs.
+  durScale() { return BreathIn.durScale(); }
+
+  // The Garden: five stages should fit comfortably inside ONE breath,
+  // so the hold per stage comes from the breath we measured.
+  growHoldMs() {
+    const c = BreathIn.cal;
+    const base = c.ready ? (c.dur / 5) * 0.62 : 380;
+    return Math.max(240, Math.min(700, base)) * this.pace();
+  }
+
+  frame = (now) => {
+    try {
+      if (!(this.last > 0)) this.last = now;
+      let dt = Math.min(48, now - this.last);
+      if (!(dt >= 0)) dt = 16;
+      this.last = now;
+      const ev = this.tickBreath(dt);
+      // Every finished breath counts, whatever the game does with it.
+      if (ev && this.state.screen !== 'warmup' && this.state.screen !== 'connect') {
+        this.breaths++;
+        if (ev.dur > this.longest) this.longest = ev.dur;
+      }
+      const s = this.state.screen;
+      if (s === 'connect') this.updateConnect(dt);
+      else if (s === 'warmup') this.updateWarmup(dt);
+      else if (s === 'stream') this.updateStream(dt, ev);
+      else if (s === 'cave') this.updateCave(dt, ev);
+      else if (s === 'conversation') this.updateConversation(dt, ev);
+      else if (s === 'pond') this.updatePond(dt, ev);
+    } catch (err) {
+      if (!this.loggedFrameErr) { this.loggedFrameErr = true; console.error('frame error', err); }
+    }
+    this.raf = requestAnimationFrame(this.frame);
+  }
+
+  ensureLoop() {
+    if (this.loopOn) return;
+    this.loopOn = true;
+    if (!this.onKeyDown) {
+      this.onKeyDown = (e) => { if (e.code === 'Space') { e.preventDefault(); this.keyDown = true; } };
+      this.onKeyUp = (e) => { if (e.code === 'Space') this.keyDown = false; };
+      this.onPointerDown = (e) => { if (!e.target.closest('button, a')) this.pointerDown = true; };
+      this.onPointerUp = () => { this.pointerDown = false; };
+      window.addEventListener('keydown', this.onKeyDown);
+      window.addEventListener('keyup', this.onKeyUp);
+      window.addEventListener('pointerdown', this.onPointerDown);
+      window.addEventListener('pointerup', this.onPointerUp);
+    }
+    this.last = performance.now();
+    this.raf = requestAnimationFrame(this.frame);
+  }
+
+  renderVals() {
+    this.ensureLoop();
+    const t = this.t();
+    const s = this.state.screen;
+    return {
+      t: t,
+      langLabel: this.state.lang === 'en' ? 'EN / हि' : 'हि / EN',
+      toggleLang: () => this.setState({ lang: this.state.lang === 'en' ? 'hi' : 'en' }),
+      isCards: s === 'cards',
+      isConnect: s === 'connect',
+      isWarmup: s === 'warmup',
+      isResult: s === 'result',
+      openConnect: () => this.openConnect(),
+      closeConnect: () => this.setState({ screen: 'cards' }),
+      pickKey: () => this.pickSource('key'),
+      pickSerial: () => this.pickSource('serial'),
+      reZero: () => BreathIn.reZero(),
+      srcIsSerial: BreathIn.src === 'serial',
+      hasSerialSensor: BreathIn.active(),
+      statusText: BreathIn.active() ? t.stSerial : (BreathIn.src === 'key' ? t.stKey : t.stOff),
+      dotColor: BreathIn.active() ? '#A5EA76' : (BreathIn.src === 'key' ? '#F6C96B' : '#F2A9C4'),
+      serialBorder: BreathIn.active() ? '#A5EA76' : 'rgba(255,255,255,.2)',
+      keyBorder: BreathIn.src === 'key' && !BreathIn.active() ? '#F6C96B' : 'rgba(255,255,255,.2)',
+      breathNote: BreathIn.why === 'needBrowser' ? t.errBrowser
+                : BreathIn.why === 'noPort' ? t.errPort
+                : BreathIn.why === 'unplugged' ? t.errUnplug
+                : '',
+
+      // --- the warm-up ---
+      warmResting: this.warmStage === 0,
+      warmBlowing: this.warmStage === 1,
+      warmDone: this.warmStage === 2,
+      warmOk: this.warmStage === 2 && !this.warmFailed,
+      warmBad: this.warmStage === 2 && this.warmFailed,
+      warmTitle: this.warmStage === 0 ? t.warmRest : this.warmStage === 1 ? t.warmBlow : (this.warmFailed ? t.warmNothing : t.warmGot),
+      warmSub: this.warmStage === 0 ? t.warmRestSub : this.warmStage === 1 ? t.warmBlowSub : (this.warmFailed ? t.warmNothingSub : t.warmGotSub),
+      warmBreaths: this.warmResult ? String(this.warmResult.breaths) : '0',
+      warmLen: this.warmResult ? (this.warmResult.dur / 1000).toFixed(1) + 's' : '\u2014',
+      warmStrength: this.warmResult ? (this.warmResult.amp - this.warmRest).toFixed(3) : '\u2014',
+      goPlay: () => this.launch(this.pendingPlace),
+      retryWarm: () => this.retryWarmup(),
+      cancelWarm: () => this.setState({ screen: 'cards' }),
+      hasSavedCal: BreathIn.cal.ready,
+      useSaved: () => this.useSavedCal(),
+      warmBarRef: this.warmBarRef, warmLiveRef: this.warmLiveRef,
+
+      // --- the results screen ---
+      res: (() => {
+        const id = this.finishedPlace || 'stream';
+        const r = this.resultFor(id);
+        const P = PLACES.find(x => x.id === id) || PLACES[0];
+        const order = ['stream', 'cave', 'clearing', 'pond'];
+        const last = order.indexOf(id) >= order.length - 1;
+        return {
+          name: t.names[id],
+          accent: P.accent, chip: P.chip, art: P.art,
+          stars: r.stars,
+          star1: r.stars >= 1, star2: r.stars >= 2, star3: r.stars >= 3,
+          noStar1: r.stars < 1, noStar2: r.stars < 2, noStar3: r.stars < 3,
+          title: r.stars >= 3 ? t.rGreat : r.stars >= 2 ? t.rGood : r.stars >= 1 ? t.rNice : t.rTried,
+          sub: r.stars >= 2 ? t.rSubHigh : t.rSubLow,
+          scoreLabel: r.label,
+          score: id === 'cave' ? r.got + 's' : (r.of ? r.got + '/' + r.of : String(r.got)),
+          breaths: String(this.breaths),
+          longest: (this.longest / 1000).toFixed(1) + 's',
+          sparks: String(this.sparks),
+          isLast: last, notLast: !last
+        };
+      })(),
+      retryPlace: () => this.retryPlace(),
+      nextPlace: () => this.nextPlace(),
+      resultToCards: () => this.setState({ screen: 'cards' }),
+
+      // --- what the profile currently says (shown in the panel) ---
+      calReady: BreathIn.cal.ready,
+      calNotReady: !BreathIn.cal.ready,
+      calLen: BreathIn.cal.ready ? (BreathIn.cal.dur / 1000).toFixed(1) + 's' : '\u2014',
+      calStrength: BreathIn.cal.ready ? (BreathIn.cal.amp - BreathIn.cal.rest).toFixed(3) : '\u2014',
+      calRest: BreathIn.cal.ready ? BreathIn.cal.rest.toFixed(3) : '\u2014',
+
+      cbBarRef: this.cbBarRef, cbValRef: this.cbValRef,
+      cbNoteRef: this.cbNoteRef, cbNormRef: this.cbNormRef,
+      isStream: s === 'stream',
+      isCave: s === 'cave',
+      isConversation: s === 'conversation',
+      isPond: s === 'pond',
+      places: PLACES.map(p => ({
+        index: p.index, accent: p.accent, wash: p.wash, chip: p.chip, art: p.art, pos: p.pos,
+        name: t.names[p.id], teach: t.teach[p.id], dur: t.durs[p.id],
+        play: () => this.startWarmup(p.id)
+      })),
+      pads: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      convPatterns: (this.convSeq.length ? this.convSeq : [{ color: '#D4A5F5' }, { color: '#FFD4A3' }, { color: '#A5D4F5' }, { color: '#D4F5A5' }]).map(p => ({ color: p.color })),
+      progressRef: this.progressRef, progressRef2: this.progressRef2, progressRef3: this.progressRef3,
+      padLaneRef: this.padLaneRef, flyRef: this.flyRef, gaugeRef: this.gaugeRef,
+      gaugeZoneRef: this.gaugeZoneRef, gaugePeakRef: this.gaugePeakRef,
+      jarCountRef: this.jarCountRef, jarFillRef: this.jarFillRef, jarWrapRef: this.jarWrapRef,
+      lineRef: this.lineRef, lineWrapRef: this.lineWrapRef,
+      caveBgRef: this.caveBgRef, caveObsRef: this.caveObsRef, caveFlyRef: this.caveFlyRef,
+      caveObstacles: [0, 1, 2, 3],
+      caveBarRef: this.caveBarRef, caveStreakRef: this.caveStreakRef,
+      jarCount2Ref: this.jarCount2Ref, jarFill2Ref: this.jarFill2Ref, jarWrap2Ref: this.jarWrap2Ref,
+      line2Ref: this.line2Ref, lineWrap2Ref: this.lineWrap2Ref,
+      convGlowRef: this.convGlowRef, convBreathRef: this.convBreathRef, convSeqRef: this.convSeqRef, convFlyRef: this.convFlyRef,
+      jarCount3Ref: this.jarCount3Ref, jarFill3Ref: this.jarFill3Ref,
+      line3Ref: this.line3Ref, lineWrap3Ref: this.lineWrap3Ref,
+      pondOrbRef: this.pondOrbRef,
+      plotRef: this.plotRef,
+      gardenFillRef: this.gardenFillRef, stageMarkRef: this.stageMarkRef, plotTextRef: this.plotTextRef,
+      line4Ref: this.line4Ref, lineWrap4Ref: this.lineWrap4Ref,
+      leaveGame: () => this.leave()
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="0; url=./Breezy%20Home.dc.html">
+  <title>Breezy — Breath Mechanics Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Baloo 2', Nunito, system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #8FD3F4 0%, #84fab0 100%);
+      color: #2F3B52;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 2.5rem 2rem;
+      border-radius: 2rem;
+      border: 4px solid #fff;
+      box-shadow: 0 1rem 2.5rem rgba(20, 73, 107, 0.2);
+      max-width: 420px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    h1 {
+      font-size: 2.2rem;
+      color: #2F3B52;
+      line-height: 1.1;
+    }
+    p {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      color: #5d6f85;
+      font-size: 1rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: 1.2rem;
+      border: 3px solid #fff;
+      background: linear-gradient(180deg, #C9AEF9 0%, #8B5CE0 100%);
+      box-shadow: inset 0 -0.4rem 0 rgba(0, 0, 0, 0.16), 0 0.5rem 1rem rgba(20, 73, 107, 0.2);
+      color: #fff;
+      font-family: 'Baloo 2', Nunito, sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      text-decoration: none;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .btn:hover {
+      filter: brightness(1.06);
+      transform: translateY(-2px);
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 4px solid rgba(139, 92, 224, 0.2);
+      border-top-color: #8B5CE0;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <script>
+    // Immediate client-side redirection to main game home
+    window.location.replace('./Breezy%20Home.dc.html');
+  </script>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner"></div>
+    <h1>Launching Breezy...</h1>
+    <p>Opening the breath mechanics game adventure.</p>
+    <a href="./Breezy%20Home.dc.html" class="btn">Click if not redirected</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+html, body { margin: 0; height: 100%; background: #140E1E; overflow: hidden; }
+a { color: #F6C96B; } a:hover { color: #ffe1a6; }
+@keyframes flyBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+</style>
+</helmet>
+
+<div style="position:relative;width:100%;height:100vh;overflow:hidden;font-family:Nunito,system-ui,sans-serif;color:#F7EEDB;background:#140E1E">
+  <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:{{ bgImage }}"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,22,.66) 0%,rgba(14,9,22,.3) 36%,rgba(14,9,22,.58) 74%,rgba(14,9,22,.88) 100%)"></div>
+
+  <div style="position:absolute;left:5.5%;right:5.5%;top:6%;display:flex;align-items:flex-start;justify-content:space-between;gap:2vh">
+    <div style="font-size:1.15vh;letter-spacing:.32em;color:rgba(247,238,219,.5);text-transform:uppercase">{{ t.kicker }}</div>
+  </div>
+
+  <div style="position:absolute;left:8%;top:50%;transform:translateY(-50%);max-width:52vh;display:flex;flex-direction:column;gap:3.4vh">
+    <div>
+      <div style="font-family:Marcellus,serif;font-size:7.4vh;line-height:.98;letter-spacing:.01em;color:#FBF1DE">Breezy</div>
+      <div style="margin-top:2vh;font-size:1.75vh;line-height:1.55;color:rgba(247,238,219,.7);text-wrap:pretty">{{ t.blurb }}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1.4vh;align-items:flex-start">
+      <a href="Chamki Firefly Forest.dc.html" style="display:flex;align-items:center;gap:1.6vh;padding:2vh 3.6vh;background:#F6C96B;color:#1A1020;font-family:Nunito;font-weight:700;font-size:1.5vh;letter-spacing:.22em;text-decoration:none" style-hover="background:#FFE2A8">{{ t.play }}</a>
+      <div style="display:flex;flex-wrap:wrap;gap:1px;background:rgba(247,238,219,.14)">
+        <a href="Chamki Firefly Forest.dc.html" style="padding:1.4vh 2.4vh;background:rgba(13,9,20,.82);color:#F7EEDB;font-size:1.2vh;letter-spacing:.2em;text-decoration:none" style-hover="background:rgba(13,9,20,.95)">{{ t.resume }}</a>
+        <a href="Breathing Report.dc.html" style="padding:1.4vh 2.4vh;background:rgba(13,9,20,.82);color:#F7EEDB;font-size:1.2vh;letter-spacing:.2em;text-decoration:none" style-hover="background:rgba(13,9,20,.95)">{{ t.grownups }}</a>
+      </div>
+    </div>
+
+    <div style="font-size:1.25vh;letter-spacing:.06em;color:rgba(247,238,219,.42)">{{ t.hint }}</div>
+  </div>
+
+  <img src="assets/char-golden.png" alt="Chamki the firefly" style="position:absolute;right:12%;top:34%;width:22vh;height:22vh;object-fit:contain;animation:flyBob 3.4s ease-in-out infinite;filter:drop-shadow(0 0 3vh rgba(255,214,130,.42))" />
+
+  <div style="position:absolute;right:5.5%;bottom:8%;width:min(38vh,80vw);display:flex;flex-direction:column;gap:1px;background:rgba(247,238,219,.12)">
+    <sc-for list="{{ places }}" as="p" hint-placeholder-count="4">
+      <div style="display:flex;align-items:baseline;gap:1.6vh;padding:1.5vh 2vh;background:rgba(13,9,20,.78)">
+        <div style="font-size:1.05vh;letter-spacing:.28em;color:{{ p.accent }}">{{ p.index }}</div>
+        <div style="flex:1;font-family:Marcellus,serif;font-size:1.9vh;color:#FBF1DE">{{ p.name }}</div>
+        <div style="font-size:1.05vh;letter-spacing:.2em;color:rgba(247,238,219,.44)">{{ p.dur }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="position:absolute;left:8%;bottom:6%;font-size:1.25vh;letter-spacing:.06em;color:rgba(247,238,219,.36)">{{ t.footer }}</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;backdrop&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Forest&quot;,&quot;Garden&quot;,&quot;Theatre&quot;],&quot;default&quot;:&quot;Forest&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const STR = {
+  en: {
+    kicker: 'Breathing games for little lungs',
+    blurb: 'Four places in the forest. Blow gently and Chamki lights the way.',
+    play: 'PLAY',
+    resume: 'PICK A PLACE',
+    grownups: 'FOR GROWN-UPS',
+    hint: 'Hold SPACE to breathe, or press and hold anywhere.',
+    footer: 'Made for children who are learning to breathe out slowly.',
+    names: ['Lillypad Hop', 'The Cave', 'Firefly Conversation', 'The Garden'],
+    durs: ['30 SECONDS', '45 SECONDS', '60 SECONDS', '5 STAGES']
+  },
+};
+
+const ACCENTS = ['#9FD0F2', '#F2A9C4', '#F6C96B', '#A9B4F2'];
+const BG = {
+  Forest: 'url(assets/scene-stream.jpg)',
+  Garden: 'url(assets/scene-garden.png)',
+  Theatre: 'url(assets/scene-stage.png)'
+};
+
+class Component extends DCLogic {
+  state = { lang: 'en' };
+
+  renderVals() {
+    const t = STR.en;
+    return {
+      t,
+      bgImage: BG[this.props.backdrop] || BG.Forest,
+      places: t.names.map((n, i) => ({
+        name: n,
+        index: '0' + (i + 1),
+        accent: ACCENTS[i],
+        dur: t.durs[i]
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breath Flute — Build It Step by Step</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07101f; --panel:#0f1c31;
+  --grid:rgba(120,180,255,.05);
+  --rule:#22334f; --rule-soft:#182742;
+  --paper:#e9eff8; --muted:#93a6c2; --dim:#61738f;
+  --amber:#ffb454; --amber-dim:#7a5526; --cyan:#54c8ea;
+  --red:#f0554a; --black:#2b3340; --blue:#3d8fe0; --yellow:#f2c14e; --green:#5ecf94;
+  --ok:#68e0a4;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --serif:"Instrument Serif",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--ink);color:var(--paper);font-family:var(--sans);
+  font-size:15px;line-height:1.72;-webkit-font-smoothing:antialiased;
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px),
+    radial-gradient(900px 620px at 85% -10%,rgba(255,180,84,.06),transparent 70%);
+  background-size:30px 30px,30px 30px,100% 100%;
+}
+.shell{max-width:1260px;margin:0 auto;padding:26px 22px 90px}
+header.mast{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;
+  padding-bottom:18px;margin-bottom:24px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.mast h1{font-family:var(--serif);font-weight:400;font-size:46px;line-height:1;letter-spacing:-.01em}
+.mast h1 em{color:var(--amber);font-style:italic}
+.mast .sub{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;margin-top:9px}
+.stamp{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--dim);
+  text-align:right;border:1px solid var(--rule);padding:10px 14px;background:rgba(15,28,49,.6)}
+.stamp b{color:var(--amber);font-weight:500}
+.grid{display:grid;grid-template-columns:250px 1fr;gap:26px;align-items:start}
+@media(max-width:920px){.grid{grid-template-columns:1fr}}
+nav.rail{position:sticky;top:18px;max-height:92vh;overflow-y:auto}
+.rail-title{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim);margin:14px 0 8px 2px}
+.rail-title:first-child{margin-top:0}
+.step-btn{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;
+  border:0;border-left:2px solid var(--rule-soft);padding:7px 8px 7px 12px;color:var(--muted);
+  cursor:pointer;font-family:var(--sans);font-size:13.5px;line-height:1.45;transition:.16s}
+.step-btn:hover{color:var(--paper);border-left-color:var(--dim);background:rgba(255,255,255,.02)}
+.step-btn.active{color:var(--paper);border-left-color:var(--amber);background:rgba(255,180,84,.07)}
+.step-btn .n{font-family:var(--mono);font-size:11px;color:var(--dim);padding-top:2px;min-width:17px}
+.step-btn.active .n{color:var(--amber)}
+.step-btn.done .n::after{content:"✓";color:var(--ok);margin-left:1px}
+.stage{border:1px solid var(--rule);background:linear-gradient(180deg,rgba(15,28,49,.85),rgba(7,16,31,.92));
+  padding:28px 30px 32px;position:relative;overflow:hidden}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:8px}
+.stage h2{font-family:var(--serif);font-weight:400;font-size:33px;line-height:1.15;margin-bottom:8px}
+.stage h3{font-family:var(--sans);font-size:16px;font-weight:600;margin:22px 0 6px}
+.lede{color:var(--muted);max-width:64ch;margin-bottom:18px;font-size:16px}
+.stage p{max-width:68ch;margin-bottom:13px}
+.stage strong{color:var(--paper);font-weight:600}
+code{font-family:var(--mono);font-size:13px;background:rgba(84,200,234,.1);color:var(--cyan);
+  padding:1px 6px;border-radius:2px}
+.note{border-left:2px solid var(--amber-dim);background:rgba(255,180,84,.05);padding:13px 17px;
+  margin:17px 0;font-size:14.5px;color:#dcc9ad;max-width:68ch}
+.note b{color:var(--amber);font-weight:600}
+.danger{border-left-color:var(--red);background:rgba(240,85,74,.06);color:#e9b9b3}
+.danger b{color:var(--red)}
+.canvas{margin:8px 0 18px;border:1px solid var(--rule-soft);background:rgba(3,8,17,.6);padding:10px}
+svg{display:block;width:100%;height:auto}
+ol.steps{margin:10px 0;padding:0;list-style:none;counter-reset:s}
+ol.steps li{counter-increment:s;padding:11px 0 11px 38px;position:relative;
+  border-bottom:1px solid var(--rule-soft);max-width:70ch;color:var(--muted)}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:11px;font-family:var(--mono);
+  font-size:11.5px;color:var(--amber);border:1px solid var(--amber-dim);width:22px;height:22px;
+  border-radius:50%;display:grid;place-items:center}
+ol.steps li b{color:var(--paper)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);
+  text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule)}
+td{padding:10px;border-bottom:1px solid var(--rule-soft);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--paper)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:14px;margin:16px 0}
+.card{border:1px solid var(--rule-soft);background:rgba(3,8,17,.5);padding:12px}
+.card .art{background:rgba(255,255,255,.02);margin:-12px -12px 10px;padding:10px}
+.card h4{font-size:14.5px;font-weight:600;margin-bottom:3px}
+.card p{font-size:13px;color:var(--muted);margin:0;max-width:none;line-height:1.55}
+.card .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;float:right;margin-top:2px}
+.tag.have{background:rgba(104,224,164,.13);color:var(--ok)}
+.tag.buy{background:rgba(240,85,74,.13);color:var(--red)}
+.check{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--rule-soft);max-width:72ch}
+.check .box{font-family:var(--mono);font-size:13px;min-width:24px;height:24px;border-radius:2px;
+  display:grid;place-items:center;margin-top:2px}
+.check.yes .box{background:rgba(104,224,164,.14);color:var(--ok)}
+.check.no .box{background:rgba(240,85,74,.14);color:var(--red)}
+.check b{color:var(--paper);font-weight:600;display:block}
+.check span.t{color:var(--muted);font-size:13.5px}
+button.next{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--amber);color:#221602;border:0;padding:12px 24px;cursor:pointer;font-weight:600;margin-top:24px}
+button.next:hover{filter:brightness(1.08)}
+.sim{display:grid;grid-template-columns:1fr 250px;gap:16px}
+@media(max-width:740px){.sim{grid-template-columns:1fr}}
+.readout{border:1px solid var(--rule-soft);background:rgba(3,8,17,.6);padding:14px}
+.readout h4{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);font-weight:400;margin-bottom:10px}
+.serial{font-family:var(--mono);font-size:12px;color:var(--ok);height:130px;overflow:hidden;
+  display:flex;flex-direction:column-reverse}
+.big{font-family:var(--mono);font-size:32px;color:var(--amber);line-height:1.1}
+.blow{width:100%;padding:15px;border:1px dashed var(--amber-dim);background:rgba(255,180,84,.05);
+  color:var(--amber);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;user-select:none;margin-top:12px;text-align:center}
+.blow.active{background:var(--amber);color:#221602;border-style:solid}
+.flow{animation:flow 2.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-40}}
+.wire-anim{stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw .9s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pulse{animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+footer.foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--rule);font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.09em;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="mast">
+  <div>
+    <h1>Breath Flute → <em>Firefly</em></h1>
+    <div class="sub">Build guide · starting from zero · Arduino Uno R3</div>
+  </div>
+  <div class="stamp">
+    You already have: <b>Uno · breadboard · wires</b><br>
+    You need to buy: <b>about ₹550</b><br>
+    Wires to connect: <b>4</b>
+  </div>
+</header>
+<div class="grid">
+  <nav class="rail"><div id="rail"></div></nav>
+  <main class="stage" id="stage"></main>
+</div>
+<footer class="foot">Click any step on the left. Nothing here needs internet once the page has loaded.</footer>
+</div>
+
+<script>
+/* ================= SHARED DEFS ================= */
+const DEFS = `<defs>
+  <linearGradient id="pcb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#0f8b91"/><stop offset="1" stop-color="#0a6a70"/></linearGradient>
+  <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e2e7ee"/><stop offset=".5" stop-color="#a9b3c0"/>
+    <stop offset="1" stop-color="#78838f"/></linearGradient>
+  <linearGradient id="bmpg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#1e5fa8"/><stop offset="1" stop-color="#14406f"/></linearGradient>
+  <linearGradient id="hxg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#1c6b52"/><stop offset="1" stop-color="#0e4536"/></linearGradient>
+  <linearGradient id="bbg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f4f2ec"/><stop offset="1" stop-color="#dcd8ce"/></linearGradient>
+  <linearGradient id="rec" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#efe7d8"/><stop offset=".5" stop-color="#ded2bc"/>
+    <stop offset="1" stop-color="#bfae92"/></linearGradient>
+  <linearGradient id="tubeg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7d8a99"/><stop offset=".4" stop-color="#cfd8e2"/>
+    <stop offset="1" stop-color="#6d7886"/></linearGradient>
+  <linearGradient id="botg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e9a24a"/><stop offset="1" stop-color="#b06f26"/></linearGradient>
+</defs>`;
+
+/* ================= ARDUINO UNO ================= */
+const UNO_W=440, UNO_H=300;
+const PWR=["IOREF","RESET","3V3","5V","GND","GND","VIN"];
+const ANA=["A0","A1","A2","A3","A4","A5"];
+const PITCH=21, PWR_X0=108, ANA_X0=300, HDR_Y=268;
+const DIG=["0","1","2","3","4","5","6","7","8","9","10","11","12","13"];
+const DIG_P=17, DIG_X0=104, DIG_X1=248;
+function digX(n){ return n<8 ? DIG_X0+n*DIG_P : DIG_X1+(n-8)*DIG_P; }
+function unoPinX(k,n){ return k==="p" ? PWR_X0+PWR.indexOf(n)*PITCH : ANA_X0+ANA.indexOf(n)*PITCH; }
+
+function drawUno(ox,oy,hot=[]){
+  let s=`<g transform="translate(${ox},${oy})">`;
+  s+=`<path d="M 10 0 H ${UNO_W-24} L ${UNO_W} 24 V ${UNO_H-10} Q ${UNO_W} ${UNO_H} ${UNO_W-10} ${UNO_H}
+       H 10 Q 0 ${UNO_H} 0 ${UNO_H-10} V 10 Q 0 0 10 0 Z" fill="url(#pcb)" stroke="#083f43" stroke-width="1.5"/>`;
+  [[26,28],[UNO_W-36,28],[26,UNO_H-32],[UNO_W-64,UNO_H-32]].forEach(([x,y])=>{
+    s+=`<circle cx="${x}" cy="${y}" r="5.5" fill="#062f33"/><circle cx="${x}" cy="${y}" r="3.4" fill="#0a1620"/>`;});
+  // USB-B
+  s+=`<rect x="-16" y="36" width="70" height="54" rx="3" fill="url(#metal)" stroke="#6b7480"/>`;
+  s+=`<rect x="-12" y="44" width="44" height="38" rx="2" fill="#3a4149"/>`;
+  s+=`<rect x="-8" y="52" width="32" height="22" rx="1" fill="#1a1f26"/>`;
+  s+=`<text x="-14" y="108" font-family="var(--mono)" font-size="9" fill="#a8d4d6">USB → laptop</text>`;
+  // barrel jack
+  s+=`<rect x="-12" y="194" width="62" height="46" rx="5" fill="#15191f" stroke="#0b0e12"/>`;
+  s+=`<circle cx="-2" cy="217" r="12" fill="#0a0d11"/><circle cx="-2" cy="217" r="4" fill="#3d444d"/>`;
+  // chip
+  s+=`<rect x="196" y="150" width="150" height="46" rx="3" fill="#16191d" stroke="#0a0c0f"/>`;
+  s+=`<circle cx="208" cy="173" r="5" fill="#0a0c0f"/>`;
+  for(let i=0;i<14;i++){
+    s+=`<rect x="${200+i*10.4}" y="145" width="5" height="6" fill="#9aa3ad"/>`;
+    s+=`<rect x="${200+i*10.4}" y="195" width="5" height="6" fill="#9aa3ad"/>`;}
+  s+=`<text x="218" y="177" font-family="var(--mono)" font-size="10" fill="#7d8890">ATMEGA328P</text>`;
+  s+=`<rect x="158" y="164" width="26" height="16" rx="7" fill="#b6bcc4" stroke="#7d858e"/>`;
+  // reset
+  s+=`<rect x="60" y="14" width="30" height="30" rx="3" fill="#20262e"/>`;
+  s+=`<circle cx="75" cy="29" r="9" fill="#c8412f"/>`;
+  s+=`<text x="50" y="58" font-family="var(--mono)" font-size="8" fill="#cfe9ea">RESET</text>`;
+  s+=`<rect x="120" y="202" width="34" height="26" rx="2" fill="#1b1f25"/>`;
+  s+=`<circle cx="180" cy="222" r="15" fill="#1c232c" stroke="#0e1319"/><circle cx="180" cy="222" r="9" fill="#2a3340"/>`;
+  s+=`<circle cx="216" cy="222" r="15" fill="#1c232c" stroke="#0e1319"/><circle cx="216" cy="222" r="9" fill="#2a3340"/>`;
+  [["ON",370,58,"#5ecf94"],["L",370,86,"#f2c14e"],["TX",396,58,"#f2c14e"],["RX",396,86,"#f2c14e"]]
+   .forEach(([n,x,y,c])=>{
+    s+=`<rect x="${x}" y="${y}" width="13" height="9" rx="1.5" fill="${c}" opacity=".85"/>`;
+    s+=`<text x="${x-2}" y="${y-3}" font-family="var(--mono)" font-size="7" fill="#cfe9ea">${n}</text>`;});
+  s+=`<text x="60" y="122" font-family="var(--serif)" font-size="27" fill="#e6f6f7" opacity=".92">ARDUINO</text>`;
+  s+=`<text x="62" y="140" font-family="var(--mono)" font-size="10" fill="#bfe4e6" opacity=".8" letter-spacing="3">UNO  R3</text>`;
+  // top digital header — real pin numbers, since we use D2 and D3
+  s+=`<rect x="${DIG_X0-8}" y="2" width="${DIG_P*8+2}" height="20" rx="2" fill="#12161b"/>`;
+  s+=`<rect x="${DIG_X1-8}" y="2" width="${DIG_P*6+2}" height="20" rx="2" fill="#12161b"/>`;
+  DIG.forEach((l,n)=>{
+    const x=digX(n), hot2=hot.includes("d:"+l);
+    if(hot2) s+=`<circle class="pulse" cx="${x}" cy="12" r="9" fill="#ffb454" opacity=".5"/>`;
+    s+=`<rect x="${x-4}" y="8" width="8" height="8" rx="1" fill="#c9a227"/>`;
+    s+=`<rect x="${x-2.5}" y="9.5" width="5" height="5" rx="1" fill="#12161b"/>`;
+    s+=`<text x="${x}" y="34" text-anchor="middle" font-family="var(--mono)" font-size="7.5"
+        fill="${hot2?'#ffb454':'#8fbfc2'}" font-weight="${hot2?'600':'400'}">${l}</text>`;});
+  s+=`<text x="${DIG_X0-8}" y="-6" font-family="var(--mono)" font-size="9" fill="#8fbfc2">DIGITAL</text>`;
+  // bottom headers
+  s+=`<rect x="${PWR_X0-11}" y="${HDR_Y-11}" width="${PITCH*7+2}" height="22" rx="2" fill="#12161b"/>`;
+  s+=`<rect x="${ANA_X0-11}" y="${HDR_Y-11}" width="${PITCH*6+2}" height="22" rx="2" fill="#12161b"/>`;
+  s+=`<text x="${PWR_X0-11}" y="${HDR_Y+36}" font-family="var(--mono)" font-size="9" fill="#8fbfc2">POWER</text>`;
+  s+=`<text x="${ANA_X0-11}" y="${HDR_Y+36}" font-family="var(--mono)" font-size="9" fill="#8fbfc2">ANALOG IN</text>`;
+  const pin=(x,l,key)=>{
+    const h=hot.includes(key); let o="";
+    if(h) o+=`<circle class="pulse" cx="${x}" cy="${HDR_Y}" r="10" fill="#ffb454" opacity=".5"/>`;
+    o+=`<rect x="${x-5}" y="${HDR_Y-5}" width="10" height="10" rx="1.5" fill="#c9a227"/>`;
+    o+=`<rect x="${x-3}" y="${HDR_Y-3}" width="6" height="6" rx="1" fill="#12161b"/>`;
+    o+=`<text x="${x}" y="${HDR_Y+23}" text-anchor="middle" font-family="var(--mono)" font-size="8.5"
+        fill="${h?'#ffb454':'#a8d4d6'}" font-weight="${h?'600':'400'}">${l}</text>`;
+    return o;};
+  PWR.forEach(l=>{s+=pin(unoPinX("p",l),l,"p:"+l);});
+  ANA.forEach(l=>{s+=pin(unoPinX("a",l),l,"a:"+l);});
+  s+=`</g>`; return s;
+}
+
+/* ================= BREADBOARD ================= */
+const BB={w:400,h:250}, BB_COLS=28, BB_P=13, BB_X0=22;
+const ROWS_T=[86,99,112,125,138], ROWS_B=[168,181,194,207,220];
+const bbX=c=>BB_X0+c*BB_P;
+function drawBreadboard(ox,oy,hl=[]){
+  let s=`<g transform="translate(${ox},${oy})">`;
+  s+=`<rect x="0" y="0" width="${BB.w}" height="${BB.h}" rx="7" fill="url(#bbg)" stroke="#bab5a9" stroke-width="1.5"/>`;
+  s+=`<line x1="14" y1="26" x2="${BB.w-14}" y2="26" stroke="#d94b3d" stroke-width="1.6"/>`;
+  s+=`<line x1="14" y1="60" x2="${BB.w-14}" y2="60" stroke="#3d7fd0" stroke-width="1.6"/>`;
+  s+=`<line x1="14" y1="${BB.h-58}" x2="${BB.w-14}" y2="${BB.h-58}" stroke="#d94b3d" stroke-width="1.6"/>`;
+  s+=`<line x1="14" y1="${BB.h-24}" x2="${BB.w-14}" y2="${BB.h-24}" stroke="#3d7fd0" stroke-width="1.6"/>`;
+  s+=`<text x="5" y="31" font-family="var(--mono)" font-size="12" fill="#d94b3d">+</text>`;
+  s+=`<text x="5" y="65" font-family="var(--mono)" font-size="12" fill="#3d7fd0">−</text>`;
+  const hole=(x,y)=>`<rect x="${x-3}" y="${y-3}" width="6" height="6" rx="1" fill="#a9a396"/>`+
+                    `<rect x="${x-2}" y="${y-2}" width="4" height="4" rx=".5" fill="#6f6a5f"/>`;
+  for(let c=0;c<BB_COLS;c++){
+    if(c%6!==5){ s+=hole(bbX(c),36)+hole(bbX(c),50)+hole(bbX(c),BB.h-48)+hole(bbX(c),BB.h-34); }
+    ROWS_T.forEach(y=>{s+=hole(bbX(c),y);});
+    ROWS_B.forEach(y=>{s+=hole(bbX(c),y);});
+  }
+  s+=`<rect x="8" y="145" width="${BB.w-16}" height="16" rx="2" fill="#cfcabf" stroke="#b8b3a7"/>`;
+  ["A","B","C","D","E"].forEach((L,i)=>{
+    s+=`<text x="7" y="${ROWS_T[i]+3}" font-family="var(--mono)" font-size="7" fill="#8e887b">${L}</text>`;});
+  hl.forEach(h=>{
+    s+=`<rect x="${bbX(h.c)-6}" y="${h.block==='bot'?162:80}" width="12" height="64" rx="4"
+         fill="${h.fill||'rgba(255,180,84,.32)'}" stroke="${h.stroke||'#ffb454'}" stroke-width="1"/>`;});
+  s+=`</g>`; return s;
+}
+
+/* ================= HX710B PRESSURE MODULE ================= */
+const HX=["VCC","GND","OUT","SCK"];
+function drawHx(ox,oy,hot=[]){
+  const w = HX.length*BB_P+14;
+  let s=`<g transform="translate(${ox},${oy})">`;
+  // the hose nozzle, pointing up — this is where the tube pushes on
+  s+=`<rect x="${w/2-4}" y="-16" width="8" height="22" rx="2" fill="#b9c2cd" stroke="#6b7480"/>`;
+  s+=`<rect x="${w/2-6}" y="-18" width="12" height="5" rx="2" fill="#9aa5b2" stroke="#6b7480"/>`;
+  // green PCB
+  s+=`<rect x="0" y="0" width="${w}" height="44" rx="2.5" fill="url(#hxg)" stroke="#0a3628"/>`;
+  // metal sensor can
+  s+=`<circle cx="${w/2}" cy="17" r="12" fill="url(#metal)" stroke="#6b7480"/>`;
+  s+=`<circle cx="${w/2}" cy="17" r="7" fill="#8d97a6"/>`;
+  s+=`<rect x="5" y="8" width="7" height="5" fill="#c8b48a"/>`;
+  s+=`<rect x="${w-12}" y="8" width="7" height="5" fill="#1a1f26"/>`;
+  s+=`<text x="${w+7}" y="14" font-family="var(--mono)" font-size="8" fill="#9fe0c2">HX710B</text>`;
+  s+=`<text x="${w+7}" y="26" font-family="var(--mono)" font-size="7" fill="#5f8f7c">0–40 kPa</text>`;
+  // pin strip
+  s+=`<rect x="2" y="32" width="${HX.length*BB_P+6}" height="12" rx="1.5" fill="#12161b"/>`;
+  HX.forEach((pn,i)=>{
+    const x=9+i*BB_P, hot2=hot.includes(pn);
+    if(hot2) s+=`<circle class="pulse" cx="${x}" cy="38" r="9" fill="#ffb454" opacity=".5"/>`;
+    s+=`<rect x="${x-3.5}" y="34.5" width="7" height="7" rx="1" fill="#c9a227"/>`;
+    s+=`<text x="${x}" y="58" text-anchor="middle" font-family="var(--mono)" font-size="7.5"
+        fill="${hot2?'#ffb454':'#9fb6cf'}">${pn}</text>`;});
+  s+=`</g>`; return s;
+}
+
+/* ================= JUMPER ================= */
+function jumper(x1,y1,x2,y2,color,delay=0,sag=120){
+  const d=`M ${x1} ${y1} C ${x1} ${y1+sag}, ${x2} ${y2+sag}, ${x2} ${y2}`;
+  return `<path class="wire-anim" d="${d}" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="7.5"
+            stroke-linecap="round" style="animation-delay:${delay}s"/>
+          <path class="wire-anim" d="${d}" fill="none" stroke="${color}" stroke-width="4.5"
+            stroke-linecap="round" style="animation-delay:${delay}s"/>
+          <path class="wire-anim" d="${d}" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1.2"
+            stroke-linecap="round" style="animation-delay:${delay}s"/>
+          <rect x="${x1-4}" y="${y1-4}" width="8" height="17" rx="2" fill="#1b2029"/>
+          <rect x="${x2-4}" y="${y2-13}" width="8" height="17" rx="2" fill="#1b2029"/>`;
+}
+
+/* ================= WIRING SCENE ================= */
+const UOX=30, UOY=92, BOX=540, BOY=300, COL0=6;
+const jumpXY=n=>({x:BOX+bbX(COL0+HX.indexOf(n)), y:BOY+ROWS_T[0]});
+function unoXY(k,n){
+  if(k==="d") return {x:UOX+digX(+n), y:UOY+2, up:true};
+  return {x:UOX+unoPinX(k,n), y:UOY+HDR_Y, up:false};
+}
+function jumperOver(x1,y1,x2,y2,color,delay){
+  const d=`M ${x1} ${y1} C ${x1} ${y1-72}, ${x2} ${y2-190}, ${x2} ${y2}`;
+  return `<path class="wire-anim" d="${d}" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="7.5"
+            stroke-linecap="round" style="animation-delay:${delay}s"/>
+          <path class="wire-anim" d="${d}" fill="none" stroke="${color}" stroke-width="4.5"
+            stroke-linecap="round" style="animation-delay:${delay}s"/>
+          <path class="wire-anim" d="${d}" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1.2"
+            stroke-linecap="round" style="animation-delay:${delay}s"/>
+          <rect x="${x1-4}" y="${y1-12}" width="8" height="17" rx="2" fill="#1b2029"/>
+          <rect x="${x2-4}" y="${y2-13}" width="8" height="17" rx="2" fill="#1b2029"/>`;
+}
+function scene(wires,hotU=[],hotB=[],hl=[]){
+  let s=`<svg viewBox="0 0 1000 650" xmlns="http://www.w3.org/2000/svg">${DEFS}`;
+  s+=drawUno(UOX,UOY,hotU);
+  s+=drawBreadboard(BOX,BOY,hl);
+  s+=drawHx(BOX+bbX(COL0)-9, BOY+ROWS_T[4]-38, hotB);
+  wires.forEach((w,i)=>{
+    const a=unoXY(w.k,w.from), b=jumpXY(w.to);
+    s+= a.up ? jumperOver(a.x,a.y-4,b.x,b.y-6,w.c,i*0.2)
+             : jumper(a.x,a.y+6,b.x,b.y-6,w.c,i*0.2);});
+  s+=`</svg>`; return s;
+}
+const W5V ={k:"p",from:"5V", to:"VCC",c:"var(--red)"};
+const WGND={k:"p",from:"GND",to:"GND",c:"var(--black)"};
+const WOUT={k:"d",from:"2",  to:"OUT",c:"var(--blue)"};
+const WSCK={k:"d",from:"3",  to:"SCK",c:"var(--yellow)"};
+
+/* ================= CODE ↔ HARDWARE ================= */
+function codeChain(){
+  const L=[
+   {t:"Your breath",    d:"Air pushes into a small sealed bottle.",                    c:"#8fb8d8", k:"— just air, no code yet —"},
+   {t:"HX710B sensor",  d:"It feels the squeeze and holds a number ready.",           c:"#54c8ea", k:"(inside the metal cylinder)"},
+   {t:"Two data wires", d:"The Uno clocks that number out of the sensor, bit by bit.", c:"#3d8fe0", k:"readRaw()"},
+   {t:"Your sketch",    d:"The Uno subtracts the resting value, squashes it to 0–1.",  c:"#ffb454", k:"norm = (raw − baseline) / FULL_SCALE"},
+   {t:"USB cable",      d:"The Uno types the number out as plain text.",               c:"#f2c14e", k:'Serial.println("0.734,523.3")'},
+   {t:"Chrome",         d:"The webpage reads that text, one line at a time.",          c:"#5ecf94", k:'port.readable → "0.734,523.3"'},
+   {t:"The game",       d:"The number becomes how high the firefly flies.",            c:"#ffb454", k:"firefly.y = breath × height"}];
+  let s=`<svg viewBox="0 0 940 ${L.length*84+30}" xmlns="http://www.w3.org/2000/svg">`;
+  L.forEach((x,i)=>{
+    const y=16+i*84;
+    s+=`<rect x="20" y="${y}" width="300" height="62" rx="3" fill="rgba(255,255,255,.03)" stroke="${x.c}" stroke-opacity=".45"/>`;
+    s+=`<circle cx="46" cy="${y+31}" r="12" fill="${x.c}" opacity=".22"/>`;
+    s+=`<text x="46" y="${y+35}" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="${x.c}">${i+1}</text>`;
+    s+=`<text x="68" y="${y+26}" font-family="var(--sans)" font-size="14" fill="#e9eff8" font-weight="600">${x.t}</text>`;
+    s+=`<text x="68" y="${y+46}" font-family="var(--sans)" font-size="11.5" fill="#93a6c2">${x.d}</text>`;
+    s+=`<path d="M 320 ${y+31} H 372" stroke="#3d4f6b" stroke-width="1.5"/>`;
+    s+=`<path class="flow" d="M 320 ${y+31} H 372" stroke="${x.c}" stroke-width="1.5" stroke-dasharray="5 6"/>`;
+    s+=`<rect x="372" y="${y+12}" width="540" height="38" rx="3" fill="rgba(3,8,17,.7)" stroke="#22334f"/>`;
+    s+=`<text x="386" y="${y+36}" font-family="var(--mono)" font-size="12" fill="${x.c}">${x.k.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</text>`;
+    if(i<L.length-1){
+      s+=`<path d="M 170 ${y+62} V ${y+84}" stroke="#3d4f6b" stroke-width="1.5"/>`;
+      s+=`<path d="M 165 ${y+78} L 170 ${y+84} L 175 ${y+78}" fill="none" stroke="#3d4f6b" stroke-width="1.5"/>`;}
+  });
+  s+=`</svg>`; return s;
+}
+
+/* ================= AIR PATH (room layout) ================= */
+function airPath(){
+  const TABLE=372;
+  let s=`<svg viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">${DEFS}`;
+
+  s+=`<line x1="40" y1="70" x2="920" y2="70" stroke="#3d4f6b" stroke-dasharray="5 6"/>`;
+  s+=`<text x="40" y="60" font-family="var(--mono)" font-size="10" fill="#61738f">MOUTH HEIGHT — the child stands or sits here</text>`;
+
+  // flute
+  s+=`<ellipse cx="330" cy="84" rx="22" ry="13" fill="#b5675f"/><ellipse cx="330" cy="84" rx="9" ry="5" fill="#5c2c2a"/>`;
+  s+=`<rect x="368" y="68" width="88" height="32" rx="9" fill="#41505f" stroke="#26303a"/>`;
+  s+=`<path d="M 392 100 v 28 h 16 v -28 z" fill="#59636f"/>`;
+  s+=`<text x="332" y="52" font-family="var(--mono)" font-size="9.5" fill="#5ecf94">silicone sleeve over the mouthpiece</text>`;
+  s+=`<rect x="454" y="66" width="52" height="36" rx="7" fill="url(#rec)" stroke="#a3937a"/>`;
+  s+=`<path d="M 492 66 l 16 -11 v 11 z" fill="#a3937a"/>`;
+  s+=`<rect x="506" y="70" width="200" height="30" rx="5" fill="url(#rec)" stroke="#a3937a"/>`;
+  s+=`<rect x="706" y="73" width="36" height="24" rx="7" fill="url(#rec)" stroke="#a3937a"/>`;
+  s+=`<path d="M 516 76 h 18 l -9 10 z" fill="#6f6252"/>`;
+  [548,578,608,638,668].forEach(x=>{ s+=`<circle cx="${x}" cy="85" r="6.5" fill="#3a2b1b"/>`; });
+  s+=`<circle cx="694" cy="85" r="6.5" fill="#3a2b1b"/>`;
+  s+=`<text x="516" y="118" font-family="var(--mono)" font-size="9.5" fill="#93a6c2">the flute stays up here, in the child's hands</text>`;
+
+  // the long tube, straight down onto the sensor nozzle
+  s+=`<path d="M 400 128 C 400 220, 330 250, 300 ${TABLE-96}" stroke="#59636f" stroke-width="13" fill="none" stroke-linecap="round"/>`;
+  s+=`<path d="M 400 128 C 400 220, 330 250, 300 ${TABLE-96}" stroke="#cfd8e2" stroke-width="7" fill="none" stroke-linecap="round" opacity=".5"/>`;
+  s+=`<text x="452" y="188" font-family="var(--mono)" font-size="11" fill="#ffb454">THIS is the long part —</text>`;
+  s+=`<text x="452" y="204" font-family="var(--mono)" font-size="11" fill="#ffb454">aquarium tube, 60–90 cm</text>`;
+  s+=`<text x="452" y="226" font-family="var(--sans)" font-size="11.5" fill="#93a6c2">Air pressure travels down a tube perfectly well.</text>`;
+  s+=`<text x="452" y="242" font-family="var(--sans)" font-size="11.5" fill="#93a6c2">Buy a metre; it costs about ₹50.</text>`;
+
+  // table
+  s+=`<rect x="30" y="${TABLE}" width="900" height="12" rx="3" fill="#3a2f26"/>`;
+  s+=`<rect x="30" y="${TABLE+12}" width="900" height="6" fill="#241d17"/>`;
+  s+=`<text x="30" y="${TABLE+34}" font-family="var(--mono)" font-size="10" fill="#61738f">THE TABLE — everything electrical lives down here and never moves</text>`;
+
+  // breadboard with the sensor in it, tube pushed onto the nozzle
+  s+=`<g transform="translate(210,${TABLE-58}) scale(.34)">${drawBreadboard(0,0,[])}</g>`;
+  s+=`<g transform="translate(266,${TABLE-86}) scale(.62)">${drawHx(0,0,[])}</g>`;
+  s+=`<text x="196" y="${TABLE-108}" font-family="var(--mono)" font-size="10" fill="#5ecf94">tube pushes straight onto the nozzle</text>`;
+  s+=`<text x="196" y="${TABLE+52}" font-family="var(--mono)" font-size="10" fill="#93a6c2">breadboard + sensor</text>`;
+
+  // arduino
+  s+=`<g transform="translate(430,${TABLE-64}) scale(.2)">${drawUno(0,0,[])}</g>`;
+  s+=`<text x="430" y="${TABLE+52}" font-family="var(--mono)" font-size="10" fill="#93a6c2">Arduino</text>`;
+  [['#f0554a',0],['#2b3340',6],['#3d8fe0',12],['#f2c14e',18]].forEach(([c,o])=>{
+    s+=`<path d="M ${350+o*0.5} ${TABLE-30} C ${372+o} ${TABLE-2}, ${406+o} ${TABLE-2}, ${436+o*0.4} ${TABLE-34}"
+         stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/>`;});
+  s+=`<text x="340" y="${TABLE+34}" font-family="var(--mono)" font-size="10" fill="#5ecf94">4 short wires</text>`;
+
+  // laptop
+  s+=`<path d="M 730 ${TABLE-4} h 150 l 14 4 h -178 z" fill="#8d97a6"/>`;
+  s+=`<path d="M 744 ${TABLE-4} v -66 h 122 v 66 z" fill="#20262e" stroke="#4a5563"/>`;
+  s+=`<rect x="752" y="${TABLE-64}" width="106" height="52" fill="#0d1728"/>`;
+  s+=`<circle cx="800" cy="${TABLE-38}" r="7" fill="#ffb454" opacity=".9"/>`;
+  s+=`<text x="742" y="${TABLE-78}" font-family="var(--mono)" font-size="9.5" fill="#93a6c2">laptop — the game runs here</text>`;
+  s+=`<path d="M 560 ${TABLE-26} C 620 ${TABLE-2}, 690 ${TABLE-2}, 736 ${TABLE-12}" stroke="#5b6470" stroke-width="4" fill="none"/>`;
+  s+=`<text x="600" y="${TABLE+18}" font-family="var(--mono)" font-size="9" fill="#61738f">USB</text>`;
+
+  s+=`<rect x="30" y="424" width="900" height="58" rx="4" fill="rgba(255,180,84,.07)" stroke="#7a5526"/>`;
+  s+=`<text x="48" y="448" font-family="var(--sans)" font-size="14" font-weight="600" fill="#ffb454">No bottle. No glue. No bleed hole. The tube just pushes onto the sensor.</text>`;
+  s+=`<text x="48" y="468" font-family="var(--sans)" font-size="12.5" fill="#dcc9ad">Only the tube goes up to the flute. The sensor stays in the breadboard forever, and the short wires you already have are long enough.</text>`;
+  s+=`</svg>`; return s;
+}
+
+/* ================= THE JOINT: sleeve over the beak ================= */
+function drawJoint(){
+  let s=`<svg viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg">${DEFS}`;
+  s+=`<text x="30" y="30" font-family="var(--mono)" font-size="11" fill="#ffb454" letter-spacing="1.4">CUT IN HALF SO YOU CAN SEE INSIDE</text>`;
+
+  // ---- recorder head joint, beak pointing left ----
+  s+=`<path d="M 330 148 L 470 118 L 700 118 L 700 232 L 470 232 L 330 202 Z" fill="url(#rec)" stroke="#a3937a" stroke-width="1.5"/>`;
+  // windway channel
+  s+=`<path d="M 344 166 L 470 152 L 560 152 L 560 166 L 470 178 L 344 184 Z" fill="#3c332a"/>`;
+  s+=`<text x="470" y="146" font-family="var(--mono)" font-size="9" fill="#6f6252">windway</text>`;
+  // block
+  s+=`<path d="M 470 178 L 560 166 L 560 226 L 470 226 Z" fill="#9a8d78"/>`;
+  // window / labium
+  s+=`<path d="M 560 118 L 600 118 L 578 152 Z" fill="#6f6252"/>`;
+  s+=`<text x="596" y="112" font-family="var(--mono)" font-size="9" fill="#93a6c2">sound comes out here</text>`;
+  s+=`<text x="640" y="200" font-family="var(--mono)" font-size="10" fill="#93a6c2">recorder head joint</text>`;
+
+  // ---- silicone sleeve stretched over the beak, overhanging the tip ----
+  s+=`<path d="M 250 132 L 476 106 L 476 122 L 262 148 Z" fill="#41505f" stroke="#26303a"/>`;
+  s+=`<path d="M 250 218 L 476 244 L 476 228 L 262 202 Z" fill="#41505f" stroke="#26303a"/>`;
+  s+=`<text x="240" y="96" font-family="var(--mono)" font-size="10.5" fill="#5ecf94">silicone sleeve — stretched on, comes off to wash</text>`;
+
+  // overhang chamber (the bit in front of the beak tip)
+  s+=`<rect x="258" y="150" width="72" height="50" fill="rgba(84,200,234,.14)"/>`;
+  s+=`<text x="196" y="262" font-family="var(--mono)" font-size="10" fill="#54c8ea">this little gap in front of the</text>`;
+  s+=`<text x="196" y="276" font-family="var(--mono)" font-size="10" fill="#54c8ea">tip is what gets measured</text>`;
+  s+=`<path d="M 286 252 L 292 206" stroke="#54c8ea" stroke-width="1"/>`;
+
+  // lips gripping the sleeve
+  s+=`<ellipse cx="278" cy="122" rx="30" ry="15" fill="#b5675f"/>`;
+  s+=`<ellipse cx="278" cy="228" rx="30" ry="15" fill="#b5675f"/>`;
+  s+=`<text x="196" y="112" font-family="var(--mono)" font-size="10" fill="#c98a8a">lips seal here,</text>`;
+  s+=`<text x="196" y="126" font-family="var(--mono)" font-size="10" fill="#c98a8a">on the rubber</text>`;
+
+  // air arrows
+  s+=`<path d="M 196 175 H 330" stroke="#ffb454" stroke-width="2" stroke-dasharray="7 5"/>`;
+  s+=`<path d="M 322 170 L 332 175 L 322 180" fill="none" stroke="#ffb454" stroke-width="2"/>`;
+  s+=`<text x="150" y="180" font-family="var(--mono)" font-size="10" fill="#ffb454">breath</text>`;
+
+  // the tap tube through the sleeve wall
+  s+=`<path d="M 294 200 V 330" stroke="#59636f" stroke-width="14" fill="none" stroke-linecap="round"/>`;
+  s+=`<path d="M 294 200 V 330" stroke="#cfd8e2" stroke-width="7" fill="none" stroke-linecap="round" opacity=".5"/>`;
+  s+=`<circle cx="294" cy="212" r="11" fill="#e9a24a" opacity=".55"/>`;
+  s+=`<text x="316" y="300" font-family="var(--mono)" font-size="10.5" fill="#ffb454">4 mm tube pushed through a punched hole,</text>`;
+  s+=`<text x="316" y="316" font-family="var(--mono)" font-size="10.5" fill="#ffb454">sealed outside with a blob of glue</text>`;
+  s+=`<text x="316" y="340" font-family="var(--sans)" font-size="12" fill="#93a6c2">…and it runs down to the sensor on the table.</text>`;
+
+  // ---- the three assembly steps ----
+  const bx=640;
+  s+=`<text x="${bx}" y="262" font-family="var(--mono)" font-size="10.5" fill="#8fa3c2" letter-spacing="1.2">HOW TO MAKE IT</text>`;
+  const stepTxt=[
+    "1 · Cut 5 cm of silicone tube, 16–19 mm inside",
+    "2 · Push it onto the beak, leaving 1 cm sticking out past the tip",
+    "3 · Punch a 4 mm hole in that sticking-out cm, push the thin tube in, glue outside"
+  ];
+  stepTxt.forEach((t,i)=>{
+    s+=`<text x="${bx}" y="${288+i*30}" font-family="var(--sans)" font-size="12" fill="#93a6c2">${t}</text>`;
+  });
+
+  // small "no T-piece" note
+  s+=`<rect x="30" y="360" width="900" height="46" rx="4" fill="rgba(240,85,74,.07)" stroke="#7a3530"/>`;
+  s+=`<text x="48" y="380" font-family="var(--sans)" font-size="13" font-weight="600" fill="#f0554a">No aquarium T-piece. It cannot fit a flute mouthpiece.</text>`;
+  s+=`<text x="48" y="398" font-family="var(--sans)" font-size="12" fill="#e9b9b3">Those T's join 4 mm tubes to each other. The beak is a flat oval about 18 mm across. The stretchy sleeve is what does the job.</text>`;
+  s+=`</svg>`; return s;
+}
+
+/* ================= PART CARDS ================= */
+function art(kind){
+  if(kind==="uno")   return `<svg viewBox="-22 -14 492 348">${DEFS}${drawUno(0,0,[])}</svg>`;
+  if(kind==="bb")    return `<svg viewBox="-8 -8 418 268">${DEFS}${drawBreadboard(0,0,[])}</svg>`;
+  if(kind==="hx")    return `<svg viewBox="-14 -30 130 104">${DEFS}${drawHx(0,0,[])}</svg>`;
+  if(kind==="wires") return `<svg viewBox="10 10 280 100">${DEFS}
+     ${jumper(30,20,120,96,"var(--red)",0,40)}${jumper(80,20,180,96,"var(--black)",0,40)}
+     ${jumper(140,20,240,96,"var(--blue)",0,40)}${jumper(200,20,275,96,"var(--yellow)",0,40)}</svg>`;
+  if(kind==="flute") return `<svg viewBox="256 72 390 88">${DEFS}
+     <rect x="266" y="94" width="70" height="52" rx="8" fill="url(#rec)" stroke="#a3937a"/>
+     <path d="M 318 94 l 20 -14 v 14 z" fill="#a3937a"/>
+     <rect x="336" y="98" width="250" height="44" rx="6" fill="url(#rec)" stroke="#a3937a"/>
+     <rect x="586" y="102" width="46" height="36" rx="8" fill="url(#rec)" stroke="#a3937a"/>
+     <path d="M 348 106 h 24 l -12 14 z" fill="#6f6252"/>
+     ${[400,442,484,526,556].map(x=>`<circle cx="${x}" cy="120" r="9" fill="#3a2b1b"/>`).join('')}</svg>`;
+  if(kind==="tube")  return `<svg viewBox="0 0 300 136">${DEFS}
+     <path d="M 20 44 C 90 -6, 200 104, 282 54" stroke="#59636f" stroke-width="16" fill="none" stroke-linecap="round"/>
+     <path d="M 20 44 C 90 -6, 200 104, 282 54" stroke="#cfd8e2" stroke-width="9" fill="none" stroke-linecap="round" opacity=".5"/>
+     <path d="M 100 92 h 60 v 26 h -60 z" fill="#4a5563" stroke="#2c343e"/>
+     <path d="M 120 118 v 16 h 20 v -16 z" fill="#4a5563" stroke="#2c343e"/></svg>`;
+  return "";
+}
+
+/* ================= STEPS ================= */
+const steps=[
+{group:"Understand", nav:"What are we making?", kicker:"Step 00", title:"Turning breath into a number", body:()=>`
+<p class="lede">Here is the whole idea in one line. <strong>The flute measures how hard a child blows and turns it into a number. The game uses that number to fly a firefly.</strong> Everything below is just how the number travels.</p>
+<div class="canvas">${codeChain()}</div>
+<p>Read the boxes from top to bottom. On the left is the real, physical thing. On the right is the bit of code that does it. Seven small hops — and the number never changes meaning along the way. It starts as "how hard you blew" and ends as "how high the firefly is".</p>
+<div class="note"><b>The one thing to remember.</b> The Arduino does not know what a game is. It only measures and reports. So when you want to change a level, add a score, or make something easier, you only change the webpage. After today you never touch the wires again.</div>
+<p>You do not need to know anything about electronics. No soldering. No maths. Four wires.</p>`},
+
+{group:"Understand", nav:"Meet the parts", kicker:"Step 01", title:"Seven things, and you already own four", body:()=>`
+<p class="lede">This is every single item. Nothing else is needed.</p>
+<div class="cards">
+ <div class="card"><div class="art">${art("uno")}</div><span class="tag have">have</span>
+  <h4>Arduino Uno R3</h4><p>A tiny computer with no screen. It reads the sensor and types numbers out through the USB cable.</p></div>
+ <div class="card"><div class="art">${art("bb")}</div><span class="tag have">have</span>
+  <h4>Breadboard</h4><p>A plastic block full of holes. Push wires in and they connect. No soldering, and you can pull them out again.</p></div>
+ <div class="card"><div class="art">${art("wires")}</div><span class="tag have">have</span>
+  <h4>Jumper wires</h4><p>Short wires with hard tips so they push into the holes. You need four.</p></div>
+ <div class="card"><div class="art">${art("hx")}</div><span class="tag buy">₹200</span>
+  <h4>HX710B pressure sensor</h4><p>A small green board with a metal cylinder and a little nozzle sticking out. The nozzle is the important bit — the air tube pushes straight onto it. This is the breath detector.</p></div>
+ <div class="card"><div class="art">${art("flute")}</div><span class="tag buy">₹200</span>
+  <h4>Plastic recorder</h4><p>The school flute. It makes a sound with almost no effort, which matters enormously for a child with asthma.</p></div>
+ <div class="card"><div class="art">${art("tube")}</div><span class="tag buy">₹80</span>
+  <h4>Silicone tube, two sizes</h4><p>A thin one (4 mm) to carry air to the sensor, and a fat stretchy one (16–19 mm) that slides over the flute's mouthpiece. Aquarium or hardware shop.</p></div>
+</div>
+<div class="note"><b>What to search for.</b> "HX710B pressure sensor module 0-40KPa". It's usually listed as a water-level or barometric module — same board. Any of them will do; they all run on 3.3–5V, so the Uno's 5V pin is fine. Make sure the photo shows the <b>little nozzle</b> on top.</div>
+<h3>Which flute exactly</h3>
+<p><strong>Yamaha YRS-23 soprano recorder</strong>, around ₹750 on Amazon India — <a href="https://www.amazon.in/Yamaha-YRS-23Y-Soprano-Recorder-Natural/dp/B0014ZG676" target="_blank" style="color:var(--cyan)">amazon.in/dp/B0014ZG676</a>. Buy this one and stop looking.</p>
+<p>Two reasons it's the right instrument rather than just a nice one. Yamaha says its 20-series has a rectangular airway with very little resistance, so <strong>even a light breath makes a clear note</strong> — which is the entire point when the player has asthma. And it's three-piece construction, so <strong>the mouthpiece pulls off and washes</strong>, which solves your hygiene requirement without designing anything.</p>
+<p>If you want a spare to experiment on, the <strong>Juárez Claró descant recorder</strong> is about ₹250 on the same site. Buy one cheap one to practise taping and one good one for the demo photos.</p>
+<h3>Can I start today with zero rupees?</h3>
+<p>Yes. Build the game first and use your <strong>laptop's microphone</strong> instead of the sensor — blow at the laptop and the game reacts. It isn't accurate enough for a real claim, but every level, every visual and every difficulty setting can be designed and tested this way. When the sensor arrives you swap it in and nothing in the game changes.</p>`},
+
+{group:"Understand", nav:"How a breadboard works", kicker:"Step 02", title:"The holes are already joined underneath", body:()=>`
+<p class="lede">This is the one thing beginners get wrong, and it makes everything else look broken. Five minutes here saves an hour later.</p>
+<div class="canvas"><svg viewBox="-24 -34 448 306">${DEFS}
+ ${drawBreadboard(0,0,[{c:5,block:'top'},{c:5,block:'bot',fill:'rgba(84,200,234,.3)',stroke:'#54c8ea'}])}
+ <text x="96" y="-16" font-family="var(--mono)" font-size="11" fill="#ffb454">these 5 orange holes are ONE connection</text>
+ <text x="96" y="266" font-family="var(--mono)" font-size="11" fill="#54c8ea">these 5 blue ones are a DIFFERENT connection</text>
+ <text x="196" y="158" font-family="var(--mono)" font-size="10" fill="#5d5850">this gap splits top from bottom</text>
+</svg></div>
+<p>Under the plastic there are little metal clips. <strong>Each group of five holes running up-and-down shares one clip.</strong> So if you put two wire tips into the same column of five, they are now touching each other — even though on the surface they look separate.</p>
+<p>The long lines along the top and bottom edges (red + and blue −) run the <strong>whole width</strong> of the board. Those are for power.</p>
+<div class="note"><b>So the rule is:</b> to connect two things, put them in the <b>same column</b>. Never the same hole — one hole fits one wire tip anyway.</div>
+<div class="note danger"><b>The classic mistake.</b> A wire pushed one row too high or too low. It looks perfectly fine and does absolutely nothing. If something doesn't work later, check this first.</div>`},
+
+{group:"Build the circuit", nav:"Push in the sensor", kicker:"Step 03", title:"Seat the green sensor board", body:()=>`
+<p class="lede">The sensor goes into the breadboard first. No wires yet. It stays here permanently — this is its only home.</p>
+<div class="canvas">${scene([],[],[],[0,1,2,3,4,5].map(i=>({c:COL0+i,block:'top',fill:'rgba(84,200,234,.16)',stroke:'#54c8ea'})))}</div>
+<ol class="steps">
+ <li><b>Unplug the USB cable first.</b> Always wire with the power off.</li>
+ <li>Hold the green sensor board so its <b>four metal pins point down</b> and the <b>nozzle points up</b>.</li>
+ <li>Push it into the <b>top half</b> of the breadboard, so each pin sits in its own column. Press gently and evenly until it's flat.</li>
+ <li>Check the tiny printed words beside the pins: <b>VCC, GND, OUT, SCK</b>. You use all four.</li>
+</ol>
+<p>Now each sensor pin has free holes above it in the same column. That's where the jumper wires go — because, as you just learned, anything in the same column is connected.</p>
+<div class="note"><b>Keep the nozzle clear.</b> Don't push the board so far in that anything presses on that little tube, and don't put it right at the edge of the breadboard where the air tube will tug it out later.</div>`},
+
+{group:"Build the circuit", nav:"Wire 1 — red (power)", kicker:"Step 04", title:"Give the sensor electricity", body:()=>`
+<p class="lede">One wire. It carries power from the Arduino to the sensor.</p>
+<div class="canvas">${scene([W5V],["p:5V"],["VCC"],[{c:COL0,block:'top'}])}</div>
+<ol class="steps">
+ <li>Find the pin marked <b>5V</b> along the bottom edge of the Arduino, in the group labelled POWER.</li>
+ <li>Push one end of a <b>red</b> jumper wire into it.</li>
+ <li>Push the other end into any free hole in the <b>same column as the sensor's VCC pin</b>.</li>
+</ol>
+<p>Red is a habit, not a rule — the electricity doesn't care what colour the plastic is. But everyone uses red for power, so use red and your photos will read correctly to anyone who knows hardware.</p>
+<div class="note danger"><b>The only wire that can cost you money.</b> If red lands on GND instead of VCC, the sensor can die. Look twice before plugging in USB. Every other mistake in this build is harmless.</div>`},
+
+{group:"Build the circuit", nav:"Wire 2 — black (ground)", kicker:"Step 05", title:"Complete the circle", body:()=>`
+<p class="lede">Electricity needs a loop — out through the red wire, back through the black one. Without this the sensor does nothing at all.</p>
+<div class="canvas">${scene([W5V,WGND],["p:GND"],["GND"],[{c:COL0+1,block:'top'}])}</div>
+<ol class="steps">
+ <li>Find a pin marked <b>GND</b> on the Arduino. There are two side by side — either works.</li>
+ <li>Push a <b>black</b> jumper wire into it.</li>
+ <li>Other end into the column holding the sensor's <b>GND</b> pin.</li>
+</ol>
+<p>GND is short for ground. Think of it as the return road. Two wires down, two to go.</p>`},
+
+{group:"Build the circuit", nav:"Wire 3 — blue (OUT)", kicker:"Step 06", title:"The wire that carries the numbers", body:()=>`
+<p class="lede">The first two wires were just food and water for the sensor. These next two are how it actually talks.</p>
+<div class="canvas">${scene([W5V,WGND,WOUT],["d:2"],["OUT"],[{c:COL0+2,block:'top'}])}</div>
+<ol class="steps">
+ <li>Find <b>2</b> along the <b>top</b> edge of the Arduino, in the row labelled DIGITAL.</li>
+ <li>Push a <b>blue</b> jumper wire into it.</li>
+ <li>Other end into the column holding the sensor's <b>OUT</b> pin.</li>
+</ol>
+<p>OUT is the sensor's answer line. The number comes back along this wire one bit at a time — twenty-four bits for every single reading.</p>
+<div class="note"><b>Why the top edge this time?</b> This sensor doesn't use the special A4/A5 circuitry, so any two ordinary pins work. Using 2 and 3 leaves <b>all six analog pins free</b>, which is why you can have six finger holes later instead of four. Free upgrade.</div>`},
+
+{group:"Build the circuit", nav:"Wire 4 — yellow (SCK)", kicker:"Step 07", title:"The wire that keeps time", body:()=>`
+<p class="lede">Last wire. Then the circuit is finished forever.</p>
+<div class="canvas">${scene([W5V,WGND,WOUT,WSCK],["d:3"],["SCK"],[{c:COL0+3,block:'top'}])}</div>
+<ol class="steps">
+ <li>Find <b>3</b>, right next to 2.</li>
+ <li>Push a <b>yellow</b> jumper wire into it.</li>
+ <li>Other end into the column holding the sensor's <b>SCK</b> pin.</li>
+</ol>
+<p>SCK is the clock. The Arduino pulses it twenty-four times, and the sensor puts out one bit of its number on each pulse. Data on one wire, timing on the other — that pair is the whole conversation.</p>
+<div class="note"><b>Blue and yellow are easy to swap.</b> They sit next to each other on both boards. If you get frozen or nonsense numbers later, swap these two before assuming anything is broken. It is by far the most common cause.</div>
+<p><strong>That's the entire circuit. Four wires. Nothing else will ever be added.</strong></p>`},
+
+{group:"Software", nav:"Put the code on the board", kicker:"Step 08", title:"Loading the sketch", body:()=>`
+<p class="lede">The Arduino is empty right now. A "sketch" is just a text file of instructions you copy onto it. It stays there even when you unplug it.</p>
+<ol class="steps">
+ <li>Download and open the <b>Arduino IDE</b> on your laptop. It's free.</li>
+ <li>Plug the Uno in with the USB cable. A small green light turns on.</li>
+ <li>Menu: <b>Tools → Board → Arduino Uno</b>.</li>
+ <li>Menu: <b>Tools → Port →</b> pick whichever option appeared after plugging in. On Windows it looks like <code>COM3</code>. On Mac, <code>/dev/cu.usbmodem…</code></li>
+ <li>Menu: <b>Sketch → Include Library → Manage Libraries.</b> Install just one: <code>ADCTouch</code>. (This sensor needs no library at all — the reading code is written out inside the sketch.)</li>
+ <li>Open <code>breath_flute_hx710b.ino</code> and press the <b>→ arrow (Upload)</b> at the top left.</li>
+ <li>Wait for <b>"Done uploading"</b>. Keep hands off the board for two seconds after — that's when it takes its "everything is quiet right now" reading.</li>
+</ol>
+<div class="note"><b>One number you must find yourself.</b> Open the sketch and set <code>DEBUG_RAW = true</code>, upload, open Serial Monitor and blow a comfortable breath. Note the biggest number you see after the <code>#</code>. Put roughly that number into <code>FULL_SCALE</code>, set <code>DEBUG_RAW</code> back to <code>false</code>, upload again. Every one of these sensors is slightly different, so nobody can give you this number in advance.</div>`},
+
+{group:"Software", nav:"Test it (no flute yet!)", kicker:"Step 09", title:"Make the number move before building anything", body:()=>`
+<p class="lede">Do not attach the flute yet. Prove the sensor talks first — checking four wires is easy, checking four wires plus a sleeve and a tube is not.</p>
+<ol class="steps">
+ <li>Menu: <b>Tools → Serial Monitor</b>. A panel opens at the bottom.</li>
+ <li>At its bottom right there's a dropdown. Set it to <b>115200</b>. Skip this and you'll see nonsense symbols.</li>
+ <li>You should see the word <code>READY</code>, then lines like <code>0.000,523.3</code> scrolling past.</li>
+ <li><b>Blow gently into the sensor's nozzle</b> — or just puff at it from a centimetre away. It is very sensitive.</li>
+</ol>
+<p>The first number should climb toward <code>1.000</code> and fall back when you stop. That is the whole system working. Everything after this is decoration.</p>
+<p>If it barely moves, lower <code>FULL_SCALE</code> — that makes it more sensitive. If it slams straight to 1.000, raise it. This is the number you measured in the last step, so adjust from there rather than guessing.</p>
+<div class="sim" style="margin-top:20px">
+ <div class="readout"><h4>What you should see</h4><div class="serial" id="serial"></div>
+  <div class="blow" id="blow">Hold here to pretend-blow · or hold SPACE</div></div>
+ <div class="readout"><h4>The number</h4><div class="big" id="val">0.000</div>
+  <div style="height:110px;position:relative;margin-top:14px;border:1px solid var(--rule-soft)">
+   <div id="fly" style="position:absolute;left:50%;bottom:4px;width:12px;height:12px;border-radius:50%;
+    background:var(--amber);box-shadow:0 0 14px 4px rgba(255,180,84,.45);transition:bottom .06s linear"></div></div>
+  <div style="font-family:var(--mono);font-size:9.5px;color:var(--dim);margin-top:8px">the firefly follows the number</div></div>
+</div>
+<p style="margin-top:16px">Notice it <strong>slides</strong> rather than snapping. Real air takes a moment to fill the bottle, and the sketch adds a little extra smoothing on purpose so the firefly doesn't jitter. That setting is called <code>ALPHA</code>.</p>`},
+
+{group:"Software", nav:"No sensor yet? Test anyway", kicker:"Step 10", title:"Run the whole game with only the Uno", body:()=>`
+<p class="lede">Yes — you can test the real chain today, with nothing but the Uno, the breadboard and one wire. You won't be blowing, but every other part is genuinely working.</p>
+<h3>Three levels of testing, from free to real</h3>
+<ol class="steps">
+ <li><b>No Arduino at all.</b> Open the game and use the keyboard or your laptop's microphone. Good for designing levels, tuning difficulty and recording demo video. Proves nothing about the hardware.</li>
+ <li><b>Uno only, no sensor.</b> Upload <code>breath_sim_uno.ino</code>. Push <b>one jumper wire into A0</b> and leave the other end loose on the table. Touching that loose end acts like blowing — light touch gives a small number, pinching more of the wire gives a bigger one. <b>This is the useful one</b>, because the USB link, the text stream, the browser connection and the firefly are all really running. Only the sensor is pretend.</li>
+ <li><b>Full rig.</b> Swap in <code>breath_flute_hx710b.ino</code> when the sensor arrives. Nothing else changes anywhere.</li>
+</ol>
+<p>The simulator prints exactly the same lines as the real sketch — <code>0.412,523.3</code> — so the game cannot tell the difference. That's the point of keeping the Arduino dumb: the number's <i>source</i> can change without anything downstream noticing.</p>
+<div class="note"><b>Do this before your parts arrive.</b> If the browser connection is going to give you trouble, it will give you trouble now, with one wire in the board and nothing to blame. Sorting that out while the circuit is this simple is much easier than sorting it out with a sealed bottle and a taped-up flute in the way.</div>
+<div class="note"><b>If the number never moves when you touch the wire:</b> the Arduino takes its "nobody is touching anything" reading in the first second after starting. Keep your hands away, press reset, wait, then touch. Taping a small strip of foil or copper tape to the loose end gives you a much bigger, steadier reading than a bare wire tip.</div>`},
+
+{group:"Build the flute", nav:"Joining the tube to the flute", kicker:"Step 11", title:"The bit I got wrong — how these two actually connect",
+ body:()=>`
+<p class="lede">You're right to be annoyed: an aquarium T-piece has 4 mm barbs meant for joining thin tubes to each other. A recorder's mouthpiece is a flat oval about 18 mm across. They will never fit together, and I shouldn't have drawn it that way.</p>
+<p>Here's what actually works, and it's simpler than the T ever was: <strong>a stretchy sleeve over the mouthpiece, with the thin tube poked through its wall.</strong></p>
+<div class="canvas">${drawJoint()}</div>
+<h3>Why this is the right answer, not just a patch</h3>
+<p>The sleeve overhangs the tip of the beak by about a centimetre. That overhang makes a tiny chamber right in front of the mouthpiece, and <strong>that chamber is exactly the pressure a breathing exercise cares about</strong> — mouth pressure. It's how real clinical breath trainers do it. Nothing gets drilled, the flute is unmodified, and the whole thing pulls off in a second.</p>
+<p>It also solves your hygiene problem for free. The child's lips touch the sleeve, never the plastic. One sleeve per child, cut from the same length of tube, costs a few rupees each and goes in soapy water.</p>
+<h3>Making it</h3>
+<ol class="steps">
+ <li>Buy <b>silicone tube with a 16–19 mm inside diameter</b> — aquarium or hardware shop, around ₹60 for a foot. Ask for food-grade if they have it. It should feel soft and stretchy, not stiff.</li>
+ <li>Cut a piece about <b>5 cm long</b>.</li>
+ <li>Push it onto the recorder's beak, wiggling it on, so that roughly <b>1 cm hangs past the tip</b>. It should grip on its own — if it slides off easily the tube is too wide, go a size down.</li>
+ <li>In that overhanging centimetre, make a <b>4 mm hole</b> in the side wall. A heated nail or a leather punch is easier and neater than a knife.</li>
+ <li>Push the thin 4 mm tube in about 5 mm. Silicone grips it hard. Put a small blob of glue <b>on the outside</b> to seal it. Don't let glue get inside the airway.</li>
+ <li>Run the thin tube down to the sensor's nozzle on the table.</li>
+</ol>
+<div class="note"><b>If you can't find fat silicone tube:</b> a 5 cm ring cut from a bicycle inner tube works and costs ₹80 for enough to make twenty. It's not food-grade and it tastes of rubber, so use it to prove the idea, then buy silicone for anything a child actually uses.</div>
+<div class="note"><b>Test it before you glue anything.</b> Hold the tube in the hole with your finger and blow. The number should move. If it doesn't, the sleeve isn't sealing on the beak — push it further on, or use a narrower tube.</div>
+<h3>Where everything sits</h3>
+<div class="canvas">${airPath()}</div>
+<p><strong>Only the thin tube travels.</strong> The sensor, the breadboard and the Arduino stay on the table, joined by the short jumper wires you already have. Buy a metre of the 4 mm tube and cut it to a comfortable length.</p>
+<p>And yes, it stays attached while playing, like wired headphones. Between sessions you pull the thin tube out of the sleeve and put the flute away.</p>
+<div class="note"><b>This tether is a genuine product problem, and you should say so.</b> A tube running from a seven-year-old's mouth to a table is fine for a prototype and wrong for a real product. The fix is a battery-powered wireless board mounted on the flute itself. Don't build that now — but write it into your case study as the known next step. Naming a limitation and its solution reads as product thinking; leaving it out reads as not having noticed.</div>
+<div class="note"><b>Breathing in.</b> Don't add a one-way valve — the cheap ones need real effort to open, which is the opposite of what you want here. Just teach the child to take the flute away from their mouth, or breathe in through the nose. Playing a recorder is a blowing-out activity anyway.</div>
+<div class="note"><b>Why a recorder and not a bansuri.</b> A bansuri needs you to blow <i>across</i> a hole at exactly the right angle, and beginners get no sound at all for days. A recorder sounds the instant you blow into it, with very little effort. For a child with tight lungs, that difference is the whole project.</div>`},
+
+{group:"Build the flute", nav:"Copper tape (optional)", kicker:"Step 12", title:"Letting the game know which note", body:()=>`
+<p class="lede">A bonus. Every level except the note-catching one works on breath alone. Skip this if you're short on time and come back later.</p>
+<p>Stick a small square of copper tape around each of the <strong>top six finger holes</strong>. Run a thin wire from each square to <code>A0</code> through <code>A5</code>. That's it — no extra parts to buy.</p>
+<p>Your finger holds a tiny amount of electricity, and the Arduino can notice the change when you touch the tape. The <code>ADCTouch</code> library already in your sketch does the noticing.</p>
+<p>Six is all six analog pins, and you get them only because this sensor talks over two digital pins instead of A4 and A5. The recorder has eight holes including the thumb hole; block the last two with Blu-tack. <strong>Fewer holes is a real design choice, not a compromise</strong> — six is a far easier job for a seven-year-old's hands than eight, so write it into the case study as a decision.</p>
+<div class="note"><b>If the pads act as though they're always being touched:</b> the Arduino takes its "nobody is touching anything" reading in the first moment after starting. Take your hands off the flute, press reset, wait two seconds. Still jumpy? Change <code>TOUCH_DELTA</code> in the sketch from 40 to 60.</div>`},
+
+{group:"The game", nav:"How code meets hardware", kicker:"Step 13", title:"The full journey of one number", body:()=>`
+<p class="lede">You asked how the code connects to the physical thing. Here it is again — same picture as step 00, but now every word in it should make sense.</p>
+<div class="canvas">${codeChain()}</div>
+<h3>The joint everyone finds strange</h3>
+<p>Between the Arduino and the browser there is <strong>no clever connection at all</strong>. The Arduino simply <em>types</em>. Fifty times a second it types a short line of text down the USB cable, like a very fast person at a keyboard:</p>
+<p style="font-family:var(--mono);font-size:14px;color:var(--ok);background:rgba(3,8,17,.7);padding:12px 16px;border:1px solid var(--rule)">0.000,523.3<br>0.114,523.3<br>0.402,523.3<br>0.731,392.0</p>
+<p>The browser sits and reads those lines as they arrive, splits each at the comma, and gets two numbers: how hard, and which note. That's the entire link. Because it's plain text, you can read it yourself in the Serial Monitor whenever you want — which is how you tell whether a problem is in the hardware or in the game.</p>
+<div class="note"><b>Two rules for connecting to the browser.</b> First, this only works in <b>Chrome or Edge</b>. Second, you can't just double-click the game's HTML file — browsers block USB access for files opened that way. Open a terminal in the game's folder, run <code>python3 -m http.server</code>, then visit <code>localhost:8000</code>. And close the Arduino Serial Monitor first: only one program can hold the cable at a time.</div>`},
+
+{group:"The game", nav:"What the game still needs", kicker:"Step 14", title:"Honest checklist of what's missing", body:()=>`
+<p class="lede">You asked what might be missing from the game code. I can't re-open that file from here, so this is the list of everything that has to be true for it to work with this sketch. Tick them off against your file.</p>
+<div class="check yes"><span class="box">✓</span><div><b>A connect button that opens the port at 115200</b>
+ <span class="t">Must match the sketch exactly. A wrong speed gives you garbage rather than silence — so garbage on screen means "wrong speed", not "broken".</span></div></div>
+<div class="check no"><span class="box">!</span><div><b>Reading text in pieces, not whole lines</b>
+ <span class="t">The most commonly missed thing. The cable delivers text in random chunks, so a line can arrive split in half. The game must collect characters into a buffer and only act when it sees a line ending. Without this, readings glitch randomly and it looks like bad hardware.</span></div></div>
+<div class="check no"><span class="box">!</span><div><b>Not squashing the number twice</b>
+ <span class="t">This sketch already sends a 0–1 number. The older version sent raw pressure. If the game still divides by a calibration value, everything feels far too weak. Check this first if the firefly barely lifts.</span></div></div>
+<div class="check yes"><span class="box">✓</span><div><b>Microphone and keyboard fallbacks</b>
+ <span class="t">So you can design levels and record demo videos with no hardware attached at all.</span></div></div>
+<div class="check no"><span class="box">!</span><div><b>A re-calibrate button that sends <code>z</code></b>
+ <span class="t">The sketch listens for the letter z and re-takes its baseline. Give the child a friendly "reset" button rather than making someone unplug the cable when readings drift.</span></div></div>
+<div class="check no"><span class="box">!</span><div><b>Handling unplug and reconnect</b>
+ <span class="t">A seven-year-old will pull the cable. The game should notice, say something kind, and offer to reconnect — not freeze.</span></div></div>
+<div class="check no"><span class="box">!</span><div><b>The cave and rhythm levels</b>
+ <span class="t">Still unbuilt. The rhythm family is the one that matters most clinically, because it trains breathing <i>in</i> as well as out.</span></div></div>
+<div class="check no"><span class="box">!</span><div><b>The session arc</b>
+ <span class="t">Right now levels come off a menu. The design was: easy opener → main level → calm wind-down. That order <i>is</i> the therapeutic idea, so a menu quietly throws it away.</span></div></div>
+<div class="check no"><span class="box">!</span><div><b>Progress that survives closing the tab</b>
+ <span class="t">The garden filling up over weeks is your strongest evidence of long-term use. It needs saving into the browser's storage, which works when you run the file yourself on localhost.</span></div></div>
+<p style="margin-top:18px">The top three stop it working at all. The rest are design work, not bugs.</p>`},
+
+{group:"The game", nav:"If something doesn't work", kicker:"Step 15", title:"Every problem, and what it actually is", body:()=>`
+<p class="lede">All of these have happened to everyone who has ever done this. None of them mean you broke something.</p>
+<table><thead><tr><th>What you see</th><th>What it almost always is</th><th>What to do</th></tr></thead><tbody>
+ <tr><td>Serial Monitor is empty</td><td>speed set wrong</td><td>set the dropdown to 115200</td></tr>
+ <tr><td>Weird symbols scrolling</td><td>also the speed</td><td>same fix</td></tr>
+ <tr><td>Numbers frozen or nonsense</td><td>blue and yellow swapped, or a wire one row off</td><td>swap pins 2 and 3, then re-seat all four wires</td></tr>
+      <tr><td>Nothing after <code>READY</code></td><td>the sensor's speed setting</td><td>change <code>PULSES</code> in the sketch from 27 to 25</td></tr>
+ <tr><td>Number never leaves 0.000</td><td>the sleeve isn't sealing, or FULL_SCALE too high</td><td>push the sleeve further onto the beak; lower FULL_SCALE</td></tr>
+      <tr><td>Number reaches 1.000 too easily</td><td>FULL_SCALE too low</td><td>raise it — use DEBUG_RAW to find your real number</td></tr>
+      <tr><td>Number drifts in the first minute</td><td>normal for this sensor while it settles</td><td>wait a minute, then press re-zero (send <code>z</code>)</td></tr>
+ <tr><td>Upload fails, port greyed out</td><td>something else is holding the cable</td><td>close Serial Monitor and the game tab, unplug, re-plug</td></tr>
+ <tr><td>Browser connect button does nothing</td><td>you opened the file by double-clicking</td><td>serve it on localhost, use Chrome</td></tr>
+ <tr><td>Firefly jitters</td><td>not enough smoothing</td><td>lower ALPHA from 0.35 to 0.20</td></tr>
+ <tr><td>Firefly feels laggy</td><td>too much smoothing</td><td>raise ALPHA to 0.5</td></tr>
+</tbody></table>
+<div class="note"><b>The single most useful habit.</b> Build in this order and never skip ahead: <b>sensor alone → then the sleeve and tube → then the copper tape → then the game.</b> Each stage should show you something believable before you add the next. Almost everyone who gets stuck built all five at once and then couldn't tell which one was wrong.</div>`}
+];
+
+/* ================= RENDER ================= */
+let current=0; const seen=new Set([0]);
+function renderRail(){
+  let html="", last=null;
+  steps.forEach((s,i)=>{
+    if(s.group!==last){ html+=`<div class="rail-title">${s.group}</div>`; last=s.group; }
+    html+=`<button class="step-btn ${i===current?'active':''} ${seen.has(i)&&i!==current?'done':''}" data-i="${i}">
+      <span class="n">${String(i).padStart(2,'0')}</span><span>${s.nav}</span></button>`;});
+  document.getElementById('rail').innerHTML=html;
+  document.querySelectorAll('.step-btn').forEach(b=> b.onclick=()=>go(+b.dataset.i));
+}
+function renderStage(){
+  const s=steps[current], last=current===steps.length-1;
+  document.getElementById('stage').innerHTML=
+    `<div class="kicker">${s.kicker}</div><h2>${s.title}</h2>${s.body()}`+
+    (last?'':`<button class="next" id="next">Next → ${steps[current+1].nav}</button>`);
+  const n=document.getElementById('next'); if(n) n.onclick=()=>go(current+1);
+  if(current===9) initSim();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function go(i){ current=Math.max(0,Math.min(steps.length-1,i)); seen.add(current); renderRail(); renderStage(); }
+
+let simTimer=null;
+function initSim(){
+  if(simTimer) clearInterval(simTimer);
+  const btn=document.getElementById('blow'); if(!btn) return;
+  let blowing=false, raw=0, sm=0, tick=0; const lines=[];
+  const se=document.getElementById('serial'), ve=document.getElementById('val'), fe=document.getElementById('fly');
+  const on=()=>{blowing=true;btn.classList.add('active');};
+  const off=()=>{blowing=false;btn.classList.remove('active');};
+  btn.addEventListener('mousedown',on);
+  btn.addEventListener('touchstart',e=>{e.preventDefault();on();},{passive:false});
+  window.addEventListener('mouseup',off); window.addEventListener('touchend',off);
+  window.addEventListener('keydown',e=>{if(e.code==='Space'&&current===9){e.preventDefault();on();}});
+  window.addEventListener('keyup',e=>{if(e.code==='Space')off();});
+  simTimer=setInterval(()=>{
+    const t=blowing?0.86+Math.sin(tick/9)*0.05:0;
+    raw+=(t-raw)*(blowing?0.10:0.13);
+    sm+=(raw-sm)*0.35;
+    const v=Math.max(0,Math.min(1,sm+(Math.random()-0.5)*0.006));
+    if(tick%2===0){
+      lines.unshift(`${v.toFixed(3)},523.3`); if(lines.length>9) lines.pop();
+      se.innerHTML=lines.map((l,i)=>`<div style="opacity:${1-i*0.1}">${l}</div>`).join('');}
+    ve.textContent=v.toFixed(3);
+    fe.style.bottom=(4+v*90)+'px';
+    tick++;
+  },20);
+}
+renderRail(); renderStage();
+</script>
+</body>
+</html>

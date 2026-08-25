@@ -1,0 +1,372 @@
+/* ==========================================================
+   game-audio.js — the whole sound layer, shared by every page.
+
+   It lives out here rather than inside one screen because the
+   home page and the game are separate documents: if each had
+   its own copy, turning the music down on one would not turn
+   it down on the other.
+
+   Mix holds the levels and remembers them. Tone, Sfx and Bgm
+   all ask Mix for their volume rather than setting their own,
+   so one slider moves everything that belongs to it.
+   ========================================================== */
+(function (root) {
+
+const MIX_KEY = 'chamkiForest.sound.v1';
+
+/* ---- the mixer -------------------------------------------------------
+   Two channels, because they interrupt differently: music is constant
+   and wants to sit low, effects are occasional and want to be heard.
+   Muting is kept separate from level, so muting then unmuting returns
+   you to where you were rather than to some default. */
+const Mix = {
+  musicLevel: 0.7, sfxLevel: 0.8,
+  musicOff: false, sfxOff: false,
+  onChange: null,
+
+  music() { return this.musicOff ? 0 : this.musicLevel; },
+  sfx()   { return this.sfxOff   ? 0 : this.sfxLevel; },
+  musicMuted() { return this.musicOff || this.musicLevel <= 0; },
+  sfxMuted()   { return this.sfxOff   || this.sfxLevel   <= 0; },
+  allOff() { return this.musicMuted() && this.sfxMuted(); },
+
+  set(what, v) {
+    v = Math.max(0, Math.min(1, v));
+    if (what === 'music') { this.musicLevel = v; this.musicOff = false; }
+    else { this.sfxLevel = v; this.sfxOff = false; }
+    this.apply();
+  },
+  toggle(what) {
+    if (what === 'music') this.musicOff = !this.musicOff;
+    else this.sfxOff = !this.sfxOff;
+    this.apply();
+  },
+  toggleAll() {
+    const off = !this.allOff();
+    this.musicOff = off; this.sfxOff = off;
+    this.apply();
+  },
+
+  // Music is already playing, so its gain has to be moved live.
+  apply() {
+    this.save();
+    try {
+      if (Bgm.gain && Tone.ctx) {
+        Bgm.gain.gain.setTargetAtTime(Bgm.level * this.music(), Tone.ctx.currentTime, 0.25);
+      }
+      if (this.musicMuted()) { if (Bgm.on) Bgm.stop(); }
+      else if (!Bgm.on && Bgm.want) Bgm.start(Bgm.want);
+    } catch (e) {}
+    if (this.onChange) this.onChange();
+  },
+
+  save() {
+    try { localStorage.setItem(MIX_KEY, JSON.stringify({
+      m: this.musicLevel, s: this.sfxLevel, mo: this.musicOff, so: this.sfxOff
+    })); } catch (e) {}
+  },
+  load() {
+    try {
+      const r = localStorage.getItem(MIX_KEY);
+      if (!r) return;
+      const d = JSON.parse(r);
+      if (typeof d.m === 'number') this.musicLevel = Math.max(0, Math.min(1, d.m));
+      if (typeof d.s === 'number') this.sfxLevel   = Math.max(0, Math.min(1, d.s));
+      this.musicOff = !!d.mo; this.sfxOff = !!d.so;
+    } catch (e) {}
+  }
+};
+
+/* ==========================================================
+   TONE — the fireflies' voice, and the child's answer.
+
+   A recorded sample is the wrong tool here: this note has to hold
+   for however long a child keeps breathing, at a pitch the game
+   chooses. So it is synthesised — but as a flute rather than a
+   raw oscillator, which suits a game played on a recorder.
+
+   Three sine partials (1st, 2nd, 3rd) in falling amounts give the
+   hollow, woody colour of a pipe. A slow shallow vibrato keeps it
+   from sounding dead, and a lowpass takes the glassy edge off.
+   Only the master GAIN moves when notes start and stop — starting
+   and stopping oscillators clicks audibly; a gain slide does not.
+   ========================================================== */
+const Tone = {
+  ctx: null, gain: null, filter: null, parts: [], vib: null, sounding: false,
+  get muted() { return Mix.allOff(); },
+
+  ensure() {
+    if (this.ctx) return true;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      const ctx = new AC();
+      this.ctx = ctx;
+
+      this.gain = ctx.createGain();
+      this.gain.gain.value = 0;
+
+      // Rolls off the upper partials so the tone stays soft at any pitch.
+      this.filter = ctx.createBiquadFilter();
+      this.filter.type = 'lowpass';
+      this.filter.frequency.value = 1800;
+      this.filter.Q.value = 0.6;
+      this.filter.connect(this.gain);
+      this.gain.connect(ctx.destination);
+
+      // A breathy pipe: strong fundamental, a little octave, a hint of 12th.
+      [[1, 1.0], [2, 0.28], [3, 0.10]].forEach(([mult, amt]) => {
+        const o = ctx.createOscillator();
+        o.type = 'sine';
+        o.frequency.value = 440 * mult;
+        const g = ctx.createGain();
+        g.gain.value = amt;
+        o.connect(g); g.connect(this.filter);
+        o.start();
+        this.parts.push({ osc: o, mult: mult });
+      });
+
+      // Slow shallow vibrato — the difference between a note and a machine.
+      const lfo = ctx.createOscillator();
+      lfo.frequency.value = 5.2;
+      const depth = ctx.createGain();
+      depth.gain.value = 2.6;                    // cents-ish, deliberately tiny
+      lfo.connect(depth);
+      this.parts.forEach(p => depth.connect(p.osc.detune));
+      lfo.start();
+      this.vib = lfo;
+      return true;
+    } catch (e) { this.ctx = null; return false; }
+  },
+
+  play(hz, level) {
+    if (Mix.sfxMuted() || !this.ensure()) return;
+    if (this.ctx.state === 'suspended') { try { this.ctx.resume(); } catch (e) {} }
+    const t = this.ctx.currentTime;
+    this.parts.forEach(p => p.osc.frequency.setTargetAtTime(hz * p.mult, t, 0.012));
+    // brighter as the breath gets stronger, the way a real pipe behaves
+    const lv = Math.max(0, Math.min(1, level == null ? 1 : level));
+    this.filter.frequency.setTargetAtTime(1200 + 1800 * lv, t, 0.03);
+    this.gain.gain.cancelScheduledValues(t);
+    this.gain.gain.setTargetAtTime((0.05 + 0.10 * lv) * Mix.sfx(), t, 0.035);   // soft attack
+    this.sounding = true;
+  },
+
+  stop() {
+    if (!this.ctx || !this.sounding) return;
+    const t = this.ctx.currentTime;
+    this.gain.gain.cancelScheduledValues(t);
+    this.gain.gain.setTargetAtTime(0, t, 0.06);                   // soft release
+    this.sounding = false;
+  },
+
+  /* Kept so older callers still work, but it must go through the mixer —
+     a setMuted that quietly sets a flag nobody reads is worse than none. */
+  setMuted(m) {
+    if (m !== Mix.allOff()) Mix.toggleAll();
+    if (m) this.stop();
+  }
+};
+
+/* ==========================================================
+   SFX — short recorded sounds for the moments that deserve one.
+   Pixabay Content License; see assets/audio/CREDITS.txt.
+   Decoded once on first use and reused, so a hop never waits.
+   ========================================================== */
+const Sfx = {
+  files: { pop: 'assets/audio/pop.mp3', ping: 'assets/audio/ping.mp3',
+           chime: 'assets/audio/chime.mp3', sparkle: 'assets/audio/sparkle.mp3',
+           click: 'assets/audio/click-soft.mp3', 'click-soft': 'assets/audio/click-soft.mp3' },
+  buf: {}, loading: {},
+
+  play(name, vol) {
+    if (Mix.sfxMuted() || !Tone.ensure()) return;
+    const ctx = Tone.ctx;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    const b = this.buf[name];
+    if (!b) { this.load(name); return; }        // first ask warms it for next time
+    try {
+      const src = ctx.createBufferSource();
+      src.buffer = b;
+      const g = ctx.createGain();
+      g.gain.value = (vol == null ? 0.35 : vol) * Mix.sfx();
+      src.connect(g); g.connect(ctx.destination);
+      src.start();
+    } catch (e) {}
+  },
+
+  load(name) {
+    if (this.buf[name] || this.loading[name] || !this.files[name] || !Tone.ensure()) return;
+    this.loading[name] = true;
+    fetch(this.files[name])
+      .then(r => r.arrayBuffer())
+      .then(a => Tone.ctx.decodeAudioData(a))
+      .then(b => { this.buf[name] = b; })
+      .catch(() => {})                          // no sound is fine; a crash is not
+      .then(() => { this.loading[name] = false; });
+  },
+
+  warm() { Object.keys(this.files).forEach(n => this.load(n)); },
+
+  /* A short sung note rather than a recorded click. Used where a hard
+     sample cut across the music — answering the fireflies, clearing a
+     gap, growing a step. Its own oscillator, so it never interrupts a
+     breath that is still sounding. */
+  blip(hz, vol) {
+    if (Mix.sfxMuted() || !Tone.ensure()) return;
+    const ctx = Tone.ctx;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    try {
+      const t = ctx.currentTime;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.005, (vol == null ? 0.35 : vol) * Mix.sfx()), t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);   // bell-ish decay
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 3200;
+      lp.connect(g); g.connect(ctx.destination);
+      [[1, 1], [2, 0.32], [3, 0.12]].forEach(([m, a]) => {
+        const o = ctx.createOscillator();
+        o.type = 'sine';
+        o.frequency.value = hz * m;
+        const og = ctx.createGain();
+        og.gain.value = a;
+        o.connect(og); og.connect(lp);
+        o.start(t); o.stop(t + 0.5);
+      });
+    } catch (e) {}
+  }
+};
+
+// Where the Garden's five steps sit on the scale — a rising phrase, so
+// the flower's growth is something you can hear as well as see.
+const GROW_NOTES = [261.63, 329.63, 392.00, 493.88, 523.25];
+
+
+/* ==========================================================
+   BGM — a recorded flute bed under every place.
+
+   Two goes at synthesising this failed: the first slid every
+   pitch on every chord change, which is how a siren is built,
+   and the second was still obviously a machine. Some things
+   want a real instrument played by a person.
+
+   "Forest Whisper Theme" by Alexandr Zhelanov, CC0. Trimmed,
+   and its tail crossfaded onto its head so the loop has no
+   seam — the raw file ended 4.7dB away from where it started,
+   which would thump once a minute. See assets/audio/CREDITS.txt.
+   ========================================================== */
+const Bgm = {
+  // One track per place, so each has its own weather.
+  tracks: {
+    stream:       'assets/audio/bgm-stream.mp3',        // lofi, easy, a little playful
+    cave:         'assets/audio/bgm-cave.mp3',          // still and thoughtful
+    conversation: 'assets/audio/bgm-conversation.mp3',  // dreamy and sparse, leaves room
+    pond:         'assets/audio/bgm-garden.mp3',        // flute, warm, unhurried
+    // The home screen is a forest too, so it shares the Garden's flute.
+    home:         'assets/audio/bgm-garden.mp3'
+  },
+  buf: {}, loading: {}, want: null,
+  node: null, gain: null, ctxRef: null,
+  on: false, level: 0.26,
+
+  load(name) {
+    const url = this.tracks[name];
+    if (!url || this.buf[name] || this.loading[name] || !Tone.ensure()) return;
+    this.loading[name] = true;
+    fetch(url)
+      .then(r => r.arrayBuffer())
+      .then(a => Tone.ctx.decodeAudioData(a))
+      .then(b => { this.buf[name] = b; if (this.on && this.want === name) this.spin(name); })
+      .catch(() => {})                                          // silence beats a crash
+      .then(() => { this.loading[name] = false; });
+  },
+
+  spin(name) {
+    const ctx = Tone.ctx;
+    if (!ctx || !this.buf[name]) return;
+    this.era = (this.era || 0) + 1;          // cancel any pending teardown
+    this.kill();
+    this.playing = name;
+    this.gain = ctx.createGain();
+    this.gain.gain.value = 0;
+    this.gain.connect(ctx.destination);
+    this.node = ctx.createBufferSource();
+    this.node.buffer = this.buf[name];
+    this.node.loop = true;              // seam already removed in the file
+    this.node.connect(this.gain);
+    this.node.start();
+    this.gain.gain.setTargetAtTime(this.level * Mix.music(), ctx.currentTime, 2.2);   // drifts in
+    this.ctxRef = ctx;
+  },
+
+  kill() {
+    try { if (this.node) { this.node.stop(); this.node.disconnect(); } } catch (e) {}
+    this.node = null;
+  },
+
+  start(name) {
+    if (Mix.musicMuted() || !Tone.ensure()) return;
+    const ctx = Tone.ctx;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    this.on = true;
+    this.want = name;
+    if (!this.buf[name]) { this.load(name); return; }   // spins itself once decoded
+    // Already on this exact track: leave it running rather than restarting,
+    // so replaying a place does not chop the music back to the top.
+    if (this.node && this.playing === name && this.ctxRef === ctx) {
+      this.era = (this.era || 0) + 1;        // this node is wanted after all
+      this.gain.gain.setTargetAtTime(this.level * Mix.music(), ctx.currentTime, 1.2);
+      return;
+    }
+    this.spin(name);
+  },
+
+  stop() {
+    /* `want` is deliberately kept: it records which track BELONGS here, so
+       unmuting knows what to bring back. Clearing it meant the music never
+       returned after a mute. `playing` is the live state and does go. */
+    this.on = false; this.playing = null;
+    if (!this.gain || !Tone.ctx) { this.kill(); return; }
+    const t = Tone.ctx.currentTime;
+    this.gain.gain.cancelScheduledValues(t);
+    this.gain.gain.setTargetAtTime(0, t, 0.8);
+    /* BUG: this cleanup used to fire regardless. Start the music again
+       inside the fade — which muting then unmuting does — and the old
+       timer would arrive and tear down the node that had just come back,
+       leaving silence with nothing to restart it. The token makes a
+       restart cancel the pending teardown. */
+    this.era = (this.era || 0) + 1;
+    const era = this.era;
+    setTimeout(() => { if (this.era === era && !this.on) this.kill(); }, 2500);
+  },
+
+  tick() {}                                    // the file carries its own motion
+};
+/* Browsers suspend audio when a tab goes to the background, and nothing
+   wakes it again on its own — the music would just stop for good. Any
+   return to the page nudges it back. */
+function keepAwake(w) {
+  if (!w || !w.addEventListener) return;
+  const wake = () => {
+    const ctx = Tone.ctx;
+    if (!ctx || ctx.state !== 'suspended') return;
+    try { ctx.resume(); } catch (e) {}
+    // If the bed was meant to be playing, make sure it still is.
+    if (Bgm.want && !Mix.musicMuted()) Bgm.start(Bgm.want);
+  };
+  w.addEventListener('pointerdown', wake);
+  w.addEventListener('keydown', wake);
+  if (w.document && w.document.addEventListener) {
+    w.document.addEventListener('visibilitychange', () => {
+      if (!w.document.hidden) wake();
+    });
+  }
+}
+keepAwake(root);
+
+Mix.load();
+
+root.GameAudio = { Mix: Mix, Tone: Tone, Sfx: Sfx, Bgm: Bgm, GROW_NOTES: GROW_NOTES };
+
+})(typeof window !== 'undefined' ? window : this);

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./assets/game-audio.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet" />
+<style>
+html, body { margin: 0; height: 100%; background: #8FD3F4; overflow: hidden; }
+button, a { transition: transform .16s cubic-bezier(.22,.7,.3,1), box-shadow .16s ease, filter .16s ease; }
+</style>
+</helmet>
+
+<div data-screen-label="Home" style="position:relative;width:100%;height:100vh;overflow:hidden;font-family:'Baloo 2',Nunito,system-ui,sans-serif;color:#2F3B52;background:#8FD3F4">
+  <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/scene-home-forest.png)"></div>
+
+  <!-- Everything below is built from the game's own kit: a .4vh white
+       border, a hard inset lip along the bottom, and one of its gradients.
+       The old plates were flat translucent cards, which read as a web page
+       sitting on top of the art rather than as part of the same toy. -->
+
+  <!-- player + wallet -->
+  <div style="position:absolute;left:2.6%;top:4%;display:flex;align-items:center;gap:1.4vh">
+    <button onClick="{{ noop }}" style="display:flex;align-items:center;gap:1.4vh;padding:1.1vh 2vh 1.1vh 1.1vh;border:.4vh solid #fff;border-radius:2vh;background:#fff;box-shadow:inset 0 -.5vh 0 rgba(20,73,107,.10),0 .6vh 1.2vh rgba(20,73,107,.28);cursor:pointer;text-align:left;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="transform:translateY(-.3vh)" style-active="transform:translateY(2px)">
+      <div style="width:5.8vh;height:5.8vh;border-radius:1.5vh;border:.35vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.45vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;color:#fff">
+        <svg width="3.2vh" height="3.2vh" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.8" fill="currentColor"></circle><path d="M4.6 20c0-3.9 3.4-5.8 7.4-5.8s7.4 1.9 7.4 5.8" fill="currentColor"></path></svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.7vh">
+        <div style="display:flex;align-items:center;gap:.9vh">
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;line-height:1;color:#2F3B52">PLAYER</div>
+          <div style="display:flex;align-items:center;height:2.1vh;padding:0 .8vh;border-radius:99px;background:linear-gradient(180deg,#A5EA76 0%,#3FA80F 100%);border:.22vh solid #fff;font-family:Nunito;font-weight:900;font-size:1.1vh;letter-spacing:.06em;color:#fff;text-shadow:0 .15vh 0 rgba(0,0,0,.28)">LVL {{ level }}</div>
+        </div>
+        <div style="position:relative;width:15vh;height:1.6vh;border-radius:99px;background:#DCE4EC;border:.22vh solid #fff;box-shadow:inset 0 .2vh .3vh rgba(20,73,107,.18);overflow:hidden">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:{{ xpPct }};background:linear-gradient(180deg,#A5EA76 0%,#3FA80F 100%);border-radius:99px"></div>
+        </div>
+      </div>
+    </button>
+
+    <div style="display:flex;align-items:center;gap:1vh;height:5.6vh;padding:0 .7vh 0 1.4vh;border-radius:99px;border:.4vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .5vh 1vh rgba(20,73,107,.26)">
+      <svg width="2.9vh" height="2.9vh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.4" fill="#B86E12"></circle><circle cx="12" cy="12" r="7.4" fill="#FFE9A8"></circle><circle cx="12" cy="12" r="4.6" fill="#F5B731"></circle></svg>
+      <div style="font-family:Nunito;font-weight:900;font-size:1.9vh;color:#fff;text-shadow:0 .2vh 0 rgba(0,0,0,.26)">{{ coins }}</div>
+      <button onClick="{{ addCoin }}" style="width:3.6vh;height:3.6vh;border-radius:50%;border:.3vh solid #fff;background:linear-gradient(180deg,#A5EA76 0%,#3FA80F 100%);box-shadow:inset 0 -.35vh 0 rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#fff;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(1px)">
+        <svg width="1.9vh" height="1.9vh" viewBox="0 0 24 24"><path d="M10.6 4h2.8v6.6H20v2.8h-6.6V20h-2.8v-6.6H4v-2.8h6.6z" fill="currentColor"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- system controls -->
+  <div style="position:absolute;right:2.6%;top:4%;display:flex;gap:1.2vh">
+    <button onClick="{{ openMissions }}" style="position:relative;width:5.6vh;height:5.6vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#FF8ED0 0%,#E9349B 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .4vh .8vh rgba(20,73,107,.24);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06)" style-active="transform:translateY(2px)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M3 10.2l9.2-4.8v13.2L3 13.8v-3.6z"></path><path stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" d="M14.6 9.2a4 4 0 010 5.6"></path></svg>
+      <div style="position:absolute;top:-.6vh;right:-.6vh;min-width:2.3vh;height:2.3vh;padding:0 .4vh;border-radius:99px;border:.3vh solid #fff;background:linear-gradient(180deg,#FF6B60 0%,#E0332A 100%);color:#fff;font-family:Nunito;font-weight:900;font-size:1.1vh;display:flex;align-items:center;justify-content:center;text-shadow:0 .15vh 0 rgba(0,0,0,.3)">2</div>
+    </button>
+    <button onClick="{{ openSound }}" style="width:5.6vh;height:5.6vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .4vh .8vh rgba(20,73,107,.24);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06)" style-active="transform:translateY(2px)">
+      <sc-if value="{{ soundOff }}">
+        <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9.4l4.6 5.2M20.6 9.4L16 14.6"></path></svg>
+      </sc-if>
+      <sc-if value="{{ soundOn }}">
+        <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" d="M15.8 8.6a4.6 4.6 0 010 6.8"></path><path stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" d="M18.6 6a8.4 8.4 0 010 12"></path></svg>
+      </sc-if>
+    </button>
+    <button onClick="{{ openSettings }}" style="width:5.6vh;height:5.6vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .4vh .8vh rgba(20,73,107,.24);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06)" style-active="transform:translateY(2px)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M19.14,12.94a7.14,7.14,0,000-1.88l2.11-1.65a.5.5,0,00.12-.64l-2-3.46a.5.5,0,00-.6-.22l-2.49,1a7.3,7.3,0,00-1.62-.94l-.38-2.65A.5.5,0,0013.8,2h-4a.5.5,0,00-.5.42l-.38,2.65a7.3,7.3,0,00-1.62.94l-2.49-1a.5.5,0,00-.6.22l-2,3.46a.5.5,0,00.12.64l2.11,1.65a7.14,7.14,0,000,1.88l-2.11,1.65a.5.5,0,00-.12.64l2,3.46a.5.5,0,00.6.22l2.49-1a7.3,7.3,0,001.62.94l.38,2.65a.5.5,0,00.5.42h4a.5.5,0,00.5-.42l.38-2.65a7.3,7.3,0,001.62-.94l2.49,1a.5.5,0,00.6-.22l2-3.46a.5.5,0,00-.12-.64ZM12,15.5A3.5,3.5,0,1115.5,12,3.5,3.5,0,0112,15.5Z"></path></svg>
+    </button>
+  </div>
+
+  <!-- the one loud thing -->
+  <a href="Chamki Firefly Forest.dc.html" style="position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;gap:1.6vh;width:36vh;height:11.4vh;padding-bottom:1vh;box-sizing:border-box;border-radius:2.8vh;border:.55vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -1vh 0 rgba(0,0,0,.16),0 1.4vh 2.4vh rgba(20,73,107,.34);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:5vh;line-height:1;letter-spacing:.05em;text-decoration:none;text-shadow:0 .4vh 0 rgba(0,0,0,.22);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.05);transform:translate(-50%,-50%) translateY(-.5vh)" style-active="transform:translate(-50%,-50%) translateY(3px)">
+    <svg width="3.2vh" height="3.2vh" viewBox="0 0 24 24" style="flex:none;margin-top:.35vh"><path fill="#fff" d="M7 4.6l13 7.4-13 7.4V4.6z"></path></svg>
+    <span style="margin-top:.2vh">PLAY</span>
+  </a>
+
+  <!-- three equal destinations, built the same way PLAY is: white border,
+       hard bottom lip, one of the game's gradients. They were white plates,
+       which made them read as a different family from the button above. -->
+  <div style="position:absolute;left:50%;bottom:6%;transform:translateX(-50%);display:flex;gap:1.8vh">
+    <button onClick="{{ openShop }}" style="display:flex;align-items:center;justify-content:center;gap:1.1vh;height:7.4vh;padding:0 2.6vh 0 2vh;padding-bottom:.55vh;box-sizing:border-box;border:.45vh solid #fff;border-radius:2.2vh;background:linear-gradient(180deg,#FF8ED0 0%,#E9349B 100%);box-shadow:inset 0 -.65vh 0 rgba(0,0,0,.16),0 .8vh 1.6vh rgba(20,73,107,.3);cursor:pointer;color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;line-height:1;letter-spacing:.05em;white-space:nowrap;text-shadow:0 .25vh 0 rgba(0,0,0,.24);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06);transform:translateY(-.4vh)" style-active="transform:translateY(2px)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24" style="flex:none"><path fill="#fff" d="M5.4 8.6h13.2l-1 11.4H6.4L5.4 8.6z"></path><path stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" d="M9 8.6a3 3 0 016 0"></path></svg>
+      <span style="margin-top:.2vh">SHOP</span>
+    </button>
+    <button onClick="{{ openMissions }}" style="display:flex;align-items:center;justify-content:center;gap:1.1vh;height:7.4vh;padding:0 2.6vh 0 2vh;padding-bottom:.55vh;box-sizing:border-box;border:.45vh solid #fff;border-radius:2.2vh;background:linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%);box-shadow:inset 0 -.65vh 0 rgba(0,0,0,.16),0 .8vh 1.6vh rgba(20,73,107,.3);cursor:pointer;color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;line-height:1;letter-spacing:.05em;white-space:nowrap;text-shadow:0 .25vh 0 rgba(0,0,0,.24);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06);transform:translateY(-.4vh)" style-active="transform:translateY(2px)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24" style="flex:none"><circle cx="12" cy="12" r="9" fill="#fff" opacity=".35"></circle><circle cx="12" cy="12" r="5.4" fill="#fff" opacity=".7"></circle><circle cx="12" cy="12" r="2.2" fill="#fff"></circle></svg>
+      <span style="margin-top:.2vh">MISSION</span><div style="display:flex;align-items:center;height:2.6vh;padding:0 1vh;margin-left:.3vh;border-radius:99px;background:rgba(255,255,255,.28);border:.2vh solid rgba(255,255,255,.6);font-family:Nunito;font-weight:900;font-size:1.35vh;color:#fff;text-shadow:none">2/5</div>
+    </button>
+    <button onClick="{{ openHelp }}" style="display:flex;align-items:center;justify-content:center;gap:1.1vh;height:7.4vh;padding:0 2.6vh 0 2vh;padding-bottom:.55vh;box-sizing:border-box;border:.45vh solid #fff;border-radius:2.2vh;background:linear-gradient(180deg,#A5EA76 0%,#3FA80F 100%);box-shadow:inset 0 -.65vh 0 rgba(0,0,0,.16),0 .8vh 1.6vh rgba(20,73,107,.3);cursor:pointer;color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;line-height:1;letter-spacing:.05em;white-space:nowrap;text-shadow:0 .25vh 0 rgba(0,0,0,.24);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06);transform:translateY(-.4vh)" style-active="transform:translateY(2px)">
+      <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24" style="flex:none"><path fill="#fff" d="M12 5.6c2.2 0 3.9 1.4 3.9 3.4 0 1.6-.9 2.3-2 3-.9.6-1.2 1-1.2 1.9v.4h-2.2v-.6c0-1.6.7-2.4 1.9-3.2.8-.5 1.1-.9 1.1-1.5 0-.8-.6-1.3-1.5-1.3s-1.6.6-1.6 1.6H8.2c0-2.1 1.6-3.7 3.8-3.7zm-.2 10.5a1.4 1.4 0 110 2.8 1.4 1.4 0 010-2.8z"></path></svg>
+      <span style="margin-top:.2vh">HOW TO PLAY</span>
+    </button>
+  </div>
+
+  <sc-if value="{{ anyPopup }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePopup }}" style="position:absolute;inset:0;background:rgba(20,50,74,.5);cursor:pointer"></div>
+  </sc-if>
+
+  <sc-if value="{{ isSound }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64vh;max-width:92%;max-height:86%;display:flex;flex-direction:column;border-radius:3vh;background:#fff;border:.45vh solid #fff;box-shadow:0 1.2vh 0 #C7D3E8,0 2.4vh 4vh rgba(20,73,107,.4);overflow:hidden">
+      <div style="display:flex;align-items:center;gap:1.4vh;padding:1.6vh 1.6vh 0">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;height:6.2vh;border-radius:99px;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.14em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.24)">SOUND</div>
+        <button onClick="{{ closePopup }}" style="flex:none;width:6.2vh;height:6.2vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(2px)">
+          <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="3.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:2.2vh 2.6vh 2.8vh">
+        <div style="display:flex;align-items:center;gap:1.4vh;padding:1.6vh 0">
+          <button onClick="{{ toggleMusic }}" style="flex:none;width:5.4vh;height:5.4vh;border-radius:1.5vh;border:.35vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.45vh 0 rgba(0,0,0,.16),0 .4vh .8vh rgba(20,73,107,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(2px)">
+            <sc-if value="{{ musicOn }}" hint-placeholder-val="{{ true }}">
+              <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" d="M15.8 8.6a4.6 4.6 0 010 6.8"></path></svg>
+            </sc-if>
+            <sc-if value="{{ musicMuted }}" hint-placeholder-val="{{ false }}">
+              <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9.4l4.6 5.2M20.6 9.4L16 14.6"></path></svg>
+            </sc-if>
+          </button>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.9vh">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;letter-spacing:.06em;color:#2F3B52">MUSIC</div>
+              <div style="font-family:Nunito;font-weight:900;font-size:1.6vh;color:#8C97AB">{{ musicPct }}</div>
+            </div>
+            <div style="display:flex;gap:.6vh;height:3.4vh">
+              <sc-for list="{{ musicBars }}" as="b" hint-placeholder-count="10">
+                <button onClick="{{ b.set }}" style="flex:1;border:none;border-radius:.9vh;background:{{ b.colour }};opacity:{{ b.dim }};cursor:pointer;padding:0;box-shadow:inset 0 -.3vh 0 rgba(0,0,0,.14);transition:opacity .12s ease,transform .12s ease" style-hover="transform:translateY(-.25vh)" style-active="transform:translateY(1px)"></button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="height:.25vh;background:#EEF3F8;border-radius:99px;margin:.6vh 0"></div>
+        <div style="display:flex;align-items:center;gap:1.4vh;padding:1.6vh 0">
+          <button onClick="{{ toggleSfx }}" style="flex:none;width:5.4vh;height:5.4vh;border-radius:1.5vh;border:.35vh solid #fff;background:linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%);box-shadow:inset 0 -.45vh 0 rgba(0,0,0,.16),0 .4vh .8vh rgba(20,73,107,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(2px)">
+            <sc-if value="{{ sfxIsOn }}" hint-placeholder-val="{{ true }}">
+              <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" d="M15.8 8.6a4.6 4.6 0 010 6.8"></path></svg>
+            </sc-if>
+            <sc-if value="{{ sfxMuted }}" hint-placeholder-val="{{ false }}">
+              <svg width="2.8vh" height="2.8vh" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.2v5.6h3.6L12.6 19V5l-5 4.2H4z"></path><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9.4l4.6 5.2M20.6 9.4L16 14.6"></path></svg>
+            </sc-if>
+          </button>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.9vh">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;letter-spacing:.06em;color:#2F3B52">SOUNDS</div>
+              <div style="font-family:Nunito;font-weight:900;font-size:1.6vh;color:#8C97AB">{{ sfxPct }}</div>
+            </div>
+            <div style="display:flex;gap:.6vh;height:3.4vh">
+              <sc-for list="{{ sfxBars }}" as="b" hint-placeholder-count="10">
+                <button onClick="{{ b.set }}" style="flex:1;border:none;border-radius:.9vh;background:{{ b.colour }};opacity:{{ b.dim }};cursor:pointer;padding:0;box-shadow:inset 0 -.3vh 0 rgba(0,0,0,.14);transition:opacity .12s ease,transform .12s ease" style-hover="transform:translateY(-.25vh)" style-active="transform:translateY(1px)"></button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <button onClick="{{ toggleAll }}" style="width:100%;margin-top:1.4vh;height:6.4vh;border:.45vh solid #fff;border-radius:1.8vh;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.6vh 0 rgba(0,0,0,.16),0 .6vh 1.2vh rgba(20,73,107,.24);cursor:pointer;color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;letter-spacing:.08em;line-height:1;padding-bottom:.5vh;text-shadow:0 .25vh 0 rgba(0,0,0,.24);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)">{{ allLabel }}</button>
+        <div style="margin-top:1.4vh;font-family:Nunito;font-weight:700;font-size:1.4vh;line-height:1.5;color:#8C97AB;text-wrap:pretty">These settings follow you into the game.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isHelp }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76vh;max-width:92%;max-height:86%;display:flex;flex-direction:column;border-radius:3vh;background:#fff;border:.45vh solid #fff;box-shadow:0 1.2vh 0 #C7D3E8,0 2.4vh 4vh rgba(20,73,107,.4);overflow:hidden">
+      <div style="display:flex;align-items:center;gap:1.4vh;padding:1.6vh 1.6vh 0">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;height:6.2vh;border-radius:99px;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.14em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.24)">HOW TO PLAY</div>
+        <button onClick="{{ closePopup }}" style="flex:none;width:6.2vh;height:6.2vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(2px)">
+          <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="3.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:2.2vh 2.6vh 2.8vh">
+        <div style="display:flex;gap:1.6vh;padding:1.4vh 0;align-items:flex-start">
+          <div style="flex:none;width:5vh;height:5vh;border-radius:1.4vh;border:.35vh solid #fff;background:linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%);box-shadow:inset 0 -.45vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;font-family:Nunito;font-weight:900;font-size:2vh;color:#fff;text-shadow:0 .2vh 0 rgba(0,0,0,.25)">1</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.4vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;color:#2F3B52">Plug in the flute</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.6vh;line-height:1.5;color:#6B7A8D;text-wrap:pretty">Press PLAY, then CONNECT and pick the port. Only needed the first time — after that it finds itself.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:1.6vh;padding:1.4vh 0;align-items:flex-start">
+          <div style="flex:none;width:5vh;height:5vh;border-radius:1.4vh;border:.35vh solid #fff;background:linear-gradient(180deg,#A5EA76 0%,#3FA80F 100%);box-shadow:inset 0 -.45vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;font-family:Nunito;font-weight:900;font-size:2vh;color:#fff;text-shadow:0 .2vh 0 rgba(0,0,0,.25)">2</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.4vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;color:#2F3B52">Breathe out, twice</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.6vh;line-height:1.5;color:#6B7A8D;text-wrap:pretty">Every place starts by asking for two ordinary breaths. Not your biggest — the one that feels easy.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:1.6vh;padding:1.4vh 0;align-items:flex-start">
+          <div style="flex:none;width:5vh;height:5vh;border-radius:1.4vh;border:.35vh solid #fff;background:linear-gradient(180deg,#FF8ED0 0%,#E9349B 100%);box-shadow:inset 0 -.45vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;font-family:Nunito;font-weight:900;font-size:2vh;color:#fff;text-shadow:0 .2vh 0 rgba(0,0,0,.25)">3</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.4vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;color:#2F3B52">Play your way</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.6vh;line-height:1.5;color:#6B7A8D;text-wrap:pretty">The game measures those two breaths and sizes itself to you. A small pair of lungs and a big one both get a fair game.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:1.6vh;padding:1.4vh 0;align-items:flex-start">
+          <div style="flex:none;width:5vh;height:5vh;border-radius:1.4vh;border:.35vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.45vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;font-family:Nunito;font-weight:900;font-size:2vh;color:#fff;text-shadow:0 .2vh 0 rgba(0,0,0,.25)">4</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.4vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2vh;color:#2F3B52">No losing</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.6vh;line-height:1.5;color:#6B7A8D;text-wrap:pretty">Nothing runs out and no score goes down. A short breath just means the firefly does not climb as high that time.</div>
+          </div>
+        </div>
+        <div style="margin-top:1.6vh;padding:1.6vh 2vh;border-radius:1.6vh;background:#EEF3F8">
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.7vh;color:#2F3B52;margin-bottom:.5vh">No flute yet?</div>
+          <div style="font-family:Nunito;font-weight:600;font-size:1.55vh;line-height:1.5;color:#6B7A8D;text-wrap:pretty">Choose Spacebar on the same screen. Hold it to breathe out, let go to breathe in. Everything else works exactly the same.</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isMissions }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70vh;max-width:92%;max-height:86%;display:flex;flex-direction:column;border-radius:3vh;background:#fff;border:.45vh solid #fff;box-shadow:0 1.2vh 0 #C7D3E8,0 2.4vh 4vh rgba(20,73,107,.4);overflow:hidden">
+      <div style="display:flex;align-items:center;gap:1.4vh;padding:1.6vh 1.6vh 0">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;height:6.2vh;border-radius:99px;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.14em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.24)">MISSIONS</div>
+        <button onClick="{{ closePopup }}" style="flex:none;width:6.2vh;height:6.2vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(2px)">
+          <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="3.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:2.2vh 2.6vh 2.8vh">
+        <div style="font-family:Nunito;font-weight:700;font-size:1.55vh;line-height:1.5;color:#6B7A8D;margin-bottom:.8vh;text-wrap:pretty">Four places, four different ways to breathe. Play them in any order.</div>
+        <div style="display:flex;align-items:center;gap:1.4vh;padding:1.3vh 0">
+          <div style="flex:none;width:4.6vh;height:4.6vh;border-radius:1.3vh;border:.3vh solid #fff;background:linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16)"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.25vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;color:#2F3B52">Lillypad Hop</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.5vh;color:#6B7A8D">Little puffs, one after another</div>
+          </div>
+          <div style="font-family:Nunito;font-weight:900;font-size:1.25vh;letter-spacing:.1em;color:#8C97AB">30 SEC</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1.4vh;padding:1.3vh 0">
+          <div style="flex:none;width:4.6vh;height:4.6vh;border-radius:1.3vh;border:.3vh solid #fff;background:linear-gradient(180deg,#FF8ED0 0%,#E9349B 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16)"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.25vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;color:#2F3B52">The Cave</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.5vh;color:#6B7A8D">One long, steady breath</div>
+          </div>
+          <div style="font-family:Nunito;font-weight:900;font-size:1.25vh;letter-spacing:.1em;color:#8C97AB">45 SEC</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1.4vh;padding:1.3vh 0">
+          <div style="flex:none;width:4.6vh;height:4.6vh;border-radius:1.3vh;border:.3vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F58A0C 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16)"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.25vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;color:#2F3B52">Firefly Conversation</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.5vh;color:#6B7A8D">Answer each pulse you see</div>
+          </div>
+          <div style="font-family:Nunito;font-weight:900;font-size:1.25vh;letter-spacing:.1em;color:#8C97AB">60 SEC</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1.4vh;padding:1.3vh 0">
+          <div style="flex:none;width:4.6vh;height:4.6vh;border-radius:1.3vh;border:.3vh solid #fff;background:linear-gradient(180deg,#A5EA76 0%,#3FA80F 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16)"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.25vh">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;color:#2F3B52">The Garden</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.5vh;color:#6B7A8D">Longer breaths make it grow</div>
+          </div>
+          <div style="font-family:Nunito;font-weight:900;font-size:1.25vh;letter-spacing:.1em;color:#8C97AB">5 STAGES</div>
+        </div>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70vh;max-width:92%;max-height:86%;display:flex;flex-direction:column;border-radius:3vh;background:#fff;border:.45vh solid #fff;box-shadow:0 1.2vh 0 #C7D3E8,0 2.4vh 4vh rgba(20,73,107,.4);overflow:hidden">
+      <div style="display:flex;align-items:center;gap:1.4vh;padding:1.6vh 1.6vh 0">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;height:6.2vh;border-radius:99px;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.14em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.24)">SETTINGS</div>
+        <button onClick="{{ closePopup }}" style="flex:none;width:6.2vh;height:6.2vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(2px)">
+          <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="3.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:2.2vh 2.6vh 2.8vh">
+        <div style="display:flex;flex-direction:column;gap:1.2vh">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:1.4vh 1.8vh;border-radius:1.6vh;background:#EEF3F8">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;color:#2F3B52">Sound</div>
+            <button onClick="{{ openSound }}" style="height:4.6vh;padding:0 2vh;border:.35vh solid #fff;border-radius:1.3vh;background:linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16);cursor:pointer;color:#fff;font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.1em;text-shadow:0 .2vh 0 rgba(0,0,0,.24);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06)" style-active="transform:translateY(2px)">ADJUST</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:1.4vh 1.8vh;border-radius:1.6vh;background:#EEF3F8">
+            <div style="display:flex;flex-direction:column;gap:.2vh">
+              <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;color:#2F3B52">The flute</div>
+              <div style="font-family:Nunito;font-weight:600;font-size:1.45vh;color:#8C97AB">Connected inside the game</div>
+            </div>
+            <a href="Chamki Firefly Forest.dc.html" style="display:flex;align-items:center;height:4.6vh;padding:0 2vh;border:.35vh solid #fff;border-radius:1.3vh;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16);cursor:pointer;color:#fff;font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.1em;text-decoration:none;text-shadow:0 .2vh 0 rgba(0,0,0,.24);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06)" style-active="transform:translateY(2px)">OPEN</a>
+          </div>
+          <div style="padding:1.4vh 1.8vh;border-radius:1.6vh;background:#EEF3F8">
+            <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;color:#2F3B52;margin-bottom:.4vh">For grown-ups</div>
+            <div style="font-family:Nunito;font-weight:600;font-size:1.5vh;line-height:1.5;color:#6B7A8D;text-wrap:pretty">This is paced breathing practice. There is no losing and no timer pressure — the exercise is the whole point, and the game sizes itself to whoever is holding the flute.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isShop }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64vh;max-width:92%;max-height:86%;display:flex;flex-direction:column;border-radius:3vh;background:#fff;border:.45vh solid #fff;box-shadow:0 1.2vh 0 #C7D3E8,0 2.4vh 4vh rgba(20,73,107,.4);overflow:hidden">
+      <div style="display:flex;align-items:center;gap:1.4vh;padding:1.6vh 1.6vh 0">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;height:6.2vh;border-radius:99px;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;letter-spacing:.14em;color:#fff;text-shadow:0 .25vh 0 rgba(0,0,0,.24)">SHOP</div>
+        <button onClick="{{ closePopup }}" style="flex:none;width:6.2vh;height:6.2vh;border-radius:50%;border:.4vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.55vh 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.08)" style-active="transform:translateY(2px)">
+          <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="3.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:2.2vh 2.6vh 2.8vh">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1.6vh;padding:2vh 0 1vh;text-align:center">
+          <div style="width:9vh;height:9vh;border-radius:2.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#FF8ED0 0%,#E9349B 100%);box-shadow:inset 0 -.6vh 0 rgba(0,0,0,.16),0 .6vh 1.2vh rgba(20,73,107,.24);display:flex;align-items:center;justify-content:center;color:#fff">
+            <svg width="5vh" height="5vh" viewBox="0 0 24 24"><path fill="currentColor" d="M5.4 8.6h13.2l-1 11.4H6.4L5.4 8.6z"></path><path stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" d="M9 8.6a3 3 0 016 0"></path></svg>
+          </div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.4vh;color:#2F3B52">Nothing here yet</div>
+          <div style="font-family:Nunito;font-weight:600;font-size:1.6vh;line-height:1.5;color:#6B7A8D;max-width:40vh;text-wrap:pretty">Sparks you collect are being saved up. When the shop opens you will be able to spend them on new places and new friends for Chamki.</div>
+          <div style="display:flex;align-items:center;gap:1vh;height:5.2vh;padding:0 2vh;border-radius:99px;border:.4vh solid #fff;background:linear-gradient(180deg,#FFD75E 0%,#F0A62A 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16)">
+            <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.4" fill="#B86E12"></circle><circle cx="12" cy="12" r="7.4" fill="#FFE9A8"></circle><circle cx="12" cy="12" r="4.6" fill="#F5B731"></circle></svg>
+            <div style="font-family:Nunito;font-weight:900;font-size:1.9vh;color:#fff;text-shadow:0 .2vh 0 rgba(0,0,0,.26)">{{ coins }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+/* The sound layer is shared with the game — see assets/game-audio.js. */
+const Mix = GameAudio.Mix;
+const Sfx = GameAudio.Sfx;
+const Bgm = GameAudio.Bgm;
+
+class Component extends DCLogic {
+  state = { coins: 1280, level: 4, xp: 62, popup: null, tick: 0 };
+
+  componentDidMount() {
+    /* The mixer is shared with the game, so the levels a grown-up sets
+       here are the levels the game uses. It tells us when it changes so
+       the meters redraw. */
+    Mix.onChange = () => this.setState(st => ({ tick: st.tick + 1 }));
+    Sfx.warm();
+    // Browsers refuse audio until a gesture, so the bed waits for the
+    // first touch of the page rather than being lost on load.
+    this.wake = () => { Bgm.start('home'); };
+    window.addEventListener('pointerdown', this.wake, { once: true });
+    window.addEventListener('keydown', this.wake, { once: true });
+    Bgm.start('home');
+  }
+
+  componentWillUnmount() {
+    Mix.onChange = null;
+    window.removeEventListener('pointerdown', this.wake);
+    window.removeEventListener('keydown', this.wake);
+  }
+
+  open(which) { Sfx.play('pop', 0.3); this.setState({ popup: which }); }
+  close() { Sfx.play('click', 0.25); this.setState({ popup: null }); }
+
+  // Ten blocks per channel: chunky enough for a child to hit, and precise
+  // enough for a grown-up. Clicking a block sets the level to that block.
+  bars(channel) {
+    const lvl = channel === 'music' ? Mix.musicLevel : Mix.sfxLevel;
+    const off = channel === 'music' ? Mix.musicOff : Mix.sfxOff;
+    const out = [];
+    for (let i = 0; i < 10; i++) {
+      const v = (i + 1) / 10;
+      const on = !off && lvl >= v - 0.001;
+      out.push({
+        colour: on ? (channel === 'music' ? '#9E77E8' : '#12A5E0') : '#DCE4EC',
+        dim: on ? '1' : '.55',
+        set: () => { Mix.set(channel, v); Sfx.play('click-soft', 0.3); }
+      });
+    }
+    return out;
+  }
+
+  renderVals() {
+    const p = this.state.popup;
+    return {
+      coins: this.state.coins.toLocaleString('en-US'),
+      level: this.state.level,
+      xpPct: this.state.xp + '%',
+
+      soundOn: !Mix.allOff(),
+      soundOff: Mix.allOff(),
+      openSound: () => this.open('sound'),
+      openHelp: () => this.open('help'),
+      openSettings: () => this.open('settings'),
+      openMissions: () => this.open('missions'),
+      openShop: () => this.open('shop'),
+      closePopup: () => this.close(),
+
+      isSound: p === 'sound',
+      isHelp: p === 'help',
+      isSettings: p === 'settings',
+      isMissions: p === 'missions',
+      isShop: p === 'shop',
+      anyPopup: p !== null,
+
+      musicBars: this.bars('music'),
+      sfxBars: this.bars('sfx'),
+      musicPct: Mix.musicOff ? 'OFF' : Math.round(Mix.musicLevel * 100) + '%',
+      sfxPct: Mix.sfxOff ? 'OFF' : Math.round(Mix.sfxLevel * 100) + '%',
+      musicOn: !Mix.musicOff, musicMuted: Mix.musicOff,
+      sfxIsOn: !Mix.sfxOff, sfxMuted: Mix.sfxOff,
+      toggleMusic: () => { Mix.toggle('music'); },
+      toggleSfx: () => { Mix.toggle('sfx'); Sfx.play('pop', 0.3); },
+      toggleAll: () => { Mix.toggleAll(); },
+      allLabel: Mix.allOff() ? 'TURN SOUND ON' : 'MUTE EVERYTHING',
+
+      addCoin: () => { Sfx.play('pop', 0.35); this.setState(st => ({ coins: st.coins + 100 })); },
+      noop: () => {}
+    };
+  }
+}
+</script>
+</body>
+</html>

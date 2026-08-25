@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./assets/game-audio.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+<style>
+html, body { margin: 0; height: 100%; background: #7FD2F5; overflow: hidden; }
+button, a { transition: transform .16s cubic-bezier(.22,.7,.3,1), box-shadow .16s ease, filter .16s ease; }
+/* The fields are built from the same kit as the buttons: white border,
+   a sunk inner edge instead of a raised lip, so they read as things you
+   type into rather than things you press. */
+.fld {
+  width: 100%; height: 6.4vh; box-sizing: border-box;
+  padding: 0 2vh; border: .4vh solid #fff; border-radius: 1.8vh;
+  background: #fff; color: #2F3B52;
+  box-shadow: inset 0 .35vh 0 rgba(20,73,107,.14), 0 .5vh 1vh rgba(20,73,107,.18);
+  font-family: Nunito, sans-serif; font-weight: 800; font-size: 2vh;
+  outline: none;
+}
+.fld::placeholder { color: #A6B3C2; font-weight: 700; }
+.fld:focus { box-shadow: inset 0 .35vh 0 rgba(20,73,107,.14), 0 0 0 .45vh #B491F5; }
+</style>
+</helmet>
+
+<div style="position:relative;width:100%;height:100vh;overflow:hidden;font-family:Nunito,system-ui,sans-serif;color:#2F3B52;background:#7FD2F5">
+  <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/Homefinal.png)"></div>
+  <!-- Just enough to lift the card off the art. The first pass was heavy
+       enough to make a bright, cheerful picture look overcast. -->
+  <div style="position:absolute;inset:0;background:radial-gradient(64% 52% at 50% 46%,rgba(12,40,64,.02) 0%,rgba(12,40,64,.16) 100%)"></div>
+
+  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:56vh;max-width:90%;display:flex;flex-direction:column;gap:2vh;padding:3.4vh;border-radius:3.2vh;backdrop-filter:blur(26px) saturate(1.5);-webkit-backdrop-filter:blur(26px) saturate(1.5);border:.32vh solid rgba(255,255,255,.34);background:linear-gradient(160deg,rgba(50,78,116,.80) 0%,rgba(18,34,56,.88) 100%);box-shadow:inset 0 .12vh 0 rgba(255,255,255,.45),0 2.6vh 5.4vh rgba(9,28,44,.55)">
+
+    <!-- which side of the door you are on -->
+    <div style="display:flex;gap:.8vh;padding:.6vh;border-radius:1.8vh;background:rgba(255,255,255,.14)">
+      <button onClick="{{ showSignIn }}" style="flex:1;height:5.2vh;border:none;border-radius:1.4vh;background:{{ signInTab }};box-shadow:{{ signInLift }};cursor:pointer;color:{{ signInInk }};font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;letter-spacing:.06em">{{ t.signIn }}</button>
+      <button onClick="{{ showSignUp }}" style="flex:1;height:5.2vh;border:none;border-radius:1.4vh;background:{{ signUpTab }};box-shadow:{{ signUpLift }};cursor:pointer;color:{{ signUpInk }};font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;letter-spacing:.06em">{{ t.signUp }}</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:.5vh;text-align:center">
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:3.2vh;line-height:1.1;color:#FFFFFF;text-wrap:balance">{{ title }}</div>
+      <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.7vh;line-height:1.4;color:rgba(255,255,255,.82);text-wrap:pretty">{{ blurb }}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1.4vh">
+      <sc-if value="{{ isSignUp }}" hint-placeholder-val="{{ false }}">
+        <input ref="{{ nameRef }}" class="fld" type="text" placeholder="{{ t.phName }}" autocomplete="nickname" />
+      </sc-if>
+      <input ref="{{ userRef }}" class="fld" type="text" placeholder="{{ t.phUser }}" autocomplete="username" />
+      <input ref="{{ passRef }}" class="fld" type="password" placeholder="{{ t.phPass }}" autocomplete="current-password" />
+    </div>
+
+    <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:1vh;padding:1.2vh 1.6vh;border-radius:1.4vh;background:#F6E2E6;box-shadow:inset 0 0 0 .3vh #F2A9C4">
+        <svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24" style="flex:none;color:#9C3A55"><circle cx="12" cy="12" r="9.2" fill="currentColor" opacity=".2"></circle><path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 7.4v6M12 16.4v.2"></path></svg>
+        <div style="font-family:Nunito;font-weight:700;font-size:1.5vh;line-height:1.4;color:#9C3A55;text-wrap:pretty">{{ error }}</div>
+      </div>
+    </sc-if>
+
+    <button onClick="{{ submit }}" style="width:100%;height:7.4vh;padding-bottom:.6vh;box-sizing:border-box;border:.5vh solid #fff;border-radius:2.1vh;background:linear-gradient(180deg,#C9AEF9 0%,#8B5CE0 100%);box-shadow:inset 0 -.75vh 0 rgba(0,0,0,.16),0 .9vh 1.6vh rgba(20,73,107,.3);cursor:pointer;color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.6vh;line-height:1;letter-spacing:.05em;text-shadow:0 .3vh 0 rgba(0,0,0,.22)" style-hover="filter:brightness(1.05);transform:translateY(-.4vh)" style-active="transform:translateY(2px)">{{ cta }}</button>
+
+    <!-- Visible on purpose. This is a prototype door with one key in it —
+         hiding the key would only make it harder to test, and anyone can
+         read it in the source anyway. Real sign-in replaces all of this. -->
+    <div style="display:flex;align-items:center;gap:1.2vh;padding:1.3vh 1.6vh;border-radius:1.4vh;background:#FFF6DF;box-shadow:inset 0 0 0 .3vh #F5D98A">
+      <svg width="2.6vh" height="2.6vh" viewBox="0 0 24 24" style="flex:none;color:#B06D0C"><path fill="currentColor" d="M14.6 3.4a6 6 0 00-5.5 8.4L3 17.9V21h3.1l1-1v-1.7h1.7l1.5-1.5v-1.7h1.7l1.3-1.3a6 6 0 102.3-11.4zm1.9 4.8a1.5 1.5 0 11-2.1-2.1 1.5 1.5 0 012.1 2.1z"></path></svg>
+      <div style="display:flex;flex-direction:column;gap:.15vh">
+        <div style="font-family:Nunito;font-weight:900;font-size:1.15vh;letter-spacing:.14em;color:#B06D0C">{{ t.demoLabel }}</div>
+        <div style="font-family:Nunito;font-weight:800;font-size:1.5vh;color:#7A4C08">{{ t.demoCreds }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const Sfx = GameAudio.Sfx;
+
+const SESSION_KEY = 'chamkiForest.session.v1';
+
+/* THE ONE KEY IN THE DOOR.
+
+   Hardcoded on purpose and only for now. Anything in this file is readable
+   by anyone who opens it, so this is a placeholder for testing the flow —
+   not a security boundary, and it must not survive into anything real.
+   When proper sign-in arrives, replace `check()` and delete this pair. */
+const DEMO_USER = 'breezy';
+const DEMO_PASS = 'breathe';
+
+const STR = {
+  en: {
+    signIn: 'SIGN IN', signUp: 'SIGN UP',
+    titleIn: 'Welcome back', blurbIn: 'Chamki has been waiting in the forest.',
+    titleUp: 'Join the forest', blurbUp: 'Make a place to keep your flowers and your fireflies.',
+    phName: "Child's name", phUser: 'Username', phPass: 'Password',
+    ctaIn: 'SIGN IN', ctaUp: 'CREATE ACCOUNT',
+    demoLabel: 'WHILE WE BUILD THE REAL DOOR',
+    demoCreds: 'breezy  /  breathe',
+    errUser: 'Type a username to carry on.',
+    errPass: 'Type a password to carry on.',
+    errName: 'What should we call you?',
+    errWrong: "That pair doesn't match. Try breezy / breathe.",
+    errShort: 'Give the password at least four letters.'
+  }
+};
+
+class Component extends DCLogic {
+  state = { mode: 'in', error: '' };
+
+  nameRef = React.createRef();
+  userRef = React.createRef();
+  passRef = React.createRef();
+
+  t() { return STR.en; }
+
+  // Reading the fields off refs rather than binding every keystroke: the
+  // value is only needed once, when the button is pressed.
+  val(ref) { return (ref.current && ref.current.value || '').trim(); }
+
+  go(mode) {
+    Sfx.play('click', 0.3);
+    this.setState({ mode: mode, error: '' });
+  }
+
+  submit() {
+    const T = this.t();
+    const up = this.state.mode === 'up';
+    const user = this.val(this.userRef);
+    const pass = this.val(this.passRef);
+
+    if (up && !this.val(this.nameRef)) return this.fail(T.errName);
+    if (!user) return this.fail(T.errUser);
+    if (!pass) return this.fail(T.errPass);
+
+    if (up) {
+      // Signing up accepts anything sensible — there is nowhere to store it
+      // yet, so refusing people would be theatre.
+      if (pass.length < 4) return this.fail(T.errShort);
+      return this.enter(this.val(this.nameRef));
+    }
+    if (user.toLowerCase() !== DEMO_USER || pass !== DEMO_PASS) return this.fail(T.errWrong);
+    this.enter(user);
+  }
+
+  fail(msg) {
+    Sfx.play('pop', 0.3);
+    this.setState({ error: msg });
+  }
+
+  enter(who) {
+    Sfx.play('chime', 0.4);
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ who: who, when: Date.now() }));
+    } catch (e) {}
+    window.location.href = 'Breezy Home.dc.html';
+  }
+
+  renderVals() {
+    const T = this.t();
+    const up = this.state.mode === 'up';
+    const on = 'linear-gradient(180deg,#C9AEF9 0%,#8B5CE0 100%)';
+    const off = 'transparent';
+    const lift = 'inset 0 -.4vh 0 rgba(0,0,0,.16)';
+    return {
+      t: T,
+
+      isSignUp: up,
+      title: up ? T.titleUp : T.titleIn,
+      blurb: up ? T.blurbUp : T.blurbIn,
+      cta: up ? T.ctaUp : T.ctaIn,
+
+      signInTab: up ? off : on,
+      signUpTab: up ? on : off,
+      signInInk: up ? 'rgba(255,255,255,.72)' : '#fff',
+      signUpInk: up ? '#fff' : 'rgba(255,255,255,.72)',
+      signInLift: up ? 'none' : lift,
+      signUpLift: up ? lift : 'none',
+
+      showSignIn: () => this.go('in'),
+      showSignUp: () => this.go('up'),
+      submit: () => this.submit(),
+
+      hasError: !!this.state.error,
+      error: this.state.error,
+
+      nameRef: this.nameRef, userRef: this.userRef, passRef: this.passRef
+    };
+  }
+}
+</script>
+</body>
+</html>

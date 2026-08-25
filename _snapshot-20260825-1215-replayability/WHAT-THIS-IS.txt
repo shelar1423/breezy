@@ -1,0 +1,9 @@
+The replayability work, parked. Not deleted — just set aside.
+
+WHAT IS IN HERE
+  the persistent meadow, the evening count, Tonight's Flight,
+  the nightly weather, the collectable fireflies, and Chamki's greeting.
+
+TO BRING IT BACK
+  cp "<this folder>"/*.dc.html .
+  cp "<this folder>"/assets/game-audio.js assets/

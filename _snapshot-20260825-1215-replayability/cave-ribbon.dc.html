@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+@keyframes flyBob { 0%,100% { transform: translate(-50%,50%) rotate(-2deg); } 50% { transform: translate(-50%,calc(50% - 6px)) rotate(2deg); } }
+body { margin: 0; background: #04070f; }
+a { color: #F6C96B; } a:hover { color: #ffe1a6; }
+</style>
+</helmet>
+
+<div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#050810;font-family:Nunito,system-ui,sans-serif;color:#F7EEDB">
+
+  <img src="assets/bg-sky.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;filter:brightness(.55)" />
+  <img src="assets/bg-l2.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;filter:blur(6px) brightness(.42)" />
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,7,15,.82) 0%,rgba(4,7,15,.28) 34%,rgba(4,7,15,.3) 62%,rgba(4,7,15,.88) 100%)"></div>
+
+  <div style="position:absolute;left:2.6%;top:5.5%;font-size:1.1vw;letter-spacing:.3em;color:#8FA6BE">B</div>
+  <div style="position:absolute;left:0;right:0;top:5%;text-align:center">
+    <div style="font-family:Marcellus,serif;font-size:1.9vw;letter-spacing:.2em;color:#F7EEDB">CAVE PASSAGE</div>
+    <div style="margin-top:.5vw;font-size:.95vw;letter-spacing:.1em;color:rgba(155,175,196,.8)">Light ribbon · ride the glow, don't leave it</div>
+  </div>
+
+  <div style="position:absolute;left:0;right:0;top:19%;height:60%;overflow:hidden">
+    <div ref="{{ guideRef }}" style="position:absolute;left:0;right:0;height:1px;background:repeating-linear-gradient(90deg,rgba(155,232,196,.35) 0 10px,rgba(155,232,196,0) 10px 26px)"></div>
+    <div ref="{{ guide2Ref }}" style="position:absolute;left:0;right:0;height:1px;background:repeating-linear-gradient(90deg,rgba(155,232,196,.35) 0 10px,rgba(155,232,196,0) 10px 26px)"></div>
+
+    <div ref="{{ laneRef }}" style="position:absolute;left:0;right:0;border-radius:999px;background:linear-gradient(180deg,rgba(190,150,255,0) 0%,rgba(190,150,255,.2) 26%,rgba(255,222,168,.4) 50%,rgba(190,150,255,.2) 74%,rgba(190,150,255,0) 100%);filter:blur(2px);transition:opacity .25s ease"></div>
+    <div ref="{{ coreRef }}" style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(255,231,178,0) 0%,rgba(255,231,178,.9) 22%,rgba(255,231,178,.9) 78%,rgba(255,231,178,0) 100%);box-shadow:0 0 22px rgba(255,206,132,.7);transition:opacity .25s ease"></div>
+
+    <img ref="{{ flyRef }}" src="assets/char-golden.png" alt="Your firefly" style="position:absolute;left:30%;width:11%;transform:translate(-50%,50%);filter:drop-shadow(0 0 34px rgba(246,201,107,.55));animation:flyBob 2.6s ease-in-out infinite" />
+  </div>
+
+  <div ref="{{ stateRef }}" style="position:absolute;left:0;right:0;bottom:19%;text-align:center;font-size:1.15vw;letter-spacing:.14em;color:#9be8c4"></div>
+
+  <div style="position:absolute;left:18%;right:18%;bottom:9%;height:1.1vw;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden">
+    <div ref="{{ bandRef }}" style="position:absolute;top:0;bottom:0;background:rgba(155,232,196,.3);border-left:2px solid rgba(155,232,196,.75);border-right:2px solid rgba(155,232,196,.75)"></div>
+    <div ref="{{ meterRef }}" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#F6C96B,#ffe1a6);border-radius:999px"></div>
+  </div>
+  <div style="position:absolute;left:18%;bottom:4.5%;font-size:.85vw;letter-spacing:.16em;color:rgba(155,175,196,.6)">SOFTER</div>
+  <div style="position:absolute;right:18%;bottom:4.5%;font-size:.85vw;letter-spacing:.16em;color:rgba(155,175,196,.6)">FIRMER</div>
+
+  <div style="position:absolute;right:3%;bottom:8%;width:7%;display:flex;flex-direction:column;align-items:center;gap:.6vw">
+    <div style="position:relative;width:100%;aspect-ratio:.72;border:2px solid rgba(255,214,160,.35);border-radius:.5vw .5vw 1.2vw 1.2vw;overflow:hidden;background:rgba(10,16,28,.5)">
+      <div ref="{{ jarRef }}" style="position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(0deg,rgba(255,196,110,.8),rgba(255,231,178,.35));transition:height .5s cubic-bezier(.2,1,.3,1)"></div>
+    </div>
+    <div ref="{{ sparkRef }}" style="font-size:.9vw;letter-spacing:.14em;color:#F6C96B">0</div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  laneRef = React.createRef(); coreRef = React.createRef(); guideRef = React.createRef(); guide2Ref = React.createRef();
+  flyRef = React.createRef(); stateRef = React.createRef(); meterRef = React.createRef();
+  bandRef = React.createRef(); jarRef = React.createRef(); sparkRef = React.createRef();
+  v = 0; hold = 0; sparks = 0; scroll = 0;
+
+  componentDidMount() { this.t0 = performance.now(); this.last = this.t0; this.raf = requestAnimationFrame(this.frame); }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); }
+
+  breathAt(ms) {
+    const K = [[0,0],[900,.66],[2300,.52],[6300,.5],[7500,.33],[9400,.49],[12200,.51],[13200,0],[15000,0]];
+    const t = ms % 15000;
+    for (let i = 0; i < K.length - 1; i++) {
+      if (t <= K[i+1][0]) {
+        const a = K[i], b = K[i+1], p = (t - a[0]) / (b[0] - a[0]), e = p*p*(3-2*p);
+        return a[1] + (b[1] - a[1]) * e;
+      }
+    }
+    return 0;
+  }
+
+  frame = (now) => {
+    const dt = Math.min(50, now - this.last); this.last = now;
+    const tt = now - this.t0;
+    const tgt = this.breathAt(tt) + Math.sin(now / 95) * 0.006;
+    this.v += (tgt - this.v) * 0.13;
+    const lc = 0.5 + 0.115 * Math.sin(tt * 0.00052) + 0.05 * Math.sin(tt * 0.0012);
+    const lh = 0.085;
+    const pos = 0.08 + this.v * 0.84;
+    const on = this.v > 0.06 && Math.abs(pos - lc) < lh;
+    if (on) { this.scroll += dt * 0.06; this.hold += dt; } else { this.hold *= 0.9985; }
+    while (this.hold > 2200) { this.hold -= 2200; this.sparks++; }
+
+    const lane = this.laneRef.current;
+    if (lane) { lane.style.top = ((1 - (lc + lh)) * 100) + '%'; lane.style.height = (2 * lh * 100) + '%'; lane.style.opacity = on ? '1' : '.35'; }
+    const core = this.coreRef.current;
+    if (core) { core.style.top = ((1 - lc) * 100) + '%'; core.style.opacity = on ? '1' : '.3'; }
+    const g1 = this.guideRef.current, g2 = this.guide2Ref.current;
+    if (g1) { g1.style.top = ((1 - (lc + lh)) * 100) + '%'; g1.style.backgroundPosition = (-this.scroll * 0.6) + 'px 0'; }
+    if (g2) { g2.style.top = ((1 - (lc - lh)) * 100) + '%'; g2.style.backgroundPosition = (-this.scroll * 0.6) + 'px 0'; }
+    const fly = this.flyRef.current;
+    if (fly) { fly.style.bottom = (pos * 100) + '%'; fly.style.filter = 'drop-shadow(0 0 ' + (18 + this.v * 46) + 'px rgba(246,201,107,' + (0.3 + this.v * 0.45) + '))'; }
+    const m = this.meterRef.current; if (m) m.style.width = Math.min(100, this.v * 100) + '%';
+    const bd = this.bandRef.current;
+    if (bd) { const c = (lc - 0.08) / 0.84, w = (2 * lh) / 0.84; bd.style.left = Math.max(0, (c - w / 2) * 100) + '%'; bd.style.width = (w * 100) + '%'; }
+    const st = this.stateRef.current;
+    if (st) {
+      let txt = 'blow gently to begin', col = 'rgba(155,175,196,.8)';
+      if (this.v > 0.06) {
+        if (on) { txt = 'steady — the light is carrying you'; col = '#9be8c4'; }
+        else if (pos < lc - lh) { txt = 'a little firmer'; col = '#F6C96B'; }
+        else { txt = 'a little softer'; col = '#F6C96B'; }
+      }
+      st.textContent = txt; st.style.color = col;
+    }
+    const jr = this.jarRef.current; if (jr) jr.style.height = Math.min(100, (this.sparks % 9) * 11.5) + '%';
+    const sp = this.sparkRef.current; if (sp) sp.textContent = String(this.sparks);
+    this.raf = requestAnimationFrame(this.frame);
+  };
+
+  renderVals() { return {
+    laneRef: this.laneRef, coreRef: this.coreRef, guideRef: this.guideRef, guide2Ref: this.guide2Ref,
+    flyRef: this.flyRef, stateRef: this.stateRef, meterRef: this.meterRef, bandRef: this.bandRef,
+    jarRef: this.jarRef, sparkRef: this.sparkRef
+  }; }
+}
+
+</script>
+</body>
+</html>

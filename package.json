@@ -1,0 +1,24 @@
+{
+  "name": "breezy",
+  "version": "1.0.0",
+  "description": "Breezy - Interactive Breath Mechanics Game Prototype",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve . -l 8000",
+    "start": "npx serve . -l 8000",
+    "serve:py": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "game",
+    "breath-mechanics",
+    "interactive",
+    "audio",
+    "arduino",
+    "game-prototype"
+  ],
+  "author": "shelar1423",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nunito:wght@400;600;700&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+<style>
+@keyframes spotPulse { 0%,100% { opacity: .75; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.06); } }
+@keyframes driftFly { 0%,100% { transform: translate(-50%,-50%); } 50% { transform: translate(-50%,calc(-50% - 8px)); } }
+body { margin: 0; background: #0b0a12; }
+a { color: #F6C96B; } a:hover { color: #ffe1a6; }
+</style>
+</helmet>
+
+<div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;font-family:Nunito,system-ui,sans-serif;color:#F7EEDB;background:
+  radial-gradient(58% 46% at 50% 46%, rgba(255,206,132,.13) 0%, rgba(255,206,132,0) 62%),
+  radial-gradient(120% 90% at 50% 8%, #3a2a3c 0%, #221d31 34%, #141425 66%, #0c0e1a 100%)">
+
+  <div style="position:absolute;inset:0;background:
+    radial-gradient(circle at 8% 22%, rgba(18,48,44,.95) 0 7%, transparent 7.6%),
+    radial-gradient(circle at 17% 12%, rgba(14,40,38,.95) 0 6%, transparent 6.6%),
+    radial-gradient(circle at 26% 26%, rgba(20,54,48,.9) 0 7.5%, transparent 8%),
+    radial-gradient(circle at 12% 40%, rgba(16,44,42,.92) 0 6.5%, transparent 7%),
+    radial-gradient(circle at 33% 8%, rgba(22,58,50,.85) 0 6%, transparent 6.5%),
+    radial-gradient(circle at 47% 14%, rgba(16,46,44,.9) 0 7%, transparent 7.5%),
+    radial-gradient(circle at 62% 9%, rgba(20,52,48,.88) 0 6.4%, transparent 7%),
+    radial-gradient(circle at 76% 18%, rgba(15,42,40,.92) 0 7.2%, transparent 7.8%),
+    radial-gradient(circle at 89% 30%, rgba(19,50,46,.9) 0 6.8%, transparent 7.4%),
+    radial-gradient(circle at 93% 52%, rgba(14,40,38,.92) 0 6.2%, transparent 6.8%),
+    radial-gradient(circle at 82% 70%, rgba(18,48,44,.9) 0 7%, transparent 7.6%),
+    radial-gradient(circle at 66% 84%, rgba(15,44,40,.9) 0 6.6%, transparent 7.2%),
+    radial-gradient(circle at 44% 90%, rgba(19,50,46,.88) 0 6%, transparent 6.6%),
+    radial-gradient(circle at 24% 82%, rgba(16,44,42,.92) 0 7%, transparent 7.6%),
+    radial-gradient(circle at 9% 66%, rgba(20,54,48,.9) 0 6.4%, transparent 7%);
+    filter:blur(1px)"></div>
+
+  <div style="position:absolute;left:6%;top:52%;width:44%;height:26%;border-radius:60% 40% 55% 45%;background:linear-gradient(120deg,rgba(120,190,220,.34),rgba(90,150,200,.16));filter:blur(6px);transform:rotate(-8deg)"></div>
+  <div style="position:absolute;left:9%;top:56%;width:38%;height:12%;border-radius:999px;background:linear-gradient(90deg,rgba(210,240,255,.3),rgba(180,220,245,.06));filter:blur(3px);transform:rotate(-8deg)"></div>
+
+  <div style="position:absolute;right:8%;bottom:9%;width:26%;aspect-ratio:1.35;border-radius:52% 48% 46% 54%;background:radial-gradient(60% 60% at 45% 40%,rgba(120,150,235,.34) 0%,rgba(60,80,170,.3) 55%,rgba(30,40,100,.42) 100%);filter:blur(5px)"></div>
+
+  <div style="position:absolute;left:0;right:0;top:5.5%;text-align:center">
+    <div style="font-family:Marcellus,serif;font-size:2.3vw;letter-spacing:.16em">Chamki's Forest</div>
+    <div style="margin-top:.5vw;font-size:.95vw;letter-spacing:.2em;color:rgba(200,190,215,.72);text-transform:uppercase">Loop composition</div>
+  </div>
+
+  <div style="position:absolute;left:20%;top:34%;width:1px;height:1px">
+    <div style="position:absolute;width:13vw;height:13vw;border-radius:50%;background:radial-gradient(circle,rgba(170,200,255,.42) 0%,rgba(120,160,240,.12) 46%,rgba(0,0,0,0) 70%);transform:translate(-50%,-50%);animation:spotPulse 5s ease-in-out infinite"></div>
+    <div style="position:absolute;transform:translate(-50%,2.9vw);width:16vw;text-align:center;font-size:1.15vw;letter-spacing:.16em;color:#dfe8ff">THE CAVE</div>
+    <div style="position:absolute;transform:translate(-50%,4.4vw);width:16vw;text-align:center;font-size:.85vw;letter-spacing:.1em;color:rgba(190,205,235,.6)">one steady breath</div>
+  </div>
+
+  <div style="position:absolute;left:26%;top:66%;width:1px;height:1px">
+    <div style="position:absolute;width:12vw;height:12vw;border-radius:50%;background:radial-gradient(circle,rgba(255,222,168,.44) 0%,rgba(255,196,110,.13) 46%,rgba(0,0,0,0) 70%);transform:translate(-50%,-50%);animation:spotPulse 5.6s ease-in-out infinite .4s"></div>
+    <div style="position:absolute;transform:translate(-50%,2.7vw);width:16vw;text-align:center;font-size:1.15vw;letter-spacing:.16em;color:#ffe8c4">THE STREAM</div>
+    <div style="position:absolute;transform:translate(-50%,4.2vw);width:16vw;text-align:center;font-size:.85vw;letter-spacing:.1em;color:rgba(235,215,185,.62)">little puffs</div>
+  </div>
+
+  <div style="position:absolute;left:57%;top:46%;width:1px;height:1px">
+    <div style="position:absolute;width:15vw;height:15vw;border-radius:50%;background:radial-gradient(circle,rgba(255,236,196,.5) 0%,rgba(255,206,132,.16) 44%,rgba(0,0,0,0) 70%);transform:translate(-50%,-50%);animation:spotPulse 4.6s ease-in-out infinite .8s"></div>
+    <div style="position:absolute;transform:translate(-50%,3.4vw);width:16vw;text-align:center;font-size:1.15vw;letter-spacing:.16em;color:#fff1d8">THE CLEARING</div>
+    <div style="position:absolute;transform:translate(-50%,4.9vw);width:16vw;text-align:center;font-size:.85vw;letter-spacing:.1em;color:rgba(240,225,200,.62)">call and answer</div>
+  </div>
+
+  <div style="position:absolute;left:81%;top:74%;width:1px;height:1px">
+    <div style="position:absolute;width:12.5vw;height:12.5vw;border-radius:50%;background:radial-gradient(circle,rgba(160,175,255,.4) 0%,rgba(90,110,210,.12) 46%,rgba(0,0,0,0) 70%);transform:translate(-50%,-50%);animation:spotPulse 6.2s ease-in-out infinite 1.2s"></div>
+    <div style="position:absolute;transform:translate(-50%,2.8vw);width:16vw;text-align:center;font-size:1.15vw;letter-spacing:.16em;color:#e2e6ff">THE POND</div>
+    <div style="position:absolute;transform:translate(-50%,4.3vw);width:16vw;text-align:center;font-size:.85vw;letter-spacing:.1em;color:rgba(196,204,240,.6)">winding down</div>
+  </div>
+
+  <img src="assets/char-golden.png" alt="Your firefly" style="position:absolute;left:41%;top:56%;width:7.5%;transform:translate(-50%,-50%);filter:drop-shadow(0 0 38px rgba(246,201,107,.55));animation:driftFly 5s ease-in-out infinite" />
+
+  <div style="position:absolute;left:0;right:0;bottom:7%;display:flex;justify-content:center">
+    <button style="font-family:Nunito;font-size:1.35vw;font-weight:700;letter-spacing:.18em;color:#3a2410;padding:1.5vw 4vw;border:none;border-radius:999px;cursor:pointer;background:linear-gradient(180deg,#ffe1a6,#F6C96B);box-shadow:0 .8vw 2.4vw rgba(255,196,110,.28)">TONIGHT'S FLIGHT</button>
+  </div>
+
+  <div style="position:absolute;right:2.4%;top:5.5%;display:flex;gap:.8vw;align-items:center">
+    <button style="font-family:Nunito;font-size:.9vw;letter-spacing:.14em;color:#dfe4f2;background:rgba(20,22,40,.6);border:1px solid rgba(180,190,225,.24);border-radius:999px;padding:.6vw 1.2vw;cursor:pointer">EN · हिं</button>
+    <button style="font-family:Nunito;font-size:.9vw;letter-spacing:.14em;color:#dfe4f2;background:rgba(20,22,40,.6);border:1px solid rgba(180,190,225,.24);border-radius:999px;padding:.6vw 1.2vw;cursor:pointer">FOR GROWN-UPS</button>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:720}}"></script>
+</body>
+</html>

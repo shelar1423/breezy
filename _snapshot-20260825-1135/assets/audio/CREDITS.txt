@@ -1,0 +1,34 @@
+SOUND EFFECTS
+  chime.mp3, sparkle.mp3, pop.mp3, ping.mp3, click-soft.mp3
+  Source : Pixabay (https://pixabay.com/sound-effects/)
+  Licence: Pixabay Content License - free for commercial use,
+           no attribution required, modification permitted.
+           https://pixabay.com/service/license-summary/
+
+--------------------------------------------------------------
+BACKGROUND MUSIC - one track per place
+  All CC0 1.0 (Public Domain Dedication): no rights reserved,
+  no attribution required, commercial use permitted.
+  https://creativecommons.org/publicdomain/zero/1.0/
+  Credit is given below voluntarily.
+
+  bgm-stream.mp3        Lillypad Hop
+    "Chill lofi inspired [loop edit]" by qubodup
+    https://opengameart.org/content/chill-lofi-inspired-loop-edit
+
+  bgm-cave.mp3          The Cave
+    "Contemplation" by joth
+    https://opengameart.org/content/contemplation-0
+
+  bgm-conversation.mp3  Firefly Conversation
+    "Heavenly Loop" by isaiah658
+    https://opengameart.org/content/heavenly-loop
+
+  bgm-garden.mp3        The Garden (and the home screen)
+    "Forest Whisper Theme" by Alexandr Zhelanov (cleytonkauffman)
+    https://opengameart.org/content/forest-whisper-theme
+
+  Modified in each case: trimmed to a stable section, the tail
+  crossfaded onto the head so the loop has no audible seam
+  (every seam measured under 1 dB), loudness-normalised to
+  -24 LUFS, encoded 96 kbps mp3.

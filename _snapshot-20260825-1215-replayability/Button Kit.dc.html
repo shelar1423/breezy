@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet" />
+<style>
+html, body { margin: 0; background: #7B5CFA; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;padding:6vh 4vh;display:flex;flex-direction:column;align-items:center;gap:5vh;background:radial-gradient(120% 100% at 50% 0%,#9B82FF 0%,#7B5CFA 55%,#6B4CE0 100%);font-family:Nunito,system-ui,sans-serif">
+  <div style="color:#fff;font-weight:900;font-size:2vh;letter-spacing:.18em;text-transform:uppercase;opacity:.85">UI Button Kit</div>
+
+  <div style="display:flex;flex-direction:column;gap:2.6vh">
+    <sc-for list="{{ colorways }}" as="c" hint-placeholder-count="5">
+      <div style="display:flex;gap:2.4vh;justify-content:center">
+        <sc-for list="{{ labels }}" as="label" hint-placeholder-count="3">
+          <button style="position:relative;overflow:hidden;min-width:17vh;padding:1.7vh 3.6vh;border-radius:99px;border:3px solid #fff;background:{{ c.bg }};box-shadow:{{ c.shadow }};color:#fff;font-family:Nunito;font-weight:900;font-size:1.9vh;letter-spacing:.04em;text-shadow:0 2px 3px rgba(0,0,0,.25);cursor:pointer" style-before="content:'';position:absolute;top:0;left:9%;right:9%;height:44%;border-radius:99px 99px 40% 40%;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0));pointer-events:none" style-active="transform:translateY(3px);box-shadow:{{ c.shadowActive }}" style-hover="filter:brightness(1.04)">{{ label }}</button>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const COLORWAYS = [
+  { top: '#FFE18A', bottom: '#F5A623', edge: '#C97A00' },
+  { top: '#FFC3EC', bottom: '#FF6FCB', edge: '#D63FA0' },
+  { top: '#9BE7FA', bottom: '#29B6E8', edge: '#1B87B3' },
+  { top: '#D9C6FA', bottom: '#B296EF', edge: '#8A67C9' },
+  { top: '#A6EE7E', bottom: '#5FBF2C', edge: '#3D8A16' }
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      labels: ['PLAY', 'NEXT', 'CONTINUE'],
+      colorways: COLORWAYS.map(c => ({
+        bg: `linear-gradient(180deg, ${c.top} 0%, ${c.bottom} 100%)`,
+        shadow: `0 5px 0 ${c.edge}, 0 10px 16px rgba(0,0,0,.28)`,
+        shadowActive: `0 1px 0 ${c.edge}, 0 3px 8px rgba(0,0,0,.24)`
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

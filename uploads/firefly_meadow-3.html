@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Firefly Meadow</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0b1428; --deep:#16264a; --dusk:#2b3f6b;
+  --amber:#ffb454; --hot:#ffe9c4; --leaf:#5ecf94; --cool:#63d0ee;
+  --pink:#f58fb4; --violet:#b98cf0;
+  --paper:#f2f6ff; --muted:#a7bada; --dim:#6d82a8;
+  --round:"Baloo 2",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:#070d1c;color:var(--paper);font-family:var(--round);
+  display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+#app{width:min(1060px,100vw);height:min(700px,100vh);position:relative;overflow:hidden;border-radius:8px;
+  box-shadow:0 30px 90px rgba(0,0,0,.6)}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.layer{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:34px;background:rgba(11,20,40,.93);z-index:6}
+.layer.on{display:flex}
+h1{font-size:62px;line-height:1;font-weight:700;margin-bottom:4px}
+h1 em{color:var(--amber);font-style:normal}
+h2{font-size:38px;font-weight:600;margin-bottom:8px}
+p{color:var(--muted);max-width:46ch;margin-bottom:14px;font-size:19px;line-height:1.6}
+.small{font-size:15px;color:var(--dim);max-width:56ch}
+.btn{font-family:var(--round);font-size:22px;background:var(--amber);color:#2a1a05;border:0;
+  padding:16px 40px;border-radius:40px;cursor:pointer;font-weight:700;margin:6px;box-shadow:0 6px 0 #b87c2c}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 #b87c2c}
+.btn.ghost{background:transparent;color:var(--muted);border:2px solid #33507f;box-shadow:none;font-size:17px;padding:12px 28px}
+.btn.ghost:active{transform:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.modes{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.mode{width:250px;border:3px solid #2b4573;background:rgba(22,38,74,.7);border-radius:20px;padding:20px 18px;
+  cursor:pointer;transition:.16s}
+.mode:hover{border-color:var(--amber);transform:translateY(-3px)}
+.mode .ic{font-size:44px;line-height:1;margin-bottom:8px}
+.mode b{display:block;font-size:22px;font-weight:700;margin-bottom:6px}
+.mode span{color:var(--muted);font-size:15px;line-height:1.45}
+.bar{width:min(420px,80vw);height:14px;border:2px solid #33507f;border-radius:10px;overflow:hidden;margin:16px 0 6px}
+.bar i{display:block;height:100%;background:var(--amber);width:0%;transition:width .08s linear}
+.big{font-family:var(--mono);font-size:34px;color:var(--amber)}
+.tiny{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+#top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:14px;padding:12px 18px;
+  z-index:4;pointer-events:none;font-size:17px;color:var(--muted)}
+#top .grow{flex:1}
+#top .mini{pointer-events:auto;font-family:var(--round);font-size:15px;background:rgba(11,20,40,.55);
+  color:var(--muted);border:2px solid #2b4573;padding:6px 16px;border-radius:20px;cursor:pointer}
+#top .mini:active{transform:translateY(2px)}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="cv"></canvas>
+  <div id="top">
+    <span id="tFlowers"></span>
+    <span class="grow"></span>
+    <span id="tStat" class="tiny">not connected</span>
+    <button class="mini" id="btnMenu">back</button>
+  </div>
+
+  <div class="layer on" id="scTitle">
+    <h1>Firefly <em>Meadow</em></h1>
+    <p>Blow out slowly and the firefly floats up. Stop, and it drifts down while you breathe in. Every time you do it, a flower grows.</p>
+    <div class="row"><button class="btn" id="btnStart">Play</button></div>
+    <p class="small" style="margin-top:20px">For grown-ups: this is paced pursed-lip breathing — four seconds out, three seconds in. Everything else in here is optional.</p>
+    <div class="row"><button class="btn ghost" id="btnHow">Notes for grown-ups</button></div>
+  </div>
+
+  <div class="layer" id="scHow">
+    <h2>Notes for grown-ups</h2>
+    <p class="small"><b>The breathing is the point. The flute is a bonus.</b> Every mode below is a complete breathing exercise on its own. The flute layer only changes which colour the flowers come out — a child who cannot manage the fingering still finishes the session and still grows a full meadow.</p>
+    <p class="small">The exercise is <b>pursed-lip breathing</b>: out slowly through pursed lips for about four seconds, in through the nose for about three. Roughly eight breaths a minute. One session is eight breaths, about a minute.</p>
+    <p class="small">Your recorder is <b>German fingering</b>, which means going down the scale is simply "cover one more finger" each time — B, then A, then G. That is why the on-screen flute fills from the top down, and why a five-year-old can follow it without reading a chart.</p>
+    <p class="small"><b>Where the note comes from.</b> The laptop microphone listens to the flute and works out which note is sounding. That means no copper tape is needed — the fingering panel works with nothing but a recorder and a laptop. If the copper pads are fitted, they act as a backup for when the room is noisy or the child is not making a sound yet.</p>
+    <p class="small">There is no losing, no timer pressure and no score that goes down. If a breath is short, the firefly simply doesn't rise as high that time.</p>
+    <div class="row"><button class="btn ghost" id="btnHowBack">Back</button></div>
+  </div>
+
+  <div class="layer" id="scInput">
+    <h2>How are we playing?</h2>
+    <div class="modes">
+      <div class="mode" data-src="serial"><div class="ic">🎵</div><b>Flute + sensor</b><span>Microphone hears the note, sensor measures the air.</span></div>
+      <div class="mode" data-src="mic"><div class="ic">🎤</div><b>Flute + microphone</b><span>No wires at all. The laptop hears everything.</span></div>
+      <div class="mode" data-src="key"><div class="ic">⌨️</div><b>Spacebar</b><span>For testing.</span></div>
+    </div>
+    <div class="row"><button class="btn ghost" id="btnInBack">Back</button></div>
+  </div>
+
+  <div class="layer" id="scCheck">
+    <h2>Give it a blow</h2>
+    <p>If the bar moves, we're ready.</p>
+    <div class="big" id="ckVal">0.000</div>
+    <div class="bar"><i id="ckBar"></i></div>
+    <div class="tiny" id="ckVerdict" style="color:var(--muted)"></div>
+    <div class="row"><button class="btn" id="btnCkGo">Ready</button><button class="btn ghost" id="btnCkBack">Back</button></div>
+  </div>
+
+  <div class="layer" id="scCal">
+    <h2 id="calTitle">Sit quietly</h2>
+    <p id="calText">Don't blow yet.</p>
+    <div class="bar"><i id="calBar"></i></div>
+    <div class="row"><button class="btn ghost" id="btnCalSkip">Skip</button></div>
+  </div>
+
+  <div class="layer" id="scMode">
+    <h2>Pick a meadow</h2>
+    <p class="small">All three are the same breathing. They differ only in what your fingers do.</p>
+    <div class="modes" id="modeList"></div>
+    <div class="row"><button class="btn ghost" id="btnModeBack">Back</button></div>
+  </div>
+
+  <div class="layer" id="scEnd">
+    <h2 id="endTitle">Look at your meadow!</h2>
+    <p id="endText"></p>
+    <div class="row"><button class="btn" id="btnAgain">Again</button><button class="btn ghost" id="btnEndMenu">Back</button></div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   THE EXERCISE. Everything else is decoration.
+   ========================================================== */
+const OUT_MS=4000, IN_MS=3000, BREATHS=8;
+
+/* ==========================================================
+   The recorder: JUAREZ Claró JRF100, GERMAN fingering.
+   German fingering is sequential going down the scale — each
+   lower note simply adds one more finger. The Arduino sends
+   how MANY holes are covered, which is exactly what this
+   fingering system needs. The two happen to fit perfectly.
+   ========================================================== */
+// hz here are what the recorder ACTUALLY sounds. A soprano recorder's
+// lowest note is C5 (523 Hz) and it climbs from there, so covering more
+// holes goes DOWN from high C.
+const LADDER=[
+  {n:"C",  holes:0, hz:1046.50, col:'#ffe9c4'},   // no holes (high C)
+  {n:"B",  holes:1, hz: 987.77, col:'#ffb454'},
+  {n:"A",  holes:2, hz: 880.00, col:'#f58fb4'},
+  {n:"G",  holes:3, hz: 783.99, col:'#63d0ee'},
+  {n:"F",  holes:4, hz: 698.46, col:'#5ecf94'},
+  {n:"E",  holes:5, hz: 659.25, col:'#b98cf0'},
+  {n:"D",  holes:6, hz: 587.33, col:'#ff8f6e'}
+];
+function holesFromSound(hz){
+  if(!hz) return null;
+  let best=null,bc=1e9;
+  LADDER.forEach(l=>{
+    const c=Math.abs(1200*Math.log2(hz/l.hz));
+    if(c<bc){bc=c;best=l;}
+  });
+  return bc<60 ? best.holes : null;   // more than half a semitone out = don't guess
+}
+
+/* ==========================================================
+   PITCH — the flute's actual sound, heard by the microphone.
+   Same detector as Flute Lab. This is what makes the copper
+   tape optional: the note can be heard instead of felt.
+   ========================================================== */
+const Pitch={
+  hz:0,clarity:0,level:0,ready:false,_an:null,_buf:null,rate:44100,
+  attach(analyser,rate){this._an=analyser;this._buf=new Float32Array(analyser.fftSize);
+    this.rate=rate;this.ready=true;},
+  tick(){
+    if(!this.ready)return;
+    this._an.getFloatTimeDomainData(this._buf);
+    const r=detectPitch(this._buf,this.rate);
+    this.level=r.rms;
+    if(r.hz>0){this.hz=this.hz?this.hz*0.6+r.hz*0.4:r.hz;this.clarity=r.clarity;}
+    else{this.clarity*=0.8;if(this.clarity<0.1)this.hz=0;}
+  }
+};
+function detectPitch(buf,rate){
+  const N=buf.length;
+  let rms=0;for(let i=0;i<N;i++)rms+=buf[i]*buf[i];
+  rms=Math.sqrt(rms/N);
+  if(rms<0.008)return{hz:0,clarity:0,rms};
+  const thr=0.2*rms;let s=0,e=N-1;
+  while(s<N/2&&Math.abs(buf[s])<thr)s++;
+  while(e>N/2&&Math.abs(buf[e])<thr)e--;
+  const b=buf.slice(s,e),M=b.length;
+  if(M<256)return{hz:0,clarity:0,rms};
+  const c=new Float32Array(M);
+  for(let lag=0;lag<M;lag++){let sum=0;for(let i=0;i<M-lag;i++)sum+=b[i]*b[i+lag];c[lag]=sum;}
+  let d=0;while(d<M-1&&c[d]>c[d+1])d++;
+  let mv=-1,mi=-1;
+  for(let i=d;i<M;i++)if(c[i]>mv){mv=c[i];mi=i;}
+  if(mi<=0||c[0]<=0)return{hz:0,clarity:0,rms};
+  const y1=c[mi-1]||0,y2=c[mi],y3=c[mi+1]||0;
+  const a=(y1+y3-2*y2)/2,bb=(y3-y1)/2;
+  const period=mi+(a?-bb/(2*a):0);
+  const hz=rate/period,clarity=mv/c[0];
+  if(hz<180||hz>2600||clarity<0.5)return{hz:0,clarity,rms};
+  return{hz,clarity,rms};
+}
+// the sketch's own table, so we can turn its Hz back into a hole count
+const SKETCH_HZ=[523.25,493.88,440.00,392.00,349.23,329.63,261.63];
+function holesFromHz(hz){
+  let best=0,bd=1e9;
+  SKETCH_HZ.forEach((f,i)=>{const d=Math.abs(f-hz); if(d<bd){bd=d;best=i;}});
+  return best;
+}
+
+const MODES=[
+ {id:'just', ic:'🌼', name:'Just breathe', blurb:'No fingers at all. Blow, rest, blow, rest.', notes:null},
+ {id:'one',  ic:'🌸', name:'One note',     blurb:'Hold B the whole time. One finger.',        notes:['B']},
+ {id:'lad',  ic:'🌺', name:'The ladder',   blurb:'B, then A, then G. One more finger each time.', notes:['B','A','G']}
+];
+
+/* ==========================================================
+   BREATH INPUT
+   ========================================================== */
+const Breath={
+  value:0,raw:0,holes:0,connected:false,comfort:0.55,lines:0,peak:0,
+  _port:null,_reader:null,_writer:null,_keep:true,_buf:"",
+  rel(){return this.comfort>0.02?Math.min(1.6,this.value/this.comfort):0;},
+  async useSerial(){
+    if(!('serial' in navigator))return{ok:false,why:"Use Chrome or Edge."};
+    try{this._port=await navigator.serial.requestPort();await this._port.open({baudRate:115200});}
+    catch(e){return{ok:false,why:"No port picked, or the page isn't on localhost."};}
+    this.connected=true;this._keep=true;this.comfort=0.95;
+    const enc=new TextEncoderStream();enc.readable.pipeTo(this._port.writable);
+    this._writer=enc.writable.getWriter();this._loop();return{ok:true};
+  },
+  async _loop(){
+    const dec=new TextDecoderStream();
+    this._port.readable.pipeTo(dec.writable).catch(()=>{});
+    this._reader=dec.readable.getReader();
+    try{while(this._keep){
+      const {value,done}=await this._reader.read(); if(done)break;
+      this._buf+=value; let i;
+      while((i=this._buf.indexOf("\n"))>=0){this._parse(this._buf.slice(0,i).trim());this._buf=this._buf.slice(i+1);}
+      if(this._buf.length>400)this._buf="";
+    }}catch(e){}
+    this.connected=false;setStat();
+  },
+  _parse(l){
+    if(!l||l[0]==='#'||l.startsWith('READY')||l.startsWith('ERR'))return;
+    const p=l.split(','),v=parseFloat(p[0]);
+    if(!isFinite(v))return;
+    this.raw=Math.max(0,Math.min(1,v));      // already 0..1 from the sketch
+    if(p[1]){const hz=parseFloat(p[1]); if(isFinite(hz)) this.padHoles=holesFromHz(hz);}
+    this.lines++;
+  },
+  async reZero(){if(this._writer){try{await this._writer.write("z");}catch(e){}}},
+  async useMic(){
+    try{
+      const st=await navigator.mediaDevices.getUserMedia({audio:{
+        echoCancellation:false, noiseSuppression:false, autoGainControl:false,
+        voiceIsolation:false,
+        // Chrome's older vendor flags. Harmless elsewhere, and on some
+        // builds these are the ones that actually take effect.
+        googEchoCancellation:false, googNoiseSuppression:false,
+        googAutoGainControl:false, googHighpassFilter:false
+      }});
+      // Ask the track what it ACTUALLY did. Browsers are allowed to ignore
+      // these requests, and when they do, a sustained blow gets treated as
+      // background noise and deleted. Better to know than to wonder.
+      try{
+        const s = st.getAudioTracks()[0].getSettings();
+        this.rawOk = (s.noiseSuppression!==true && s.autoGainControl!==true);
+        this.micReport = 'noiseSuppression=' + s.noiseSuppression +
+                         '  autoGain=' + s.autoGainControl +
+                         '  echoCancel=' + s.echoCancellation;
+        console.log('[mic]', this.micReport, this.rawOk?'OK':'<-- browser overrode us');
+      }catch(e){ this.rawOk=true; this.micReport='could not read mic settings'; }
+
+      const ac=new (window.AudioContext||window.webkitAudioContext)();
+      const an=ac.createAnalyser();an.fftSize=2048;
+      ac.createMediaStreamSource(st).connect(an);
+      this._an=an;this._bins=new Float32Array(an.fftSize);this.micOn=true;
+      Pitch.attach(an,ac.sampleRate);        // the same stream feeds pitch detection
+      return{ok:true};
+    }catch(e){return{ok:false,why:"Microphone was not allowed."};}
+  },
+  _floor:null,
+  _readMic(){
+    this._an.getFloatTimeDomainData(this._bins);
+    let s=0;for(let i=0;i<this._bins.length;i++)s+=this._bins[i]*this._bins[i];
+    const rms=Math.sqrt(s/this._bins.length);
+    this.lastRms=rms;
+    this.raw=this.gate(rms);
+  },
+
+  // ---- the noise gate ----------------------------------------------------
+  // The old code let the noise floor chase the signal, so a steady room hum
+  // and a steady blow looked the same after a second. Now the room level is
+  // MEASURED once, while the child sits quietly, and then held still.
+  ambient:null, rawOk:true, micReport:'', peakSeen:0,
+  MARGIN:2.4,        // how far above the room a sound must be to count
+  GAIN:11,
+  measureRoom(rms){                       // called during the quiet countdown
+    this.ambient = this.ambient===null ? rms : Math.max(this.ambient, rms);
+  },
+  gate(rms){
+    this.peakSeen=Math.max(this.peakSeen,rms);
+    if(this.ambient===null){              // not measured yet - be conservative
+      this.ambient = rms;
+      return 0;
+    }
+    // Slow one-way drift: only ever creeps UP, and only while nothing is
+    // happening, so a fan that starts mid-session gets absorbed but a long
+    // steady breath never does.
+    if(rms < this.ambient*this.MARGIN) this.ambient += (rms-this.ambient)*0.0015;
+    const v = (rms - this.ambient*this.MARGIN) * this.GAIN;
+    return Math.max(0, Math.min(1, v));
+  },
+  roomTooLoud(){ return this.ambient!==null && this.ambient>0.035; },
+  src:null,_key:false,padHoles:0,
+  // What the child is fingering, decided by whatever evidence we have.
+  // Heard note first (needs only a microphone), copper pads second.
+  currentHoles(){
+    const heard=holesFromSound(Pitch.hz);
+    if(heard!==null && Pitch.level>0.012) return heard;
+    if(this.connected) return this.padHoles;
+    return null;
+  },
+  tick(){
+    if(this._an)this._readMic();
+    if(this.src==='key'){const t=this._key?0.9:0;this.raw+=(t-this.raw)*(this._key?0.09:0.12);}
+    this.value+=(this.raw-this.value)*0.28;
+    if(this.value<0.004)this.value=0;
+  }
+};
+window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();Breath._key=true;}});
+window.addEventListener('keyup',e=>{if(e.code==='Space')Breath._key=false;});
+
+/* ==========================================================
+   CANVAS
+   ========================================================== */
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1,lw=0,lh=0;
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);
+  const r=cv.getBoundingClientRect();W=r.width;H=r.height;
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+function resizeIfNeeded(){const r=cv.getBoundingClientRect();
+  if(r.width!==lw||r.height!==lh){lw=r.width;lh=r.height;resize();}}
+
+/* ==========================================================
+   GAME STATE
+   ========================================================== */
+let state='title',mode=null,cycT=0,phase='out',breathN=0,fly={y:0,glow:0};
+let flowers=[],puffs=[],lastT=performance.now(),peakThisBreath=0,stats=null;
+
+function startMode(i){
+  mode=MODES[i];
+  cycT=0;phase='out';breathN=0;fly={y:0,glow:0};flowers=[];puffs=[];peakThisBreath=0;
+  stats={done:0,strong:0,best:0,rightNote:0};
+  state='play';show(null);
+}
+function targetNote(){
+  if(!mode||!mode.notes)return null;
+  return mode.notes[breathN % mode.notes.length];
+}
+function targetHoles(){
+  const n=targetNote(); if(!n)return null;
+  return LADDER.find(l=>l.n===n).holes;
+}
+function noteColour(){
+  const n=targetNote();
+  return n? LADDER.find(l=>l.n===n).col : '#ffb454';
+}
+
+function update(dt){
+  cycT+=dt;
+  const b=Math.min(1.3,Breath.rel());
+
+  if(phase==='out'){
+    peakThisBreath=Math.max(peakThisBreath,b);
+    fly.y += (Math.min(1,b) - fly.y)*0.045;
+    fly.glow += (Math.min(1,b)-fly.glow)*0.12;
+    if(cycT>=OUT_MS){
+      // a breath is finished — a flower always grows
+      const strong = peakThisBreath>0.45;
+      const hn=Breath.currentHoles();
+      const right  = (targetHoles()===null) || (hn!==null && hn===targetHoles());
+      flowers.push({x:0.08+Math.random()*0.84, s:0, strong, right,
+                    col: right? noteColour() : '#7d8ba3'});
+      stats.done++; if(strong)stats.strong++; if(right)stats.rightNote++;
+      stats.best=Math.max(stats.best,peakThisBreath);
+      for(let i=0;i<16;i++)puffs.push({x:W/2,y:H*0.52-fly.y*H*0.3,
+        vx:(Math.random()-.5)*3,vy:(Math.random()-.5)*3-1,life:900});
+      peakThisBreath=0; phase='in'; cycT=0;
+      breathN++;
+      if(breathN>=BREATHS){ endSession(); return; }
+    }
+  }else{
+    fly.y += (0 - fly.y)*0.03;
+    fly.glow += (0.25-fly.glow)*0.06;
+    if(cycT>=IN_MS){ phase='out'; cycT=0; }
+  }
+  flowers.forEach(f=>f.s=Math.min(1,f.s+dt/700));
+  puffs.forEach(p=>{p.life-=dt;p.x+=p.vx;p.y+=p.vy;p.vy+=0.03;});
+  puffs=puffs.filter(p=>p.life>0);
+}
+
+/* ---------- drawing ---------- */
+function sky(){
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#0b1428');g.addColorStop(.55,'#1c2f57');g.addColorStop(1,'#38507f');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  for(let i=0;i<50;i++){
+    const x=(i*151)%W,y=(i*83)%(H*0.55);
+    ctx.fillStyle='rgba(220,235,255,'+(0.10+0.10*Math.sin(performance.now()/900+i))+')';
+    ctx.fillRect(x,y,2,2);
+  }
+  ctx.fillStyle='#12351f';
+  ctx.beginPath();ctx.moveTo(0,H);
+  for(let x=0;x<=W;x+=12)ctx.lineTo(x,H*0.80-14*Math.sin(x/150));
+  ctx.lineTo(W,H);ctx.fill();
+}
+function drawFly(){
+  const x=W/2, y=H*0.52-fly.y*H*0.30, r=18;
+  const g=ctx.createRadialGradient(x,y,0,x,y,120*(0.35+fly.glow));
+  g.addColorStop(0,'rgba(255,233,196,'+(0.55*(0.4+fly.glow))+')');
+  g.addColorStop(1,'rgba(255,180,84,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,120*(0.35+fly.glow),0,7);ctx.fill();
+  // body
+  ctx.fillStyle='#2a2438';ctx.beginPath();ctx.ellipse(x,y,r*0.62,r,0,0,7);ctx.fill();
+  // wings
+  ctx.fillStyle='rgba(210,235,255,.42)';
+  const flap=Math.sin(performance.now()/60)*4;
+  ctx.beginPath();ctx.ellipse(x-r*0.9,y-6+flap,r*0.8,r*0.42,-0.5,0,7);ctx.fill();
+  ctx.beginPath();ctx.ellipse(x+r*0.9,y-6-flap,r*0.8,r*0.42,0.5,0,7);ctx.fill();
+  // tail light
+  ctx.fillStyle='#ffe9c4';ctx.beginPath();ctx.arc(x,y+r*0.75,r*0.5*(0.7+fly.glow*0.6),0,7);ctx.fill();
+  // eyes
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x-5,y-8,3.4,0,7);ctx.arc(x+5,y-8,3.4,0,7);ctx.fill();
+  ctx.fillStyle='#1a1626';ctx.beginPath();ctx.arc(x-5,y-7,1.7,0,7);ctx.arc(x+5,y-7,1.7,0,7);ctx.fill();
+}
+function drawFlowers(){
+  flowers.forEach(f=>{
+    const x=f.x*W, y=H*0.80+8, s=f.s*(f.strong?1:0.72);
+    ctx.strokeStyle='#2f7d4a';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-34*s);ctx.stroke();
+    for(let i=0;i<6;i++){
+      const a=i/6*Math.PI*2;
+      ctx.fillStyle=f.col;
+      ctx.beginPath();ctx.ellipse(x+Math.cos(a)*10*s,y-34*s+Math.sin(a)*10*s,6*s,6*s,0,0,7);ctx.fill();
+    }
+    ctx.fillStyle='#ffe9c4';ctx.beginPath();ctx.arc(x,y-34*s,5*s,0,7);ctx.fill();
+  });
+}
+/* the coach: a ring that grows on the out-breath and shrinks on the in-breath.
+   No words, because a five-year-old should not have to read anything. */
+function drawCoach(){
+  const x=W*0.5,y=H*0.52-fly.y*H*0.30;
+  const p = phase==='out' ? cycT/OUT_MS : 1-cycT/IN_MS;
+  const r = 54+p*96;
+  ctx.strokeStyle = phase==='out' ? 'rgba(94,207,148,.55)' : 'rgba(99,208,238,.5)';
+  ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(x,y,150,0,7);ctx.stroke();
+  // big arrow cue
+  ctx.font='34px "Baloo 2", sans-serif';ctx.textAlign='center';
+  ctx.fillStyle = phase==='out' ? 'rgba(94,207,148,.9)':'rgba(99,208,238,.9)';
+  ctx.fillText(phase==='out'?'↑':'↓', x, y-r-16);
+  ctx.textAlign='left';
+}
+/* the fingering chart — big, colour-matched, no reading required */
+function drawFlute(){
+  const th=targetHoles();
+  const x=W-104, y0=H*0.20, gap=Math.min(42,(H*0.52)/7);
+  ctx.save();
+  // body of the recorder
+  ctx.fillStyle='#efe7d8';
+  ctx.beginPath();ctx.roundRect(x-26,y0-58,52,gap*7+96,26);ctx.fill();
+  ctx.fillStyle='#cbbda4';ctx.beginPath();ctx.roundRect(x-26,y0-58,52,34,17);ctx.fill();
+  // 7 holes, filled from the top down
+  for(let i=0;i<7;i++){
+    const cy=y0+i*gap;
+    const hn=Breath.currentHoles();
+    const need = th!==null && i<th;
+    const got  = hn!==null && i<hn;
+    ctx.beginPath();ctx.arc(x,cy,13,0,7);
+    ctx.fillStyle = got? (need?'#5ecf94':'#f0554a') : (need? 'rgba(255,180,84,.30)' : '#3d3628');
+    ctx.fill();
+    ctx.lineWidth=3;
+    ctx.strokeStyle = need? '#ffb454' : 'rgba(0,0,0,.25)';
+    ctx.stroke();
+    if(need&&!got){
+      const pl=1+0.16*Math.sin(performance.now()/240);
+      ctx.strokeStyle='rgba(255,180,84,.55)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(x,cy,17*pl,0,7);ctx.stroke();
+    }
+  }
+  // which hand
+  ctx.font='13px "Baloo 2", sans-serif';ctx.textAlign='center';
+  ctx.fillStyle='#a7bada';ctx.fillText('left hand', x, y0-70);
+  ctx.fillText('right hand', x, y0+gap*3+22);
+  // the note letter, in the flower's colour
+  if(targetNote()){
+    ctx.font='700 40px "Baloo 2", sans-serif';
+    ctx.fillStyle=noteColour();
+    ctx.fillText(targetNote(), x, y0+gap*7+58);
+  }
+  ctx.textAlign='left';ctx.restore();
+}
+function render(){
+  sky();
+  drawFlowers();
+  drawCoach();
+  drawFly();
+  puffs.forEach(p=>{ctx.fillStyle='rgba(255,233,196,'+(p.life/900)+')';ctx.beginPath();ctx.arc(p.x,p.y,3,0,7);ctx.fill();});
+  if(mode&&mode.notes)drawFlute();
+  // breath bar, big and chunky
+  const bw=Math.min(360,W*0.4),bx=(W-bw)/2,by=H-46;
+  ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.roundRect(bx-3,by-3,bw+6,20,10);ctx.fill();
+  ctx.fillStyle=phase==='out'?'#5ecf94':'#63d0ee';
+  const bv=Math.min(1,Breath.rel()/1.1);
+  ctx.beginPath();ctx.roundRect(bx,by,Math.max(6,bw*bv),14,7);ctx.fill();
+  document.getElementById('tFlowers').textContent='🌼 '+flowers.length+' / '+BREATHS;
+}
+
+/* ==========================================================
+   SCREENS
+   ========================================================== */
+const $=id=>document.getElementById(id);
+function show(id){['scTitle','scHow','scInput','scCheck','scCal','scMode','scEnd']
+  .forEach(s=>$(s).classList.remove('on')); if(id)$(id).classList.add('on');}
+function setStat(){
+  const on=Breath.connected||Breath.src==='mic'||Breath.src==='key';
+  $('tStat').textContent=on?(Breath.connected?'flute ready':(Breath.src==='mic'?'microphone':'spacebar')):'not connected';
+  $('tStat').style.color=on?'#5ecf94':'#6d82a8';
+}
+function buildModes(){
+  $('modeList').innerHTML=MODES.map((m,i)=>
+    `<div class="mode" data-m="${i}"><div class="ic">${m.ic}</div><b>${m.name}</b><span>${m.blurb}</span></div>`).join('');
+  document.querySelectorAll('.mode[data-m]').forEach(el=>el.onclick=()=>startMode(+el.dataset.m));
+}
+let calStage=0,calT=0,calPeak=0;
+function beginCal(){calStage=0;calT=2500;calPeak=0;
+  $('calTitle').textContent='Sit quietly';$('calText').textContent="Don't blow yet.";
+  state='cal';show('scCal');}
+function calTick(dt){
+  calT-=dt;
+  if(calStage===0){
+    if(Breath._an) Breath.measureRoom(Breath.lastRms||0);   // learn the room
+    $('calBar').style.width=(100*(1-calT/2500))+'%';
+    if(calT<=0){calStage=1;calT=5000;calPeak=0;
+      $('calTitle').textContent='Now one gentle blow';$('calText').textContent='Not your biggest — an easy one.';}}
+  else{calPeak=Math.max(calPeak,Breath.value);
+    $('calBar').style.width=(100*Math.min(1,Breath.value/0.6))+'%';
+    if(calT<=0)endCal();}
+  if(Breath.roomTooLoud()) $('calText').textContent='It is quite noisy in here — that is fine, just blow a little firmer.';
+  if(Breath._an && !Breath.rawOk) $('calText').textContent='Your browser is still filtering the mic. Turn off voice isolation in your sound settings.';
+}
+function endCal(){Breath.comfort=Math.max(0.12,calPeak*0.85);buildModes();state='mode';show('scMode');}
+function checkTick(){
+  Breath.peak=Math.max(Breath.peak||0,Breath.value);
+  $('ckVal').textContent=Breath.value.toFixed(3);
+  $('ckBar').style.width=(100*Math.min(1,Breath.value))+'%';
+  $('ckVerdict').textContent = Breath.peak<0.05?'Blow a bit harder, or check the wires.'
+    : Breath.peak<0.35?'Working, but weak — type c in the Serial Monitor to recalibrate.'
+    : 'Perfect.';
+}
+function endSession(){
+  const pct=Math.round(100*stats.strong/Math.max(1,stats.done));
+  $('endTitle').textContent='Look at your meadow!';
+  let t='You grew '+flowers.length+' flowers — one for every breath.';
+  if(mode.notes) t+=' '+stats.rightNote+' of them came out in colour, which means your fingers were right too.';
+  t+='  Your longest breath was strong on '+stats.strong+' of '+stats.done+'.';
+  $('endText').textContent=t;
+  state='end';show('scEnd');
+}
+function loop(now){
+  const dt=Math.min(50,now-lastT);lastT=now;
+  Pitch.tick();Breath.tick();resizeIfNeeded();
+  if(state==='play'&&mode){update(dt);render();}
+  else{sky();drawFlowers();if(state==='cal')calTick(dt);if(state==='check')checkTick();}
+  requestAnimationFrame(loop);
+}
+
+$('btnStart').onclick=()=>{state='input';show('scInput');};
+$('btnHow').onclick=()=>{state='how';show('scHow');};
+$('btnHowBack').onclick=$('btnInBack').onclick=()=>{state='title';show('scTitle');};
+$('btnCkBack').onclick=()=>{state='input';show('scInput');};
+$('btnCkGo').onclick=()=>beginCal();
+$('btnCalSkip').onclick=()=>endCal();
+$('btnAgain').onclick=()=>startMode(MODES.findIndex(m=>m.id===mode.id));
+$('btnEndMenu').onclick=$('btnMenu').onclick=()=>{buildModes();state='mode';show('scMode');};
+document.querySelectorAll('.mode[data-src]').forEach(el=>{
+  el.onclick=async()=>{
+    const s=el.dataset.src;Breath.src=s;
+    // The microphone is started in every mode — it is what hears the note.
+    // Serial adds the pressure sensor on top when it is available.
+    let r={ok:true};
+    if(s==='serial'){ r=await Breath.useSerial(); await Breath.useMic(); }
+    else if(s==='mic'){ r=await Breath.useMic(); }
+    else { await Breath.useMic().catch(()=>{}); }
+    setStat();
+    if(!r.ok){$('ckVerdict').textContent=r.why;}
+    Breath.peak=0;state='check';show('scCheck');
+  };
+});
+resize();setStat();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
