@@ -363,7 +363,7 @@ a { color: #F6C96B; } a:hover { color: #ffe1a6; }
     <!-- A mirrored pair, so repeat-x has no seam to show. The plain art was
          11k wide and its two edges were nothing like each other, which is the
          join that kept sliding past. -->
-    <div ref="{{ caveBgRef }}" style="position:absolute;inset:0;background-image:url(assets/scene-tunnel-tile.png);background-size:auto 100%;background-repeat:repeat-x;background-position:0 center"></div>
+    <div ref="{{ caveBgRef }}" style="position:absolute;inset:0;background-image:url(assets/scene-tunnel-tile.png);background-size:auto 120%;background-repeat:repeat-x;background-position:0 bottom"></div>
 
         <button onClick="{{ leaveGame }}" style="position:absolute;left:2.6vh;top:2.6vh;z-index:9;display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2vh 0 1.4vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#B9C7D8 0%,#6E8299 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</button>
 
@@ -375,7 +375,7 @@ a { color: #F6C96B; } a:hover { color: #ffe1a6; }
       <div ref="{{ clockRef2 }}" style="min-width:7vh;flex:none;text-align:center;padding:.2vh 1.2vh;border-radius:99px;border:.3vh solid rgba(255,255,255,.9);background:rgba(18,12,28,.5);font-family:Nunito,sans-serif;font-weight:900;font-size:1.5vh;letter-spacing:.04em;color:#fff;text-shadow:0 .2vh .3vh rgba(0,0,0,.45);font-variant-numeric:tabular-nums">0:00</div>
     </div>
 
-    <div ref="{{ caveObsRef }}" style="position:absolute;left:0;right:0;top:42%;bottom:0;overflow:hidden">
+    <div ref="{{ caveObsRef }}" style="position:absolute;left:0;right:0;top:26%;bottom:0;overflow:hidden">
       <sc-for list="{{ caveObstacles }}" as="o" hint-placeholder-count="4">
         <div style="position:absolute;top:0;bottom:0;left:0;width:13%;transform:translateX(-50%)">
           <!-- Two clusters of soap bubbles with the gap between them.
@@ -1611,7 +1611,11 @@ class Component extends DCLogic {
   caveBand() {
     const e = this.props.breathEffort;
     const half = 9 * (e === 'Gentle' ? 1.35 : e === 'Strong' ? 0.8 : 1);
-    const bandTop = 42, bandH = 58, pad = 3;
+    /* The background is scaled to 120% and pinned to the bottom, which
+       crops most of the sky and drops the ground line to about 25%. The
+       flight band has to follow it exactly — these numbers and that
+       background-size are one measurement, not two. */
+    const bandTop = 26, bandH = 74, pad = 3;
     const yLo = half / (bandH / 100);
     const yHi = (100 - pad - half - bandTop) / (bandH / 100);
     return { yLo: yLo, yHi: yHi };
@@ -1659,12 +1663,16 @@ class Component extends DCLogic {
 
     const speed = 17;
     this.caveScroll += (speed * dt) / 1000;
-    if (this.caveBgRef.current) this.caveBgRef.current.style.backgroundPosition = (-this.caveScroll * 5.2) + 'px center';
+    /* 'center' here quietly overrode the vertical anchor set in the markup,
+       so scaling the tile up cropped the cave FLOOR as well as the sky —
+       the underground had no visible bottom. Anchor to the bottom: the
+       floor is the one edge that must always be on screen. */
+    if (this.caveBgRef.current) this.caveBgRef.current.style.backgroundPosition = (-this.caveScroll * 5.2) + 'px bottom';
 
     const flyX = 26;
     const flyTarget = this.laneFor(this.breath.value);
     this.caveY += (flyTarget - this.caveY) * Math.min(1, dt / 210);
-    if (this.caveFlyRef.current) this.caveFlyRef.current.style.top = (42 + this.caveY * 0.58) + '%';
+    if (this.caveFlyRef.current) this.caveFlyRef.current.style.top = (26 + this.caveY * 0.74) + '%';
 
     let hit = false;
     for (const o of this.caveObs) {
@@ -1741,7 +1749,11 @@ class Component extends DCLogic {
       .filter(o => o.x > flyX - 4)
       .sort((a, b) => a.x - b.x)[0];
     if (next && this.caveAimRef.current && this.caveLevelRef.current) {
-      // invert the same mapping used for the owl: y -> breath
+      /* invert the same mapping used for the owl: y -> breath.
+         These came from consts that were folded into caveBand() when the
+         level was reframed, which left this line throwing every frame and
+         the aim cue frozen. Read them from the one source instead. */
+      const { yLo, yHi } = this.caveBand();
       const toBreath = (y) => Math.max(0, Math.min(1, (yHi - y) / (yHi - yLo)));
       const lo = toBreath(next.gapC + next.gapH / 2);
       const hi = toBreath(next.gapC - next.gapH / 2);
@@ -1971,9 +1983,13 @@ class Component extends DCLogic {
       const sp = SPOTS[Math.min(SPOTS.length - 1, this.plotIdx)];
       f.style.left = sp[0] + '%';
       f.style.bottom = (sp[1] + 15 + stage * 1.6) + '%';
-      // 6 Hz at rest up to about 13 Hz at full stretch
-      const beat = Math.cos(this.elapsed / 1000 * (6 + v * 7) * Math.PI * 2);
-      const flap = 1 - (0.1 + v * 0.34) * (0.5 + 0.5 * beat);
+      /* A real butterfly beats its wings 5-12 times a second. Copied
+         literally that reads as panic on a 12vh sprite — the wings just
+         blur. Slowed to roughly 1.6 Hz resting and 3.4 Hz at full
+         stretch: still clearly beating, still faster when the breath is
+         working, but calm enough for a breathing exercise. */
+      const beat = Math.cos(this.elapsed / 1000 * (1.6 + v * 1.8) * Math.PI * 2);
+      const flap = 1 - (0.08 + v * 0.2) * (0.5 + 0.5 * beat);
       f.style.transform = 'translate(-50%,0) scaleX(' + flap.toFixed(3) + ')';
       f.style.opacity = full ? '0' : '1';
     }
