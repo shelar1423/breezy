@@ -363,7 +363,7 @@ a { color: #F6C96B; } a:hover { color: #ffe1a6; }
     <!-- A mirrored pair, so repeat-x has no seam to show. The plain art was
          11k wide and its two edges were nothing like each other, which is the
          join that kept sliding past. -->
-    <div ref="{{ caveBgRef }}" style="position:absolute;inset:0;background-image:url(assets/scene-tunnel-tile.png);background-size:auto 120%;background-repeat:repeat-x;background-position:0 bottom"></div>
+    <div ref="{{ caveBgRef }}" style="position:absolute;inset:0;background-image:url(assets/scene-tunnel-tile.png);background-size:auto 121%;background-repeat:repeat-x;background-position:0 bottom"></div>
 
         <button onClick="{{ leaveGame }}" style="position:absolute;left:2.6vh;top:2.6vh;z-index:9;display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2vh 0 1.4vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#B9C7D8 0%,#6E8299 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</button>
 
@@ -507,7 +507,7 @@ a { color: #F6C96B; } a:hover { color: #ffe1a6; }
   </sc-if>
 
   <sc-if value="{{ isPond }}" hint-placeholder-val="{{ false }}">
-    <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/scene-garden.png)"></div>
+    <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/scene-garden-play.png)"></div>
     <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,22,.34) 0%,rgba(14,9,22,.04) 28%,rgba(14,9,22,0) 62%,rgba(14,9,22,.3) 100%)"></div>
 
     <button onClick="{{ leaveGame }}" style="position:absolute;left:2.6vh;top:2.6vh;z-index:11;display:flex;align-items:center;gap:.9vh;height:5.4vh;padding:0 2vh 0 1.4vh;border-radius:1.4vh;border:.4vh solid #fff;background:linear-gradient(180deg,#B9C7D8 0%,#6E8299 100%);box-shadow:inset 0 -.5vh 0 rgba(0,0,0,.16),0 .3vh .6vh rgba(0,0,0,.24);color:#fff;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.6vh;letter-spacing:.1em;cursor:pointer;transition:transform .16s cubic-bezier(.22,.7,.3,1),box-shadow .16s ease,filter .16s ease" style-hover="filter:brightness(1.05)" style-active="transform:translateY(2px)"><svg width="2.4vh" height="2.4vh" viewBox="0 0 24 24"><path fill="currentColor" d="M11.3 5.3L4.6 12l6.7 6.7 2-2L9.4 13H20v-2H9.4l3.9-3.7z"></path></svg>{{ t.back }}</button>
@@ -1611,8 +1611,12 @@ class Component extends DCLogic {
   caveBand() {
     const e = this.props.breathEffort;
     const half = 9 * (e === 'Gentle' ? 1.35 : e === 'Strong' ? 0.8 : 1);
-    /* The background is scaled to 120% and pinned to the bottom, which
-       crops most of the sky and drops the ground line to about 25%. The
+    /* The background is scaled to 121% and pinned to the bottom, which
+       drops the ground line to about 26%, where the obstacle band starts.
+       The scale is derived from where the tile's own ground line falls
+       (~39% of its height), measured off a real render rather than
+       guessed. Re-measure it if the tunnel art is ever replaced.
+       The
        flight band has to follow it exactly — these numbers and that
        background-size are one measurement, not two. */
     const bandTop = 26, bandH = 74, pad = 3;
