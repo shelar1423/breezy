@@ -27,7 +27,7 @@ button, a { transition: transform .16s cubic-bezier(.22,.7,.3,1), box-shadow .16
 </helmet>
 
 <div data-screen-label="Home" style="position:relative;width:100%;height:100vh;overflow:hidden;font-family:'Baloo 2',Nunito,system-ui,sans-serif;color:#2F3B52;background:#8FD3F4">
-  <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/realhome.png)"></div>
+  <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-image:url(assets/breezyhome.png)"></div>
 
   <!-- Everything below is built from the game's own kit: a .4vh white
        border, a hard inset lip along the bottom, and one of its gradients.
@@ -236,7 +236,7 @@ button, a { transition: transform .16s cubic-bezier(.22,.7,.3,1), box-shadow .16
         </div>
         <div style="margin-top:1.6vh;padding:1.6vh 2vh;border-radius:1.6vh;background:rgba(255,255,255,.13);box-shadow:inset 0 0 0 .28vh rgba(20,73,107,.10),0 .35vh 0 rgba(20,73,107,.09)">
           <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.7vh;color:#FFFFFF;margin-bottom:.5vh">No flute yet?</div>
-          <div style="font-family:Nunito;font-weight:600;font-size:1.55vh;line-height:1.5;color:rgba(255,255,255,.86);text-wrap:pretty">Choose <b>Device Mic</b> to blow directly into your Mac's microphone, or choose <b>Spacebar</b> to play with keys. Everything else works exactly the same.</div>
+          <div style="font-family:Nunito;font-weight:600;font-size:1.55vh;line-height:1.5;color:rgba(255,255,255,.86);text-wrap:pretty">Choose Spacebar on the same screen. Hold it to breathe out, let go to breathe in. Everything else works exactly the same.</div>
         </div>
       </div>
     </div>
@@ -359,10 +359,10 @@ const SESSIONS_KEY = 'chamkiForest.v3';
 /* Same four places as the game, in the same order, with the same art —
    so the list here is recognisably the list you pick from in there. */
 const PLACES = [
-  { id: 'stream',   name: 'Lillypad Hop',        teach: 'Little puffs, one after another', art: 'assets/card-stream.png',  pos: '50% 40%', chip: '#7FDDF7 0%,#12A5E0 100%' },
-  { id: 'cave',     name: 'The Cave',            teach: 'One long, steady breath',          art: 'assets/scene-tunnel.png', pos: '50% 50%', chip: '#FF8ED0 0%,#E9349B 100%' },
-  { id: 'clearing', name: 'Songbird Echo',      teach: 'Echo back the bird\u2019s song',     art: 'assets/card-stage.png',   pos: '50% 44%', chip: '#FFD75E 0%,#F58A0C 100%' },
-  { id: 'pond',     name: 'The Garden',          teach: 'Longer breaths make it grow',      art: 'assets/scene-garden.png', pos: '50% 62%', chip: '#A5EA76 0%,#3FA80F 100%' }
+  { id: 'stream',   name: 'Lillypad Hop',        teach: 'Little puffs, one after another', art: 'assets/Lillypad Game.png',  pos: '50% 50%', chip: '#7FDDF7 0%,#12A5E0 100%' },
+  { id: 'cave',     name: 'The Cave',            teach: 'One long, steady breath',          art: 'assets/Tunnel Game.png', pos: '50% 50%', chip: '#FF8ED0 0%,#E9349B 100%' },
+  { id: 'clearing', name: 'Songbird Echo',      teach: 'Echo back the bird\u2019s song',     art: 'assets/Stage.png',   pos: '50% 50%', chip: '#FFD75E 0%,#F58A0C 100%' },
+  { id: 'pond',     name: 'The Garden',          teach: 'Longer breaths make it grow',      art: 'assets/Flower Growing.png', pos: '50% 50%', chip: '#A5EA76 0%,#3FA80F 100%' }
 ];
 
 const Profile = GameCamera.Profile;
@@ -546,7 +546,7 @@ class Component extends DCLogic {
           const st = g.stars || 0;
           return {
             name: pl.name, teach: pl.teach, chip: pl.chip,
-            art: 'url(' + pl.art + ')', pos: pl.pos,
+            art: 'url("' + pl.art + '")', pos: pl.pos,
             played: (g.plays || 0) > 0,
             notPlayed: !(g.plays || 0),
             plays: String(g.plays || 0),
