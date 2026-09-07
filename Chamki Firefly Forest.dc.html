@@ -84,17 +84,24 @@ a { color: #F6C96B; } a:hover { color: #ffe1a6; }
         <div style="flex:1;display:flex;align-items:center;height:6.2vh;padding-left:1vh;font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.9vh;letter-spacing:.01em;color:#fff;text-shadow:0 .2vh .8vh rgba(9,28,44,.45)">{{ t.conn }}</div>
       </div>
 
-      <div style="display:flex;gap:1.8vh">
-        <button onClick="{{ pickSerial }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1vh;padding:2.6vh 1.8vh;border:.45vh solid {{ serialBorder }};border-radius:2.4vh;background:rgba(255,255,255,.13);box-shadow:inset 0 -.55vh 0 rgba(20,73,107,.10),0 .8vh 1.6vh rgba(20,73,107,.24);cursor:pointer;text-align:center;transition:transform .18s cubic-bezier(.22,.7,.3,1),filter .18s ease" style-hover="transform:translateY(-.6vh);filter:brightness(1.02)" style-active="transform:translateY(2px)">
-          <div style="font-size:3.6vh;line-height:1">🎵</div>
-          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.2vh;color:#FFFFFF">{{ t.srcSerial }}</div>
-          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.5vh;line-height:1.4;color:rgba(255,255,255,.80);text-wrap:pretty">{{ t.srcSerialBlurb }}</div>
-          <div style="margin-top:.7vh;padding:.8vh 2vh;border-radius:99px;border:.35vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#8B5CE0 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.18);color:#fff;font-family:Nunito;font-weight:900;font-size:1.25vh;letter-spacing:.14em;text-shadow:0 .2vh 0 rgba(0,0,0,.24)">{{ t.connectNow }}</div>
+      <div style="display:flex;gap:1.4vh">
+        <button onClick="{{ pickSerial }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.9vh;padding:2.2vh 1.4vh;border:.45vh solid {{ serialBorder }};border-radius:2.4vh;background:rgba(255,255,255,.13);box-shadow:inset 0 -.55vh 0 rgba(20,73,107,.10),0 .8vh 1.6vh rgba(20,73,107,.24);cursor:pointer;text-align:center;transition:transform .18s cubic-bezier(.22,.7,.3,1),filter .18s ease" style-hover="transform:translateY(-.4vh);filter:brightness(1.02)" style-active="transform:translateY(2px)">
+          <div style="font-size:3.2vh;line-height:1">🎵</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;color:#FFFFFF">{{ t.srcSerial }}</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.35vh;line-height:1.35;color:rgba(255,255,255,.80);text-wrap:pretty">{{ t.srcSerialBlurb }}</div>
+          <div style="margin-top:auto;padding:.7vh 1.8vh;border-radius:99px;border:.35vh solid #fff;background:linear-gradient(180deg,#C9AEF9 0%,#8B5CE0 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.18);color:#fff;font-family:Nunito;font-weight:900;font-size:1.15vh;letter-spacing:.14em;text-shadow:0 .2vh 0 rgba(0,0,0,.24)">{{ t.connectNow }}</div>
         </button>
-        <button onClick="{{ pickKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1vh;padding:2.6vh 1.8vh;border:.45vh solid {{ keyBorder }};border-radius:2.4vh;background:rgba(255,255,255,.13);box-shadow:inset 0 -.55vh 0 rgba(20,73,107,.10),0 .8vh 1.6vh rgba(20,73,107,.24);cursor:pointer;text-align:center;transition:transform .18s cubic-bezier(.22,.7,.3,1),filter .18s ease" style-hover="transform:translateY(-.6vh);filter:brightness(1.02)" style-active="transform:translateY(2px)">
-          <div style="font-size:3.6vh;line-height:1">⌨️</div>
-          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:2.2vh;color:#FFFFFF">{{ t.srcKey }}</div>
-          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.5vh;line-height:1.4;color:rgba(255,255,255,.80);text-wrap:pretty">{{ t.srcKeyBlurb }}</div>
+        <button onClick="{{ pickMic }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.9vh;padding:2.2vh 1.4vh;border:.45vh solid {{ micBorder }};border-radius:2.4vh;background:rgba(255,255,255,.13);box-shadow:inset 0 -.55vh 0 rgba(20,73,107,.10),0 .8vh 1.6vh rgba(20,73,107,.24);cursor:pointer;text-align:center;transition:transform .18s cubic-bezier(.22,.7,.3,1),filter .18s ease" style-hover="transform:translateY(-.4vh);filter:brightness(1.02)" style-active="transform:translateY(2px)">
+          <div style="font-size:3.2vh;line-height:1">💨</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;color:#FFFFFF">{{ t.srcMic }}</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.35vh;line-height:1.35;color:rgba(255,255,255,.80);text-wrap:pretty">{{ t.srcMicBlurb }}</div>
+          <div style="margin-top:auto;padding:.7vh 1.8vh;border-radius:99px;border:.35vh solid #fff;background:linear-gradient(180deg,#7FDDF7 0%,#12A5E0 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.18);color:#fff;font-family:Nunito;font-weight:900;font-size:1.15vh;letter-spacing:.14em;text-shadow:0 .2vh 0 rgba(0,0,0,.24)">{{ t.connectMic }}</div>
+        </button>
+        <button onClick="{{ pickKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.9vh;padding:2.2vh 1.4vh;border:.45vh solid {{ keyBorder }};border-radius:2.4vh;background:rgba(255,255,255,.13);box-shadow:inset 0 -.55vh 0 rgba(20,73,107,.10),0 .8vh 1.6vh rgba(20,73,107,.24);cursor:pointer;text-align:center;transition:transform .18s cubic-bezier(.22,.7,.3,1),filter .18s ease" style-hover="transform:translateY(-.4vh);filter:brightness(1.02)" style-active="transform:translateY(2px)">
+          <div style="font-size:3.2vh;line-height:1">⌨️</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.9vh;color:#FFFFFF">{{ t.srcKey }}</div>
+          <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:600;font-size:1.35vh;line-height:1.35;color:rgba(255,255,255,.80);text-wrap:pretty">{{ t.srcKeyBlurb }}</div>
+          <div style="margin-top:auto;padding:.7vh 1.8vh;border-radius:99px;border:.35vh solid rgba(255,255,255,.45);background:rgba(255,255,255,.16);color:#fff;font-family:Nunito;font-weight:900;font-size:1.15vh;letter-spacing:.14em">{{ t.skipConnect }}</div>
         </button>
       </div>
 
@@ -599,23 +606,24 @@ const STR = {
     breathe: 'HOW WE BREATHE', conn: 'How are we breathing?',
     srcKey: 'Spacebar', srcKeyBlurb: 'No hardware. Hold the space bar. Good for testing.',
     srcSerial: 'Flute + sensor', srcSerialBlurb: 'The sensor measures the air, the flute plays the note.',
+    srcMic: 'Mac / Device Mic', srcMicBlurb: 'Blow directly into your mic. Talking & speech are filtered out.',
     tryBlow: 'Give it a blow — if the bar moves, we are ready.',
     noteHeard: 'NOTE PLAYED', reading: 'READING',
     reZero: 'RE-ZERO SENSOR',
-    stKey: 'spacebar', stSerial: 'flute ready', stOff: 'not connected',
+    stKey: 'spacebar', stSerial: 'flute ready', stMic: 'mic ready (blow)', stOff: 'not connected',
     steadyBar: 'STEADY', onBar: 'ON THE BAR', yourBreath: 'YOUR BREATH', lenLbl: 'LENGTH', strengthLbl: 'STRENGTH', restLbl: 'RESTING', breathsLbl: 'BREATHS',
     notMeasured: 'not measured yet — the next game will ask',
     warmRest: 'Sit still for a moment',
-    warmRestSub: 'Hands off the flute. We are listening to how quiet it is.',
+    warmRestSub: 'Hands off the flute / stay quiet. We are listening to how quiet it is.',
     warmBlow: 'Now breathe out, twice',
-    warmBlowSub: 'Just an ordinary breath into the flute. Not your biggest — the one that feels easy. Then one more.',
+    warmBlowSub: 'Just an ordinary breath into the flute or mic. Not your biggest — the one that feels easy. Then one more.',
     warmGot: 'That is your breath',
     warmGotSub: 'Everything in the game is now measured against this, so it fits you.',
     warmNothing: 'We did not catch that',
-    warmNothingSub: 'Make sure the flute is on the tube, then breathe out gently twice more.',
+    warmNothingSub: 'Make sure your sensor or mic is active, then breathe out gently twice more.',
     warmClip: 'The sensor ran out of room \u2014 your breath is stronger than it can measure, so every breath looks the same size. The game will still work. To fix it properly: open the Arduino Serial Monitor, type c and press Enter, then follow the count-in.',
     letsPlay: 'PLAY', againBreath: 'BREATHE AGAIN', useLast: 'USE LAST TIME',
-    connectNow: 'CONNECT', skipConnect: 'PLAY WITHOUT IT',
+    connectNow: 'CONNECT', connectMic: 'USE MIC', skipConnect: 'PLAY WITHOUT IT',
     rGreat: 'Beautiful breathing!', rGood: 'Really well done.', rNice: 'Nice work.', rTried: 'Good try!',
     rSubHigh: 'Your breath stayed lovely and steady.', rSubLow: 'Every breath counts. Try another?',
     rPuffs: 'PUFFS LANDED', rSteady: 'LONGEST STEADY', rPatterns: 'PATTERNS', rFlowers: 'FLOWERS',
@@ -715,7 +723,7 @@ const BreathIn = {
      ------------------------------------------------------------------ */
   NORMAL: 0.5,
 
-  src: 'key',                 // 'key' | 'serial'
+  src: 'key',                 // 'key' | 'serial' | 'mic'
   raw: 0, connected: false,
   why: '', lines: 0, hz: 0, note: null,
   serialRaw: 0,
@@ -724,7 +732,10 @@ const BreathIn = {
   // The measured person. amp/dur are what ONE normal breath looks like.
   cal: { rest: 0, amp: 0.35, dur: 2200, breaths: 0, ready: false, when: 0 },
 
-  active() { return this.src === 'serial' && this.connected; },
+  active() {
+    return (this.src === 'serial' && this.connected) ||
+           (this.src === 'mic' && this._micConnected);
+  },
   _emit() { if (this.onChange) this.onChange(); },
 
   // Sensor reading -> the 0..1 the games think in, with a normal
@@ -906,18 +917,170 @@ const BreathIn = {
     this.connected = false; this.serialRaw = 0;
   },
 
+  /* ---- Mac / Device Microphone (Blow Detection & Speech Filter) --- */
+  _micStream: null,
+  _audioCtx: null,
+  _analyser: null,
+  _timeBuf: null,
+  _freqBuf: null,
+  _micConnected: false,
+  _micSmoothed: 0,
+  _micNoiseFloor: 0.012,
+
+  async useMic() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return { ok: false, why: 'needBrowser' };
+    }
+    try {
+      if (this._micStream) {
+        this._micStream.getTracks().forEach(t => t.stop());
+        this._micStream = null;
+      }
+      let stream;
+      try {
+        // Disable aggressive browser voice-isolation DSP that strips breath noise
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+        });
+      } catch (e) {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return { ok: false, why: 'needBrowser' };
+      if (!this._audioCtx || this._audioCtx.state === 'closed') {
+        this._audioCtx = new AudioCtx();
+      }
+      if (this._audioCtx.state === 'suspended') {
+        await this._audioCtx.resume();
+      }
+
+      const source = this._audioCtx.createMediaStreamSource(stream);
+      const analyser = this._audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.2;
+      source.connect(analyser);
+
+      this._micStream = stream;
+      this._analyser = analyser;
+      this._timeBuf = new Float32Array(analyser.fftSize);
+      this._freqBuf = new Uint8Array(analyser.frequencyBinCount);
+      this._micConnected = true;
+      this._micSmoothed = 0;
+      this.src = 'mic';
+      this._emit();
+      return { ok: true };
+    } catch (err) {
+      console.warn('Microphone error:', err);
+      return { ok: false, why: 'micDenied' };
+    }
+  },
+
+  closeMic() {
+    if (this._micStream) {
+      this._micStream.getTracks().forEach(t => t.stop());
+      this._micStream = null;
+    }
+    if (this._audioCtx && this._audioCtx.state !== 'closed') {
+      try { this._audioCtx.suspend(); } catch (e) {}
+    }
+    this._micConnected = false;
+    this._micSmoothed = 0;
+  },
+
+  _processMic(dt) {
+    if (!this._micConnected || !this._analyser) return 0;
+    this._analyser.getFloatTimeDomainData(this._timeBuf);
+    this._analyser.getByteFrequencyData(this._freqBuf);
+
+    // 1. RMS Energy
+    let sumSq = 0;
+    for (let i = 0; i < this._timeBuf.length; i++) {
+      const s = this._timeBuf[i];
+      sumSq += s * s;
+    }
+    const rms = Math.sqrt(sumSq / this._timeBuf.length);
+
+    // 2. Frequency Spectral Analysis (Bins are ~86Hz wide at 44.1kHz)
+    // - Sub-bass turbulence (wind buffeting): Bins 0..2 (~0 - 250 Hz)
+    // - Vocal core / speech formants: Bins 3..25 (~250 - 2200 Hz)
+    // - High friction breath hiss: Bins 26..100 (~2200 - 8600 Hz)
+    let rumbleSum = 0;
+    for (let i = 0; i <= 2; i++) rumbleSum += this._freqBuf[i];
+    const rumbleAvg = rumbleSum / 3;
+
+    let voiceSum = 0, voiceMax = 0;
+    for (let i = 3; i <= 25; i++) {
+      const val = this._freqBuf[i];
+      voiceSum += val;
+      if (val > voiceMax) voiceMax = val;
+    }
+    const voiceAvg = voiceSum / 23;
+    const voicePeakRatio = voiceAvg > 6 ? (voiceMax / voiceAvg) : 1;
+
+    let hissSum = 0;
+    for (let i = 26; i <= 100; i++) hissSum += this._freqBuf[i];
+    const hissAvg = hissSum / 75;
+
+    // Adaptively update noise floor
+    if (rms < this._micNoiseFloor) {
+      this._micNoiseFloor = this._micNoiseFloor * 0.95 + rms * 0.05;
+    } else {
+      this._micNoiseFloor = this._micNoiseFloor * 0.999 + rms * 0.001;
+    }
+
+    // 3. Speech rejection vs Wind/Blow detection:
+    // Speech is dominated by distinct vocal pitch peaks (high voicePeakRatio)
+    // with relatively little aerodynamic sub-150Hz wind rumble.
+    const isSpeech = (voicePeakRatio > 2.2 && voiceAvg > 18 && rumbleAvg < voiceAvg * 1.5) ||
+                     (voiceAvg > 40 && voicePeakRatio > 1.8 && rumbleAvg < voiceAvg * 1.2);
+
+    let blowIntensity = 0;
+    if (!isSpeech && rms > 0.015) {
+      // Physical breath against the mic creates strong turbulent buffeting (<180Hz) + continuous hiss
+      const blowScore = Math.max(
+        (rumbleAvg - 15) / 120,
+        (hissAvg - 12) / 85,
+        (rms - 0.014) * 3.5
+      );
+      if (blowScore > 0.05) {
+        // Map comfortable blow into 0.25..0.65 range, firm blow to 1.0
+        blowIntensity = Math.min(1.0, Math.max(0, (blowScore - 0.05) * 1.35));
+      }
+    }
+
+    // Smooth response: fast attack on blow, gentle release
+    const attack = 0.35;
+    const decay = 0.12;
+    const rate = blowIntensity > this._micSmoothed ? attack : decay;
+    this._micSmoothed += (blowIntensity - this._micSmoothed) * rate;
+    if (this._micSmoothed < 0.005) this._micSmoothed = 0;
+
+    return this._micSmoothed;
+  },
+
   tick(dt) {
-    this.raw = this.active() ? this.serialRaw : 0;
-    if (this.active()) this.trackZero(dt || 16);
-    else { this.zero = 0; this._zeroSeen = false; }
+    if (this.src === 'serial' && this.connected) {
+      this.raw = this.serialRaw;
+      this.trackZero(dt || 16);
+    } else if (this.src === 'mic' && this._micConnected) {
+      this.raw = this._processMic(dt || 16);
+      this.trackZero(dt || 16);
+    } else {
+      this.raw = 0;
+      this.zero = 0;
+      this._zeroSeen = false;
+    }
   },
 
   async use(src) {
     this.why = '';
     if (src !== 'serial' && this.connected) await this.closeSerial();
+    if (src !== 'mic' && this._micConnected) this.closeMic();
     this.src = src;
     let r = { ok: true };
     if (src === 'serial') r = await this.useSerial();
+    else if (src === 'mic') r = await this.useMic();
     if (!r.ok) { this.why = r.why; this.src = 'key'; }
     this._emit();
     return r;
@@ -2298,16 +2461,23 @@ class Component extends DCLogic {
       closeConnect: () => { this.lobbyMusic(); this.setState({ screen: 'cards' }); },
       pickKey: () => this.pickSource('key'),
       pickSerial: () => this.pickSource('serial'),
+      pickMic: () => this.pickSource('mic'),
       reZero: () => BreathIn.reZero(),
       srcIsSerial: BreathIn.src === 'serial',
-      hasSerialSensor: BreathIn.active(),
-      statusText: BreathIn.active() ? t.stSerial : (BreathIn.src === 'key' ? t.stKey : t.stOff),
+      srcIsMic: BreathIn.src === 'mic',
+      hasSerialSensor: BreathIn.src === 'serial' && BreathIn.connected,
+      hasMicSensor: BreathIn.src === 'mic' && BreathIn._micConnected,
+      statusText: BreathIn.src === 'serial' && BreathIn.connected ? t.stSerial
+                : BreathIn.src === 'mic' && BreathIn._micConnected ? t.stMic
+                : (BreathIn.src === 'key' ? t.stKey : t.stOff),
       dotColor: BreathIn.active() ? '#A5EA76' : (BreathIn.src === 'key' ? '#F6C96B' : '#F2A9C4'),
-      serialBorder: BreathIn.active() ? '#A5EA76' : 'rgba(255,255,255,.2)',
-      keyBorder: BreathIn.src === 'key' && !BreathIn.active() ? '#F6C96B' : 'rgba(255,255,255,.2)',
+      serialBorder: BreathIn.src === 'serial' && BreathIn.connected ? '#A5EA76' : 'rgba(255,255,255,.2)',
+      micBorder: BreathIn.src === 'mic' && BreathIn._micConnected ? '#A5EA76' : 'rgba(255,255,255,.2)',
+      keyBorder: BreathIn.src === 'key' ? '#F6C96B' : 'rgba(255,255,255,.2)',
       breathNote: BreathIn.why === 'needBrowser' ? t.errBrowser
                 : BreathIn.why === 'noPort' ? t.errPort
                 : BreathIn.why === 'unplugged' ? t.errUnplug
+                : BreathIn.why === 'micDenied' ? t.errMic
                 : '',
 
       // --- the warm-up ---
