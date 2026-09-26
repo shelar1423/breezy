@@ -11,6 +11,7 @@
 - 📊 **Breathing Analytics & Reports**: Live breathing statistics, rhythm evaluation, and session reports for players and grownups.
 - 🎵 **Adaptive Sound Engine**: Dynamic ambient soundtrack layers and sound effects responsive to player actions.
 - 🔌 **Hardware Support (Optional)**: Includes Arduino sketches (`arduino/`) for HX710B breath flute pressure sensors and serial simulators.
+- ⚡ **No account required**: Open the game directly; profile and progress stay on the device.
 - ⚡ **Zero-Config Vercel Ready**: Ready to deploy directly to Vercel or any static hosting platform.
 
 ---
@@ -64,7 +65,6 @@ This repository is pre-configured for Vercel deployment with `vercel.json`.
 ├── Breezy Home.dc.html            # Main game launcher, level select, profile & settings
 ├── Chamki Firefly Forest.dc.html  # Main gameplay scene with breath detection & firefly collection
 ├── Breathing Report.dc.html       # Player breathing report and session statistics
-├── Breezy Login.dc.html           # Player profile & authentication screen
 ├── Chamki Start.dc.html           # Story intro and mission launch pad
 ├── Button Kit.dc.html             # Reusable UI component kit
 ├── cave-ribbon.dc.html            # Cave biome (ribbon route)

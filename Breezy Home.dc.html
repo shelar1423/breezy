@@ -307,14 +307,6 @@ button, a { transition: transform .16s cubic-bezier(.22,.7,.3,1), box-shadow .16
             <a href="Chamki Firefly Forest.dc.html" style="display:flex;align-items:center;height:4.6vh;padding:0 2vh;border:.35vh solid #fff;border-radius:1.3vh;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16);cursor:pointer;color:#fff;font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.1em;text-decoration:none;text-shadow:0 .2vh 0 rgba(0,0,0,.24);transition:transform .16s cubic-bezier(.22,.7,.3,1),filter .16s ease" style-hover="filter:brightness(1.06)" style-active="transform:translateY(2px)">OPEN</a>
           </div>
 
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:1.4vh 1.8vh;border-radius:1.6vh;background:rgba(255,255,255,.13);box-shadow:inset 0 0 0 .28vh rgba(20,73,107,.10),0 .35vh 0 rgba(20,73,107,.09)">
-            <div style="display:flex;flex-direction:column;gap:.2vh">
-              <div style="font-family:'Baloo 2',Nunito,sans-serif;font-weight:800;font-size:1.8vh;color:#FFFFFF">Signed in as {{ who }}</div>
-              <div style="font-family:Nunito;font-weight:600;font-size:1.45vh;color:rgba(255,255,255,.80)">Flowers and stars stay on this device.</div>
-            </div>
-            <button onClick="{{ signOut }}" style="flex:none;height:4.6vh;padding:0 2vh;border:.35vh solid #fff;border-radius:1.3vh;background:linear-gradient(180deg,#C9AEF9 0%,#9E77E8 100%);box-shadow:inset 0 -.4vh 0 rgba(0,0,0,.16);cursor:pointer;color:#fff;font-family:Nunito;font-weight:900;font-size:1.3vh;letter-spacing:.1em;text-shadow:0 .2vh 0 rgba(0,0,0,.24)" style-hover="filter:brightness(1.06)" style-active="transform:translateY(2px)">SIGN OUT</button>
-          </div>
-
           <sc-if value="{{ notConfirming }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex;align-items:center;justify-content:space-between;padding:1.4vh 1.8vh;border-radius:1.6vh;background:rgba(255,255,255,.13);box-shadow:inset 0 0 0 .28vh rgba(20,73,107,.10),0 .35vh 0 rgba(20,73,107,.09)">
               <div style="display:flex;flex-direction:column;gap:.2vh;padding-right:1.4vh">
@@ -346,13 +338,7 @@ button, a { transition: transform .16s cubic-bezier(.22,.7,.3,1), box-shadow .16
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 /* The sound layer is shared with the game — see assets/game-audio.js. */
-const SESSION_KEY  = 'chamkiForest.session.v1';
 const PROGRESS_KEY = 'chamkiForest.progress.v1';
-
-function session() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
-  catch (e) { return null; }
-}
 const BREATH_KEY   = 'chamkiForest.breath.v1';
 const SESSIONS_KEY = 'chamkiForest.v3';
 
@@ -441,11 +427,6 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
-    /* Nobody signed in yet: send them to the door. Checked before anything
-       else starts so the music does not begin under a screen they are
-       about to be moved off. */
-    if (!session()) { window.location.replace('Breezy Login.dc.html'); return; }
-
     /* The mixer is shared with the game, so the levels a grown-up sets
        here are the levels the game uses. It tells us when it changes so
        the meters redraw. */
@@ -492,7 +473,7 @@ class Component extends DCLogic {
   renderVals() {
     const p = this.state.popup;
     return {
-      who: Profile.name() || ((session() && session().who) ? String(session().who).slice(0, 14) : 'PLAYER'),
+      who: Profile.name() || 'PLAYER',
       avatar: Profile.picUrl(),
       avatarBg: Profile.picUrl()
         ? 'url(' + Profile.picUrl() + ')'
@@ -511,10 +492,6 @@ class Component extends DCLogic {
       takeSnap: () => this.takeSnap(),
       closeSnap: () => this.closeSnap(),
       clearPic: () => { Profile.clearPic(); Sfx.play('pop', 0.3); this.setState(st => ({ tick: st.tick + 1 })); },
-      signOut: () => {
-        try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
-        window.location.href = 'Breezy Login.dc.html';
-      },
       level: this.levelNow().level,
       xpPct: this.levelNow().pct + '%',
 
