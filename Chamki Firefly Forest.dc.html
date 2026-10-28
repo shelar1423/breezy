@@ -200,7 +200,7 @@ a { color: #F6C96B; } a:hover { color: #ffe1a6; }
       <sc-if value="{{ warmClipped }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;align-items:center;gap:1.4vh;max-width:56vh;padding:1.4vh 2vh;border-radius:1.6vh;background:rgba(255,158,150,.16);box-shadow:inset 0 0 0 .3vh rgba(255,158,150,.5);text-align:left">
           <svg width="3vh" height="3vh" viewBox="0 0 24 24" style="flex:none;color:#FFB3AC"><circle cx="12" cy="12" r="9.2" fill="currentColor" opacity=".22"></circle><path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 7.4v6M12 16.4v.2"></path></svg>
-          <div style="font-family:Nunito,sans-serif;font-weight:700;font-size:1.5vh;line-height:1.45;color:#FFD9D5;text-wrap:pretty">{{ t.warmClip }}</div>
+          <div style="font-family:Nunito,sans-serif;font-weight:700;font-size:1.5vh;line-height:1.45;color:#FFD9D5;text-wrap:pretty">{{ warmClipText }}</div>
         </div>
       </sc-if>
 
@@ -603,7 +603,7 @@ const STR = {
     steadyBar: 'STEADY', onBar: 'ON THE BAR', yourBreath: 'YOUR BREATH', lenLbl: 'LENGTH', strengthLbl: 'STRENGTH', restLbl: 'RESTING', breathsLbl: 'BREATHS',
     notMeasured: 'not measured yet — the next game will ask',
     warmRest: 'Sit still for a moment',
-    warmRestSub: 'Hands off the flute / stay quiet. We are listening to how quiet it is.',
+    warmRestSub: 'Keep the flute away from your mouth and do not blow yet. We are checking what the sensor reads with no air in it.',
     warmBlow: 'Now breathe out, twice',
     warmBlowSub: 'Just an ordinary breath into the flute. Not your biggest — the one that feels easy. Then one more.',
     warmGot: 'That is your breath',
@@ -611,7 +611,8 @@ const STR = {
     warmNothing: 'We did not catch that',
     warmNothingSub: 'Make sure your sensor is plugged in, then breathe out gently twice more.',
     warmFit: 'Fitting the flute to your breath\u2026',
-    warmFitSub: 'The sensor needed a different setting for your breath, so we changed it. Stop and sit still for a moment \u2014 then breathe out easily twice more.',
+    warmFitSub: 'The sensor needed a different setting for your breath, so we changed it. Do not blow for a moment \u2014 then breathe out easily twice more.',
+    warmOldFw: 'The Arduino is still running an older sketch, which cannot measure a gentle breath properly \u2014 every breath reads as a big one. Upload arduino/breath_flute_hx710b/breath_flute_hx710b.ino from the latest code (Arduino IDE \u2192 Upload, wait for \u201cDone uploading\u201d), then reconnect.',
     warmClip: 'The sensor ran out of room \u2014 your breath is stronger than it can measure, so every breath looks the same size. The game will still work. To fix it: upload the latest breath_flute_hx710b sketch to the Arduino, which makes room by itself.',
     letsPlay: 'PLAY', againBreath: 'BREATHE AGAIN', useLast: 'USE LAST TIME',
     connectNow: 'CONNECT',
@@ -889,8 +890,22 @@ const BreathIn = {
     return true;
   },
 
+  /* Which sketch is on the board. The current one answers 'v' with a
+     "# fw" line (and prints it when it boots — opening the port resets
+     an Uno, so ask more than once). No answer means an older sketch:
+     those pin every breath at the top, and no amount of fitting in the
+     game can fix that, so it is better to say so plainly. */
+  fw: 0, _startedAt: 0,
+  fwOld() { return this.active() && this.fw === 0 && this.lines > 0 && Date.now() - this._startedAt > 6000; },
+  _askVersion() {
+    [500, 2500, 4500].forEach((ms) => setTimeout(() => {
+      if (this.active() && !this.fw && this._writer) this._writer.write('v').catch(() => {});
+    }, ms));
+  },
+
   _start() {
     this.connected = true; this._keep = true; this._buf = ''; this.why = '';
+    this.fw = 0; this._startedAt = Date.now(); this._askVersion();
     try {
       const enc = new TextEncoderStream();
       enc.readable.pipeTo(this._port.writable).catch(() => {});
@@ -934,6 +949,7 @@ const BreathIn = {
     // The sketch widened its scale: everything measured before this line
     // was on a different ruler. The warm-up watches this.
     if (l.startsWith('# scale')) { this.scaleGen++; return; }
+    if (l.startsWith('# fw')) { this.fw = parseInt(l.split(' ').pop(), 10) || 1; return; }
     if (!l || l[0] === '#' || l.startsWith('READY') || l.startsWith('ERR')) return;
     const p = l.split(','), v = parseFloat(p[0]);
     if (!isFinite(v)) return;
@@ -2173,6 +2189,7 @@ class Component extends DCLogic {
   WARM_MAX_FITS = 4;
   warmFits = 0;
   warmFitting = false;
+  warmRefit = false;        // a re-fit is under way, up to the next recording
   warmClipMs = 0;
   warmQuietMs = 0;
   warmFitMs = 0;
@@ -2186,6 +2203,7 @@ class Component extends DCLogic {
     this.warmSeen = 0;
     this.warmClipMs = 0;
     this.warmResult = null;
+    this.warmRefit = false;
     this.warmGen = BreathIn.scaleGen;
     BreathIn.startCapture();
   }
@@ -2196,6 +2214,7 @@ class Component extends DCLogic {
      wait for the air to stop, then start over from the quiet step. */
   refitWarmup() {
     this.warmFitting = true;
+    this.warmRefit = true;
     this.warmQuietMs = 0;
     this.warmFitMs = 0;
     this.warmFitLow = BreathIn.raw;
@@ -2214,6 +2233,7 @@ class Component extends DCLogic {
     this.warmFailed = false;
     this.warmFits = 0;
     this.warmFitting = false;
+    this.warmRefit = false;
     BreathIn.startCapture();
     this.setState({ screen: 'warmup' });
   }
@@ -2259,7 +2279,7 @@ class Component extends DCLogic {
     // for this breath: every breath, big or small, would come out the
     // same. Ask for more room and measure again, rather than keep it.
     this.warmClipMs = BreathIn.raw >= 0.97 ? this.warmClipMs + dt : 0;
-    if (this.warmClipMs > 150 && this.warmFits < this.WARM_MAX_FITS) {
+    if (this.warmClipMs > 150 && this.warmFits < this.WARM_MAX_FITS && !BreathIn.fwOld()) {
       this.warmFits++;
       BreathIn.widen();
       this.refitWarmup();
@@ -2292,6 +2312,7 @@ class Component extends DCLogic {
     this.warmFailed = false;
     this.warmFits = 0;
     this.warmFitting = false;
+    this.warmRefit = false;
     this.beginWarmBlow();
     this.forceUpdate();
   }
@@ -2436,10 +2457,11 @@ class Component extends DCLogic {
       warmDone: this.warmStage === 2,
       warmOk: this.warmStage === 2 && !this.warmFailed,
       warmBad: this.warmStage === 2 && this.warmFailed,
-      warmTitle: this.warmFitting ? t.warmFit : this.warmStage === 0 ? t.warmRest : this.warmStage === 1 ? t.warmBlow : (this.warmFailed ? t.warmNothing : t.warmGot),
-      warmSub: this.warmFitting ? t.warmFitSub : this.warmStage === 0 ? t.warmRestSub : this.warmStage === 1 ? t.warmBlowSub : (this.warmFailed ? t.warmNothingSub : t.warmGotSub),
+      warmTitle: this.warmRefit && this.warmStage < 2 ? t.warmFit : this.warmStage === 0 ? t.warmRest : this.warmStage === 1 ? t.warmBlow : (this.warmFailed ? t.warmNothing : t.warmGot),
+      warmSub: this.warmRefit && this.warmStage < 2 ? t.warmFitSub : this.warmStage === 0 ? t.warmRestSub : this.warmStage === 1 ? t.warmBlowSub : (this.warmFailed ? t.warmNothingSub : t.warmGotSub),
       // Only about a FINISHED measurement — never over one still running.
-      warmClipped: this.warmStage === 2 && !!(this.warmResult && ((this.warmResult.clip || 0) > 0.015 || (this.warmResult.span || 0) >= 0.9)),
+      warmClipText: BreathIn.fwOld() ? t.warmOldFw : t.warmClip,
+      warmClipped: this.warmStage === 2 && (BreathIn.fwOld() || !!(this.warmResult && ((this.warmResult.clip || 0) > 0.015 || (this.warmResult.span || 0) >= 0.9))),
       warmBreaths: this.warmResult ? String(this.warmResult.breaths) : '0',
       warmLen: this.warmResult ? (this.warmResult.dur / 1000).toFixed(1) + 's' : '\u2014',
       warmStrength: this.warmResult ? BreathIn.cal.amp.toFixed(3) : '\u2014',

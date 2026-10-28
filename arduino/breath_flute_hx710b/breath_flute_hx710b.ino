@@ -24,6 +24,9 @@
  *          sends this by itself when it sees a breath pinned at 1.000,
  *          so you should never need to type it.
  *
+ *      v   print the sketch version. The game asks for this, so it can
+ *          tell you when the board is still running an older sketch.
+ *
  *      p   print the current settings, and PAUSE the stream so you can
  *          read them. Type s to start it again.
  *
@@ -66,6 +69,10 @@ const long    MAX_FULL_SCALE = 16000000L;
 // calibrate(): that breath lands near 0.45, not at the ceiling.
 const float   HEADROOM = 2.2;
 // ----------------------------
+
+// Bump when the game needs to know about a change. The game sends 'v'
+// and warns if no "# fw" line comes back (an older sketch).
+const uint8_t  FW_VERSION = 3;
 
 const uint16_t EE_MAGIC = 0xB1F7;   // marks "there is a saved value here"
 const int      EE_ADDR  = 0;
@@ -263,6 +270,11 @@ void flipPolarity() {
   Serial.println(polarity);
 }
 
+void printVersion() {
+  Serial.print(F("# fw breath_flute "));
+  Serial.println(FW_VERSION);
+}
+
 void pauseStream() { streaming = false; pausedAt = millis(); }
 void resumeStream() { streaming = true; Serial.println(F("# streaming again")); }
 
@@ -353,6 +365,7 @@ void setup() {
   for (uint8_t i = 0; i < 6; i++) touchRef[i] = ADCTouch.read(HOLE_PIN[i], 100);
 
   Serial.println(F("READY"));
+  printVersion();
   printSettings();
   Serial.println(F("# type c + Enter to calibrate, z to re-zero, p to print settings"));
 }
@@ -382,6 +395,7 @@ void handleSerial() {
       savedScale = fullScale;
     }
     else if (c == 'p' || c == 'P') printSettings();
+    else if (c == 'v' || c == 'V') printVersion();
     else if (c == 's' || c == 'S') { if (streaming) pauseStream(); else resumeStream(); }
   }
 }
