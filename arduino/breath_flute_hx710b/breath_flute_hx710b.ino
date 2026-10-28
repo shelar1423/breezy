@@ -73,6 +73,33 @@ const int      EE_ADDR  = 0;
 long  fullScale = DEFAULT_FULL_SCALE;
 long  baseline  = 0;
 
+/* WHICH WAY IS "BLOWING". Depending on the module and which side of the
+   bridge the tube is on, blowing can make the HX710B read DOWN instead of
+   up. The old sketch assumed up: it took a breath as "the zero just
+   moved", dragged the zero down under it, and when the breath ended the
+   resting sensor read as a big breath that never stopped. Every breath
+   after that looked heavy. So the sketch now notices which way the air
+   goes and flips itself, and remembers it. */
+int8_t polarity = 1;
+const uint16_t EE_POL_MAGIC = 0xB1F8;
+const int      EE_POL_ADDR  = 8;
+uint16_t strongUp = 0, strongDown = 0;
+
+/* STUCK-ZERO RESCUE. A reading parked above the zero is frozen as "air"
+   (see below), so if the sensor settled a little higher after a breath —
+   they do, and they drift for minutes after power-up — the zero never
+   caught up and the resting sensor read as a breath for the rest of the
+   session. Now: if NOTHING in the last ~10 seconds came down to the zero,
+   it was not a breath, it was the zero moving. Jump to it. The same the
+   other way: ten seconds with everything BELOW the zero means the zero is
+   too high. minBucket[]/maxBucket[] hold the lowest/highest reading of
+   each of the last 10 seconds. */
+const uint8_t MIN_BUCKETS = 10;
+long  minBucket[MIN_BUCKETS];
+long  maxBucket[MIN_BUCKETS];
+uint8_t minIdx = 0;
+unsigned long minSince = 0;
+
 /* THE DRIFT FIX.
    The HX710B does not sit still. Its "nobody is blowing" reading wanders
    with temperature and with time, and this sketch used to measure that
@@ -144,7 +171,7 @@ long readRaw() {
     delayMicroseconds(1);
   }
   if (v & 0x800000L) v |= 0xFF000000L;         // it's a signed 24-bit number
-  return v;
+  return v * polarity;                         // so "blowing" is always up
 }
 
 long waitRead() {                              // blocks until a fresh sample
@@ -153,11 +180,18 @@ long waitRead() {                              // blocks until a fresh sample
   return readRaw();
 }
 
+void resetMinWindow(long v) {
+  for (uint8_t i = 0; i < MIN_BUCKETS; i++) { minBucket[i] = v; maxBucket[i] = v; }
+  minIdx = 0;
+  minSince = millis();
+}
+
 void tareBaseline() {
   long v[32];
   long sum = 0;
   for (uint8_t i = 0; i < 32; i++) { v[i] = waitRead(); sum += v[i]; }
   baseline = sum / 32;
+  resetMinWindow(baseline);
 
   long lo = v[0], hi = v[0];
   for (uint8_t i = 1; i < 32; i++) { if (v[i] < lo) lo = v[i]; if (v[i] > hi) hi = v[i]; }
@@ -204,6 +238,31 @@ void setScale(long fs) {
   Serial.println(fullScale);
 }
 
+void loadPolarity() {
+  uint16_t magic = 0;
+  int8_t pol = 1;
+  EEPROM.get(EE_POL_ADDR, magic);
+  EEPROM.get(EE_POL_ADDR + 2, pol);
+  polarity = (magic == EE_POL_MAGIC && pol == -1) ? -1 : 1;
+}
+
+void flipPolarity() {
+  polarity = -polarity;
+  baseline = -baseline;                        // same zero, other way up
+  for (uint8_t i = 0; i < MIN_BUCKETS; i++) {
+    long lo = minBucket[i];
+    minBucket[i] = -maxBucket[i];
+    maxBucket[i] = -lo;
+  }
+  strongUp = strongDown = 0;
+  smoothed = 0;
+  EEPROM.put(EE_POL_ADDR, EE_POL_MAGIC);
+  EEPROM.put(EE_POL_ADDR + 2, polarity);
+  // Starts with '# scale' so the game re-measures: the numbers just changed.
+  Serial.print(F("# scale: blowing reads the other way on this sensor - flipped, polarity="));
+  Serial.println(polarity);
+}
+
 void pauseStream() { streaming = false; pausedAt = millis(); }
 void resumeStream() { streaming = true; Serial.println(F("# streaming again")); }
 
@@ -215,6 +274,7 @@ void printSettings() {
   Serial.println();
   Serial.print(F("# baseline="));   Serial.println(baseline);
   Serial.print(F("# noiseBand=")); Serial.println(noiseBand);
+  Serial.print(F("# polarity="));  Serial.println(polarity);
   Serial.print(F("# PULSES="));     Serial.println(PULSES);
   Serial.println(F("# paused so you can read this. type s + Enter to resume."));
   Serial.println(F("#"));
@@ -233,15 +293,18 @@ void calibrate() {
   }
   Serial.println(F("# BLOW NOW - one comfortable breath - 6 seconds"));
 
-  long peak = 0;
+  long peak = 0, dip = 0;
   unsigned long t0 = millis();
   uint8_t dots = 0;
   while (millis() - t0 < 6000) {
     if (!ready()) continue;
     long v = readRaw() - baseline;
     if (v > peak) peak = v;
+    if (v < dip) dip = v;
     if ((millis() - t0) / 1000 > dots) { dots++; Serial.println(F("# ...")); }
   }
+  // The breath went DOWN: this sensor reads the other way round.
+  if (-dip > peak * 2 && -dip >= 200) { flipPolarity(); peak = -dip; }
 
   Serial.print(F("# your peak was ")); Serial.println(peak);
 
@@ -283,6 +346,7 @@ void setup() {
   delay(300);
   waitRead();                                  // first read is junk
   loadFullScale();                             // before the tare: it clamps noiseBand
+  loadPolarity();
   savedScale = fullScale;
   tareBaseline();
 
@@ -330,11 +394,52 @@ void loop() {
   long v = readRaw();
   long d = v - baseline;
 
+  // ---- which way is blowing? (see the note by polarity) ----
+  // Count clearly-air samples each way. A sensor where the air reliably
+  // goes DOWN, about a second of it with hardly any going up, is upside
+  // down. Halved now and then so old history fades.
+  if (d > noiseBand * 6 && strongUp < 60000) strongUp++;
+  if (d < -noiseBand * 6 && strongDown < 60000) strongDown++;
+  if (strongUp + strongDown > 800) { strongUp /= 2; strongDown /= 2; }
+  // Two seconds of it, so one inhale through the flute does not flip it.
+  if (strongDown >= 80 && strongDown > strongUp * 4) { flipPolarity(); return; }
+
+  // ---- stuck-zero rescue (see the note by minBucket) ----
+  if (v < minBucket[minIdx]) minBucket[minIdx] = v;
+  if (v > maxBucket[minIdx]) maxBucket[minIdx] = v;
+  if (millis() - minSince >= 1000) {
+    minSince = millis();
+    long low = minBucket[0], high = maxBucket[0];
+    for (uint8_t i = 1; i < MIN_BUCKETS; i++) {
+      if (minBucket[i] < low) low = minBucket[i];
+      if (maxBucket[i] > high) high = maxBucket[i];
+    }
+    if (low - baseline > noiseBand) {
+      baseline = low;
+      Serial.print(F("# zero was stuck below the sensor - moved up, baseline="));
+      Serial.println(baseline);
+    } else if (baseline - high > noiseBand) {
+      baseline = high;
+      Serial.print(F("# zero was stuck above the sensor - moved down, baseline="));
+      Serial.println(baseline);
+    }
+    minIdx = (minIdx + 1) % MIN_BUCKETS;
+    minBucket[minIdx] = v;
+    maxBucket[minIdx] = v;
+  }
+  d = v - baseline;
+
   // ---- chase the zero (see the note by noiseBand) ----
-  if (d < 0) {
+  if (d < 0 && d > -noiseBand * 4) {
+    // A little below: the zero has drifted down. Follow it briskly.
     long down = d / 8;
     if (down < -noiseBand) down = -noiseBand;  // bounded, so one odd sample cannot yank it
     baseline += down;
+  } else if (d < 0) {
+    // Far below is not drift — it is air going the other way (suction,
+    // or an upside-down sensor about to be flipped above). Following it
+    // is what used to leave the zero stranded under the real rest. If it
+    // really is the zero, the rescue above moves it within ten seconds.
   } else if (d < noiseBand) {
     // ~5 second time constant, with a floor of 1 count so it always
     // makes progress even when the division rounds away to nothing.

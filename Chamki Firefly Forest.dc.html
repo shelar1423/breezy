@@ -611,7 +611,7 @@ const STR = {
     warmNothing: 'We did not catch that',
     warmNothingSub: 'Make sure your sensor is plugged in, then breathe out gently twice more.',
     warmFit: 'Fitting the flute to your breath\u2026',
-    warmFitSub: 'That one filled the sensor right up, so we gave it more room. Stop for a moment, then breathe out easily twice more.',
+    warmFitSub: 'The sensor needed a different setting for your breath, so we changed it. Stop and sit still for a moment \u2014 then breathe out easily twice more.',
     warmClip: 'The sensor ran out of room \u2014 your breath is stronger than it can measure, so every breath looks the same size. The game will still work. To fix it: upload the latest breath_flute_hx710b sketch to the Arduino, which makes room by itself.',
     letsPlay: 'PLAY', againBreath: 'BREATHE AGAIN', useLast: 'USE LAST TIME',
     connectNow: 'CONNECT',
@@ -741,6 +741,7 @@ const BreathIn = {
      So: `rest` is now always 0, `amp` always holds the SPAN, and the
      offset is chased continuously by `zero` below. ---------------- */
   zero: 0, noise: 0.006, _zeroSeen: false,
+  _lowA: Infinity, _lowB: Infinity, _lowT: 0,   // lowest readings, for the stuck-zero rescue
 
   // The squelch: under this much movement the sensor is talking to
   // itself, not carrying air. Measured from the child's own quiet
@@ -753,7 +754,19 @@ const BreathIn = {
 
   trackZero(dt) {
     const v = this.raw;
-    if (!this._zeroSeen) { this.zero = v; this._zeroSeen = true; return; }
+    if (!this._zeroSeen) { this.zero = v; this._zeroSeen = true; this._lowA = this._lowB = v; this._lowT = 0; return; }
+    /* Above the gate the zero freezes (below), so if the sensor ever
+       settles higher than it was, the zero never catches up and rest
+       reads as a breath for good — every light breath then looks heavy.
+       If nothing in the last 5-10 seconds came back down to the zero, it
+       was not a breath: the zero moved. Jump to the lowest reading. */
+    this._lowA = Math.min(this._lowA, v);
+    this._lowT += dt;
+    if (this._lowT >= 5000) {
+      const low = Math.min(this._lowA, this._lowB);
+      if (low - this.zero > this.gate()) this.zero = low;
+      this._lowB = this._lowA; this._lowA = v; this._lowT = 0;
+    }
     const d = v - this.zero;
     const rate = (perSec) => 1 - Math.pow(1 - perSec, Math.max(0, dt) / 1000);
     if (d < 0) {
@@ -2162,6 +2175,8 @@ class Component extends DCLogic {
   warmFitting = false;
   warmClipMs = 0;
   warmQuietMs = 0;
+  warmFitMs = 0;
+  warmFitLow = 0;
   warmGen = 0;
 
   // Start (or restart) the recording of the two breaths.
@@ -2170,16 +2185,20 @@ class Component extends DCLogic {
     this.warmT = this.WARM_BLOW_MS;
     this.warmSeen = 0;
     this.warmClipMs = 0;
+    this.warmResult = null;
     this.warmGen = BreathIn.scaleGen;
     BreathIn.startCapture();
   }
 
-  /* The scale changed under the recording — the sketch widened itself, or
-     we asked it to. Breaths measured on the old scale cannot be mixed
-     with the new, so wait for the air to stop and record again. */
+  /* The scale changed under the recording — the sketch widened itself,
+     flipped, or we asked it to. Breaths measured on the old scale cannot
+     be mixed with the new, and the resting level is in old units too. So
+     wait for the air to stop, then start over from the quiet step. */
   refitWarmup() {
     this.warmFitting = true;
     this.warmQuietMs = 0;
+    this.warmFitMs = 0;
+    this.warmFitLow = BreathIn.raw;
     this.forceUpdate();
   }
 
@@ -2204,6 +2223,25 @@ class Component extends DCLogic {
     this.warmT -= dt;
     BreathIn.pushCapture(dt);
 
+    // After a re-fit: wait for the air to stop — measured against the
+    // lowest reading since, because the old resting level is in old units
+    // — then measure the quiet again. Never wait more than 3 seconds: a
+    // sensor that will not settle should not leave anyone stuck here.
+    if (this.warmFitting) {
+      this.warmFitMs += dt;
+      this.warmFitLow = Math.min(this.warmFitLow, BreathIn.raw);
+      this.warmQuietMs = BreathIn.raw - this.warmFitLow < 0.03 ? this.warmQuietMs + dt : 0;
+      if (this.warmLiveRef.current) this.warmLiveRef.current.style.width = '0%';
+      if (this.warmQuietMs >= 400 || this.warmFitMs >= 3000) {
+        this.warmFitting = false;
+        this.warmStage = 0;
+        this.warmT = this.WARM_REST_MS;
+        BreathIn.startCapture();
+        this.forceUpdate();
+      }
+      return;
+    }
+
     if (this.warmStage === 0) {
       if (this.warmBarRef.current) this.warmBarRef.current.style.width = (100 * (1 - this.warmT / this.WARM_REST_MS)) + '%';
       if (this.warmT <= 0) {
@@ -2214,15 +2252,6 @@ class Component extends DCLogic {
         this.beginWarmBlow();             // fresh window for the breaths
         this.forceUpdate();
       }
-      return;
-    }
-
-    // Between a re-fit and the next recording: wait until the air has
-    // stopped, so a breath already under way is not half-counted.
-    if (this.warmFitting) {
-      this.warmQuietMs = BreathIn.raw - this.warmRest < 0.04 ? this.warmQuietMs + dt : 0;
-      if (this.warmLiveRef.current) this.warmLiveRef.current.style.width = '0%';
-      if (this.warmQuietMs >= 400) { this.warmFitting = false; this.beginWarmBlow(); this.forceUpdate(); }
       return;
     }
 
@@ -2407,9 +2436,10 @@ class Component extends DCLogic {
       warmDone: this.warmStage === 2,
       warmOk: this.warmStage === 2 && !this.warmFailed,
       warmBad: this.warmStage === 2 && this.warmFailed,
-      warmTitle: this.warmStage === 0 ? t.warmRest : this.warmStage === 1 ? (this.warmFitting ? t.warmFit : t.warmBlow) : (this.warmFailed ? t.warmNothing : t.warmGot),
-      warmSub: this.warmStage === 0 ? t.warmRestSub : this.warmStage === 1 ? (this.warmFitting ? t.warmFitSub : t.warmBlowSub) : (this.warmFailed ? t.warmNothingSub : t.warmGotSub),
-      warmClipped: !!(this.warmResult && ((this.warmResult.clip || 0) > 0.015 || (this.warmResult.span || 0) >= 0.9)),
+      warmTitle: this.warmFitting ? t.warmFit : this.warmStage === 0 ? t.warmRest : this.warmStage === 1 ? t.warmBlow : (this.warmFailed ? t.warmNothing : t.warmGot),
+      warmSub: this.warmFitting ? t.warmFitSub : this.warmStage === 0 ? t.warmRestSub : this.warmStage === 1 ? t.warmBlowSub : (this.warmFailed ? t.warmNothingSub : t.warmGotSub),
+      // Only about a FINISHED measurement — never over one still running.
+      warmClipped: this.warmStage === 2 && !!(this.warmResult && ((this.warmResult.clip || 0) > 0.015 || (this.warmResult.span || 0) >= 0.9)),
       warmBreaths: this.warmResult ? String(this.warmResult.breaths) : '0',
       warmLen: this.warmResult ? (this.warmResult.dur / 1000).toFixed(1) + 's' : '\u2014',
       warmStrength: this.warmResult ? BreathIn.cal.amp.toFixed(3) : '\u2014',
