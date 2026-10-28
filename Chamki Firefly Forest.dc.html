@@ -619,7 +619,10 @@ const STR = {
     rBreaths: 'BREATHS', rLongest: 'LONGEST BREATH', rSparks: 'SPARKS',
     rRetry: 'BREATHE AGAIN', rNext: 'NEXT PLACE', rPlaces: 'ALL PLACES', rHome: 'HOME',
     errBrowser: 'This needs Chrome or Edge.',
-    errPort: 'No port picked. Close the Arduino Serial Monitor first — only one program can hold the cable.',
+    errPort: 'No port picked. Click CONNECT and choose the Arduino (often called USB Serial, CH340 or Arduino Uno). If it is not in the list, replug the cable or install the CH340 driver.',
+    errBusy: 'The Arduino is busy. Close the Arduino Serial Monitor / Serial Plotter (or any other tab using it), then connect again — only one program can hold the cable.',
+    errSecure: 'The flute only connects on https:// or http://localhost. Open the game from localhost, not from a file or an IP address.',
+    errOpen: 'Could not open the port. Unplug the cable, plug it back in, then connect again.',
     errUnplug: 'The cable came out. Plug it back in and connect again.'
   }
 };
@@ -816,35 +819,63 @@ const BreathIn = {
      without another dialog. So after the very first time, the flute just
      connects on its own — nobody has to choose anything again. */
   async autoConnect() {
-    if (!('serial' in navigator)) return false;
-    try {
-      const ports = await navigator.serial.getPorts();
-      if (!ports.length) return false;
-      this._port = ports[0];
-      await this._port.open({ baudRate: SERIAL_BAUD });
-    } catch (e) { this._port = null; return false; }
-    this.src = 'serial'; this.connected = true; this._keep = true;
-    try {
-      const enc = new TextEncoderStream();
-      enc.readable.pipeTo(this._port.writable).catch(() => {});
-      this._writer = enc.writable.getWriter();
-    } catch (e) { this._writer = null; }
-    this._readLoop();
-    this._emit();
-    return true;
+    if (!('serial' in navigator) || !window.isSecureContext) return false;
+    let ports;
+    try { ports = await navigator.serial.getPorts(); } catch (e) { return false; }
+    // Every port this page was ever trusted with, not just the first:
+    // a Bluetooth or old board can sit at ports[0] and block the flute.
+    for (const port of ports) {
+      if (await this._openPort(port) === true) {
+        this.src = 'serial';
+        this._start();
+        return true;
+      }
+    }
+    return false;
   },
 
   async useSerial() {
     if (!('serial' in navigator)) return { ok: false, why: 'needBrowser' };
+    if (!window.isSecureContext) return { ok: false, why: 'insecure' };
+    // Let go of anything we still hold (an earlier connect, or a port left
+    // open after the cable was pulled), or opening it again will fail.
+    if (this._port) await this.closeSerial();
+    let port;
     try {
-      this._port = await navigator.serial.requestPort();
-      await this._port.open({ baudRate: SERIAL_BAUD });
+      port = await navigator.serial.requestPort();
     } catch (e) {
-      // Almost always one of: nothing picked, or the Arduino Serial
-      // Monitor still holds the cable. Only one program gets it at a time.
-      return { ok: false, why: 'noPort' };
+      return { ok: false, why: e && e.name === 'SecurityError' ? 'insecure' : 'noPort' };
     }
-    this.connected = true; this._keep = true;
+    const r = await this._openPort(port);
+    if (r !== true) return { ok: false, why: r };
+    this._start();
+    return { ok: true };
+  },
+
+  // Open one port. Returns true, or the reason it would not open.
+  async _openPort(port) {
+    try {
+      await port.open({ baudRate: SERIAL_BAUD });
+    } catch (e) {
+      const name = e && e.name;
+      // Already open in this page (a connect that never got closed):
+      // close it and open it fresh, so no old stream still holds it.
+      if (name === 'InvalidStateError') {
+        try { await port.close(); await port.open({ baudRate: SERIAL_BAUD }); this._port = port; return true; }
+        catch (e2) { return 'openFail'; }
+      }
+      // NetworkError: another program — usually the Arduino Serial
+      // Monitor — holds the cable. Only one program gets it at a time.
+      return name === 'NetworkError' ? 'busy'
+           : name === 'SecurityError' ? 'insecure'
+           : 'openFail';
+    }
+    this._port = port;
+    return true;
+  },
+
+  _start() {
+    this.connected = true; this._keep = true; this._buf = ''; this.why = '';
     try {
       const enc = new TextEncoderStream();
       enc.readable.pipeTo(this._port.writable).catch(() => {});
@@ -852,7 +883,6 @@ const BreathIn = {
     } catch (e) { this._writer = null; }
     this._readLoop();
     this._emit();
-    return { ok: true };
   },
 
   async _readLoop() {
@@ -875,7 +905,13 @@ const BreathIn = {
     // A seven-year-old WILL pull the cable. Notice it, say something
     // kind, and let them reconnect — never freeze.
     this.connected = false; this.serialRaw = 0; this.raw = 0; this._buf = '';
-    if (this.src === 'serial' && this._keep) this.why = 'unplugged';
+    if (this.src === 'serial' && this._keep) {
+      this.why = 'unplugged';
+      // Release the dead port so the next CONNECT can open it again.
+      const port = this._port;
+      this._port = null; this._reader = null; this._writer = null;
+      try { if (port) await port.close(); } catch (e) {}
+    }
     this._emit();
   },
 
@@ -2301,6 +2337,9 @@ class Component extends DCLogic {
       keyBorder: BreathIn.src === 'key' && !BreathIn.active() ? '#F6C96B' : 'rgba(255,255,255,.2)',
       breathNote: BreathIn.why === 'needBrowser' ? t.errBrowser
                 : BreathIn.why === 'noPort' ? t.errPort
+                : BreathIn.why === 'busy' ? t.errBusy
+                : BreathIn.why === 'insecure' ? t.errSecure
+                : BreathIn.why === 'openFail' ? t.errOpen
                 : BreathIn.why === 'unplugged' ? t.errUnplug
                 : '',
 
