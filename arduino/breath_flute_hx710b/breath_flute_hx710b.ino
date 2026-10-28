@@ -20,6 +20,10 @@
  *          tracks the zero continuously while you play - but it forces
  *          a fresh measurement of the zero AND of the sensor's noise.
  *
+ *      w   widen. Makes the scale 2.5x roomier and saves it. The game
+ *          sends this by itself when it sees a breath pinned at 1.000,
+ *          so you should never need to type it.
+ *
  *      p   print the current settings, and PAUSE the stream so you can
  *          read them. Type s to start it again.
  *
@@ -53,6 +57,14 @@ const float   ALPHA       = 0.35;   // smoothing, 0..1
 const int     TOUCH_DELTA = 40;     // above reference = hole covered
 const uint8_t TOUCH_EVERY = 3;      // read finger pads every Nth sample
 const long    DEFAULT_FULL_SCALE = 20000;
+// The HX710B is a 24-bit converter, so a difference from the zero can be
+// as big as ~16.7 million counts. The old 4,000,000 cap sat well inside
+// that: a firm breath could exceed it, the scale could not widen any
+// further, and the output pinned at 1.000 for good.
+const long    MAX_FULL_SCALE = 16000000L;
+// How much room to leave above the breath that set the scale. Same as
+// calibrate(): that breath lands near 0.45, not at the ceiling.
+const float   HEADROOM = 2.2;
 // ----------------------------
 
 const uint16_t EE_MAGIC = 0xB1F7;   // marks "there is a saved value here"
@@ -171,9 +183,25 @@ void loadFullScale() {
   if (magic == EE_MAGIC) {
     long v = 0;
     EEPROM.get(EE_ADDR + 2, v);
-    if (v > 200 && v < 4000000L) { fullScale = v; return; }
+    if (v > 200 && v <= MAX_FULL_SCALE) { fullScale = v; return; }
   }
   fullScale = DEFAULT_FULL_SCALE;
+}
+
+/* Change the scale while streaming. `smoothed` is in the OLD scale's
+   units, so it is rescaled too — otherwise the next few readings would
+   jump. The '# scale' line tells the game the ruler just changed, so
+   it can throw away anything it measured against the old one. */
+void setScale(long fs) {
+  if (fs > MAX_FULL_SCALE) fs = MAX_FULL_SCALE;
+  if (fs <= fullScale) return;
+  long oldSpan = (fullScale > noiseBand) ? (fullScale - noiseBand) : fullScale;
+  fullScale = fs;
+  if (noiseBand > fullScale / 6) noiseBand = fullScale / 6;
+  long newSpan = (fullScale > noiseBand) ? (fullScale - noiseBand) : fullScale;
+  smoothed *= (float)oldSpan / (float)newSpan;
+  Serial.print(F("# scale widened to "));
+  Serial.println(fullScale);
 }
 
 void pauseStream() { streaming = false; pausedAt = millis(); }
@@ -283,6 +311,12 @@ void handleSerial() {
     char c = Serial.read();
     if (c == 'c' || c == 'C') { streaming = true; calibrate(); }
     else if (c == 'z' || c == 'Z') { streaming = true; tareBaseline(); }
+    else if (c == 'w' || c == 'W') {
+      // Asked for on purpose, so write it down now rather than later.
+      setScale(fullScale * 5 / 2);
+      saveFullScale(fullScale);
+      savedScale = fullScale;
+    }
     else if (c == 'p' || c == 'P') printSettings();
     else if (c == 's' || c == 'S') { if (streaming) pauseStream(); else resumeStream(); }
   }
@@ -308,15 +342,12 @@ void loop() {
   }
   // d >= noiseBand: that is air. Leave the zero exactly where it is.
 
-  /* Air off the top of the scale: widen to fit, with room to spare, so
-     the child immediately has somewhere above "normal" to go. */
-  if (d > fullScale) {
-    fullScale = (long)(d * 1.7);
-    if (fullScale > 4000000L) fullScale = 4000000L;
-    if (noiseBand > fullScale / 6) noiseBand = fullScale / 6;
-    Serial.print(F("# scale was too small - widened to "));
-    Serial.println(fullScale);
-  }
+  /* Air nearing the top of the scale: widen BEFORE it clips, with the
+     same headroom as calibrate(). This used to wait until the reading was
+     already past 1.000 and then widen to only 1.7x, so every breath on
+     the way up spent its time between 0.6 and 1.000 — even a small one
+     looked like a full breath until the scale had grown several times. */
+  if (d > fullScale - fullScale / 5) setScale((long)(d * HEADROOM));
   // Write it down now and then, not every sample.
   if (fullScale != savedScale && millis() - lastScaleSave > SCALE_SAVE_EVERY) {
     lastScaleSave = millis();

@@ -610,7 +610,9 @@ const STR = {
     warmGotSub: 'Everything in the game is now measured against this, so it fits you.',
     warmNothing: 'We did not catch that',
     warmNothingSub: 'Make sure your sensor is plugged in, then breathe out gently twice more.',
-    warmClip: 'The sensor ran out of room \u2014 your breath is stronger than it can measure, so every breath looks the same size. The game will still work. To fix it properly: open the Arduino Serial Monitor, type c and press Enter, then follow the count-in.',
+    warmFit: 'Fitting the flute to your breath\u2026',
+    warmFitSub: 'That one filled the sensor right up, so we gave it more room. Stop for a moment, then breathe out easily twice more.',
+    warmClip: 'The sensor ran out of room \u2014 your breath is stronger than it can measure, so every breath looks the same size. The game will still work. To fix it: upload the latest breath_flute_hx710b sketch to the Arduino, which makes room by itself.',
     letsPlay: 'PLAY', againBreath: 'BREATHE AGAIN', useLast: 'USE LAST TIME',
     connectNow: 'CONNECT',
     rGreat: 'Beautiful breathing!', rGood: 'Really well done.', rNice: 'Nice work.', rTried: 'Good try!',
@@ -916,6 +918,9 @@ const BreathIn = {
   },
 
   _parse(l) {
+    // The sketch widened its scale: everything measured before this line
+    // was on a different ruler. The warm-up watches this.
+    if (l.startsWith('# scale')) { this.scaleGen++; return; }
     if (!l || l[0] === '#' || l.startsWith('READY') || l.startsWith('ERR')) return;
     const p = l.split(','), v = parseFloat(p[0]);
     if (!isFinite(v)) return;
@@ -926,6 +931,12 @@ const BreathIn = {
 
   // Tell the sketch to take a fresh "nobody is blowing" reading.
   async reZero() { if (this._writer) { try { await this._writer.write('z'); } catch (e) {} } },
+
+  // Ask the sketch for a roomier scale (saved on the board). Sent when a
+  // breath pins at 1.000, so nobody has to open the Serial Monitor.
+  // Older sketches ignore it; the warm-up then falls back to its warning.
+  async widen() { if (this._writer) { try { await this._writer.write('w'); } catch (e) {} } },
+  scaleGen: 0,
 
   async closeSerial() {
     this._keep = false;
@@ -2144,6 +2155,33 @@ class Component extends DCLogic {
      ------------------------------------------------------------------ */
   WARM_REST_MS = 2000;
   WARM_BLOW_MS = 9000;
+  // How many times the warm-up may ask the sketch for more room before
+  // it gives up and shows the warning. 2.5x each, so ~40x in all.
+  WARM_MAX_FITS = 4;
+  warmFits = 0;
+  warmFitting = false;
+  warmClipMs = 0;
+  warmQuietMs = 0;
+  warmGen = 0;
+
+  // Start (or restart) the recording of the two breaths.
+  beginWarmBlow() {
+    this.warmStage = 1;
+    this.warmT = this.WARM_BLOW_MS;
+    this.warmSeen = 0;
+    this.warmClipMs = 0;
+    this.warmGen = BreathIn.scaleGen;
+    BreathIn.startCapture();
+  }
+
+  /* The scale changed under the recording — the sketch widened itself, or
+     we asked it to. Breaths measured on the old scale cannot be mixed
+     with the new, so wait for the air to stop and record again. */
+  refitWarmup() {
+    this.warmFitting = true;
+    this.warmQuietMs = 0;
+    this.forceUpdate();
+  }
 
   startWarmup(placeId) {
     this.pendingPlace = placeId;
@@ -2155,6 +2193,8 @@ class Component extends DCLogic {
     this.warmRest = 0;
     this.warmResult = null;
     this.warmFailed = false;
+    this.warmFits = 0;
+    this.warmFitting = false;
     BreathIn.startCapture();
     this.setState({ screen: 'warmup' });
   }
@@ -2171,13 +2211,32 @@ class Component extends DCLogic {
         // The same quiet window tells us how much this sensor wobbles.
         BreathIn.noise = BreathIn.noiseFromCapture();
         BreathIn.zero = this.warmRest; BreathIn._zeroSeen = true;
-        this.warmStage = 1;
-        this.warmT = this.WARM_BLOW_MS;
-        BreathIn.startCapture();          // fresh window for the breaths
+        this.beginWarmBlow();             // fresh window for the breaths
         this.forceUpdate();
       }
       return;
     }
+
+    // Between a re-fit and the next recording: wait until the air has
+    // stopped, so a breath already under way is not half-counted.
+    if (this.warmFitting) {
+      this.warmQuietMs = BreathIn.raw - this.warmRest < 0.04 ? this.warmQuietMs + dt : 0;
+      if (this.warmLiveRef.current) this.warmLiveRef.current.style.width = '0%';
+      if (this.warmQuietMs >= 400) { this.warmFitting = false; this.beginWarmBlow(); this.forceUpdate(); }
+      return;
+    }
+
+    // A reading pinned at the top means the sensor's scale is too small
+    // for this breath: every breath, big or small, would come out the
+    // same. Ask for more room and measure again, rather than keep it.
+    this.warmClipMs = BreathIn.raw >= 0.97 ? this.warmClipMs + dt : 0;
+    if (this.warmClipMs > 150 && this.warmFits < this.WARM_MAX_FITS) {
+      this.warmFits++;
+      BreathIn.widen();
+      this.refitWarmup();
+      return;
+    }
+    if (BreathIn.scaleGen !== this.warmGen) { this.refitWarmup(); return; }
 
     // Stage 1: recording two ordinary breaths.
     if (this.warmBarRef.current) this.warmBarRef.current.style.width = (100 * (1 - this.warmT / this.WARM_BLOW_MS)) + '%';
@@ -2201,11 +2260,10 @@ class Component extends DCLogic {
   }
 
   retryWarmup() {
-    this.warmStage = 1;
-    this.warmT = this.WARM_BLOW_MS;
-    this.warmSeen = 0;
     this.warmFailed = false;
-    BreathIn.startCapture();
+    this.warmFits = 0;
+    this.warmFitting = false;
+    this.beginWarmBlow();
     this.forceUpdate();
   }
 
@@ -2349,8 +2407,8 @@ class Component extends DCLogic {
       warmDone: this.warmStage === 2,
       warmOk: this.warmStage === 2 && !this.warmFailed,
       warmBad: this.warmStage === 2 && this.warmFailed,
-      warmTitle: this.warmStage === 0 ? t.warmRest : this.warmStage === 1 ? t.warmBlow : (this.warmFailed ? t.warmNothing : t.warmGot),
-      warmSub: this.warmStage === 0 ? t.warmRestSub : this.warmStage === 1 ? t.warmBlowSub : (this.warmFailed ? t.warmNothingSub : t.warmGotSub),
+      warmTitle: this.warmStage === 0 ? t.warmRest : this.warmStage === 1 ? (this.warmFitting ? t.warmFit : t.warmBlow) : (this.warmFailed ? t.warmNothing : t.warmGot),
+      warmSub: this.warmStage === 0 ? t.warmRestSub : this.warmStage === 1 ? (this.warmFitting ? t.warmFitSub : t.warmBlowSub) : (this.warmFailed ? t.warmNothingSub : t.warmGotSub),
       warmClipped: !!(this.warmResult && ((this.warmResult.clip || 0) > 0.015 || (this.warmResult.span || 0) >= 0.9)),
       warmBreaths: this.warmResult ? String(this.warmResult.breaths) : '0',
       warmLen: this.warmResult ? (this.warmResult.dur / 1000).toFixed(1) + 's' : '\u2014',
